@@ -12,13 +12,43 @@ namespace TrainingCenterFinalProject.Models
             using (var context = new PetCareDbContext(
                 serviceProvider.GetRequiredService<DbContextOptions<PetCareDbContext>>()))
             {
-                // 如果資料庫中已經有 UserProfile，代表已經 Seed 過，直接 return
+                var now = DateTime.Now;
+
+                // ==========================================
+                // ★ 獨立區塊：檢查並建立 職位 (Occupations)
+                // ==========================================
+                if (!context.Occupations.Any())
+                {
+                    var occVet = new Occupations { OccupationID = "O01", OccupationName = "獸醫師" };
+                    var occGroomer = new Occupations { OccupationID = "O11", OccupationName = "寵物美容師" };
+                    var occAdmin = new Occupations { OccupationID = "O00", OccupationName = "院長" };
+                    context.Occupations.AddRange(occVet, occGroomer, occAdmin);
+                    context.SaveChanges();
+                }
+
+                // ==========================================
+                // ★ 獨立區塊：檢查並建立 就業紀錄 (Employment)
+                // ==========================================
+                // 若剛剛在資料庫手動清空了 Employment，這裡就會偵測到沒有資料並重新寫入
+                if (!context.Employments.Any())
+                {
+                    // 因為這裡獨立於下方的變數，我們直接使用已知的 UserID 與 InstitutionID 來建立關聯
+                    context.Employments.AddRange(
+                         new Employment { UserID = "U202607280002", InstitutionID = "I00001", OccupationID = "O01", Status = "Active", LicenseNumber = "VET-123456", StartDate = now.AddYears(-2) },
+                         new Employment { UserID = "U202607280003", InstitutionID = "I00002", OccupationID = "O02", Status = "Active", LicenseNumber = "GROOM-654321", StartDate = now.AddYears(-1) }
+                     );
+                    context.SaveChanges();
+                }
+
+
+                // ==========================================
+                // 原有的防呆機制：如果資料庫中已經有 UserProfile，
+                // 代表下方的舊有測試資料都已經 Seed 過，直接 return
+                // ==========================================
                 if (context.UserProfiles.Any())
                 {
                     return;
                 }
-
-                var now = DateTime.Now;
 
                 // ==========================================
                 // 1. 建立 驗證方式 (UserCredential)
@@ -58,21 +88,12 @@ namespace TrainingCenterFinalProject.Models
                 context.SaveChanges();
 
                 // ==========================================
-                // 5. 建立 就業紀錄 (Employment)
-                // ==========================================
-                context.Employments.AddRange(
-                    new Employment { UserID = vet.UserID, InstitutionID = clinic.InstitutionID, Occupation = "獸醫師", AuthLevel = "Vet", Status = "Active", LicenseNumber = "VET-123456", StartDate = now.AddYears(-2) },
-                    new Employment { UserID = groomer.UserID, InstitutionID = salon.InstitutionID, Occupation = "寵物美容師", AuthLevel = "Staff", Status = "Active", LicenseNumber = "GROOM-654321", StartDate = now.AddYears(-1) }
-                );
-                context.SaveChanges();
-
-                // ==========================================
                 // 6. 建立 寵物資料 (Pet)
                 // ==========================================
                 var petDog = new Pet { OwnerID = owner.UserID, Name = "小白", Species = "Dog", Breed = "馬爾濟斯", Gender = "M", DateOfBirth = new DateTime(2021, 5, 10), SpecialNotes = "皮膚容易過敏" };
                 var petCat = new Pet { OwnerID = owner.UserID, Name = "胖橘", Species = "Cat", Breed = "米克斯", Gender = "F", DateOfBirth = new DateTime(2022, 10, 1) };
                 context.Pets.AddRange(petDog, petCat);
-                context.SaveChanges(); // 儲存以取得資料庫自動產生的 PetID
+                context.SaveChanges();
 
                 // ==========================================
                 // 7. 建立 資料授權紀錄 (AuthorizationRecord)
@@ -104,7 +125,7 @@ namespace TrainingCenterFinalProject.Models
                 // ==========================================
                 var record = new MedicalRecord { PetID = petDog.PetID, VetID = vet.UserID, VisitDate = now.AddDays(-10), Symptoms = "食慾不佳，連續嘔吐兩次", Diagnosis = "急性腸胃炎" };
                 context.MedicalRecords.Add(record);
-                context.SaveChanges(); // 取得自動產生的 RecordID
+                context.SaveChanges();
 
                 context.RecordDiagnoses.Add(new RecordDiagnosis { RecordID = record.RecordID, TermID = vocab1.TermID, Severity = "Moderate", Remark = "注意水分補充", CreatedDate = now });
                 context.Prescriptions.Add(new Prescription { RecordID = record.RecordID, MedicationName = "Cerenia 止吐藥", Dosage = "16mg", Frequency = "一天一次", Instructions = "飯後餵食，若持續嘔吐須回診" });
@@ -115,7 +136,7 @@ namespace TrainingCenterFinalProject.Models
                 // ==========================================
                 var log = new CareGroomingLog { PetID = petCat.PetID, StaffID = groomer.UserID, LogDate = now.AddDays(-20), ActivityDetails = "完成洗澡、剪指甲、清耳朵。情緒稍稍緊張但無攻擊性。", DietNotes = "給予肉泥零食，進食正常" };
                 context.CareGroomingLogs.Add(log);
-                context.SaveChanges(); // 取得自動產生的 LogID
+                context.SaveChanges();
 
                 context.LogPhotos.Add(new LogPhoto { LogID = log.LogID, ImageURL = "https://example.com/photos/cat_grooming_01.jpg" });
                 context.SaveChanges();

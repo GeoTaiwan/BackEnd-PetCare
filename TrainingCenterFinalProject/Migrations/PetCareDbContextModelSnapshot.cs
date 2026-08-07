@@ -130,11 +130,6 @@ namespace TrainingCenterFinalProject.Migrations
                     b.Property<string>("InstitutionID")
                         .HasColumnType("nchar(6)");
 
-                    b.Property<string>("AuthLevel")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
@@ -143,10 +138,9 @@ namespace TrainingCenterFinalProject.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Occupation")
+                    b.Property<string>("OccupationID")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
@@ -159,6 +153,8 @@ namespace TrainingCenterFinalProject.Migrations
                     b.HasKey("UserID", "InstitutionID");
 
                     b.HasIndex("InstitutionID");
+
+                    b.HasIndex("OccupationID");
 
                     b.ToTable("Employments");
                 });
@@ -294,6 +290,21 @@ namespace TrainingCenterFinalProject.Migrations
                     b.HasKey("TermID");
 
                     b.ToTable("MedicalVocabularyDictionaries");
+                });
+
+            modelBuilder.Entity("TrainingCenterFinalProject.Models.Occupations", b =>
+                {
+                    b.Property<string>("OccupationID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("OccupationName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("OccupationID");
+
+                    b.ToTable("Occupations");
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.Pet", b =>
@@ -691,6 +702,12 @@ namespace TrainingCenterFinalProject.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("TrainingCenterFinalProject.Models.Occupations", "OccupationDetails")
+                        .WithMany("Employment")
+                        .HasForeignKey("OccupationID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("TrainingCenterFinalProject.Models.UserProfile", "UserProfile")
                         .WithMany("Employments")
                         .HasForeignKey("UserID")
@@ -698,6 +715,8 @@ namespace TrainingCenterFinalProject.Migrations
                         .IsRequired();
 
                     b.Navigation("Institution");
+
+                    b.Navigation("OccupationDetails");
 
                     b.Navigation("UserProfile");
                 });
@@ -837,6 +856,11 @@ namespace TrainingCenterFinalProject.Migrations
             modelBuilder.Entity("TrainingCenterFinalProject.Models.MedicalVocabularyDictionary", b =>
                 {
                     b.Navigation("RecordDiagnoses");
+                });
+
+            modelBuilder.Entity("TrainingCenterFinalProject.Models.Occupations", b =>
+                {
+                    b.Navigation("Employment");
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.Pet", b =>

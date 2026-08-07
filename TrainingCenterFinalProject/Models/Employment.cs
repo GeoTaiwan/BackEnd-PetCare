@@ -17,14 +17,8 @@ namespace TrainingCenterFinalProject.Models
         public string InstitutionID { get; set; } = null!;
 
         [Required]
-        [StringLength(50)]
-        [Display(Name = "職位")]
-        public string Occupation { get; set; } = null!;
-
-        [Required]
-        [StringLength(20)]
-        [Display(Name = "機構權限")]
-        public string AuthLevel { get; set; } = null!;
+        [Display(Name = "職位代號")]
+        public string OccupationID { get; set; } = null!;
 
         [Required]
         [StringLength(20)]
@@ -48,5 +42,9 @@ namespace TrainingCenterFinalProject.Models
 
         [ForeignKey(nameof(InstitutionID))]
         public virtual Institution? Institution { get; set; }
+
+        // === 新增：與 Occupations 的關聯 ===
+        [ForeignKey(nameof(OccupationID))]
+        public virtual Occupations? OccupationDetails { get; set; }
     }
 }
