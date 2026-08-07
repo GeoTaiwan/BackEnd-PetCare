@@ -10,7 +10,7 @@ namespace TrainingCenterFinalProject.Models
         public string OccupationID { get; set; } = null!;
         [Display(Name ="職位名稱")]
         public string OccupationName { get; set; } = null!;
-
+        //關聯
         public virtual List<Employment> Employment { get; set; } = new List<Employment>();
 
     }
