@@ -78,6 +78,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
+app.UseStaticFiles(); // 👈 必須要有這一行，wwwroot 內的檔案才能被讀取下載！
 app.UseRouting();
 
 app.UseAuthentication();

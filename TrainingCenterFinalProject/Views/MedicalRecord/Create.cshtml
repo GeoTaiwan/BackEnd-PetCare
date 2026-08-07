@@ -10,7 +10,7 @@
 <hr /> *@
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="mb-3">
@@ -20,11 +20,11 @@
                 <span asp-validation-for="PetID" class="text-danger"></span>
             </div>
 
-            <div class="mb-3">
+            @* <div class="mb-3">
                 <label asp-for="VetID" class="control-label"></label>
                 <input asp-for="VetID" class="form-control" />
                 <span asp-validation-for="VetID" class="text-danger"></span>
-            </div>
+            </div> *@
 
             <div class="mb-3">
                 <label asp-for="VisitDate" class="control-label"></label>
@@ -40,13 +40,16 @@
 
             <div class="mb-3">
                 <label asp-for="TestResultsFile" class="control-label"></label>
-                <input asp-for="TestResultsFile" class="form-control" />
+                <!-- 加上 type="file"，並命名為 uploadFile (這會對應 Controller 的參數) -->
+                <!-- 可選: 使用 accept 限制上傳格式，例如 accept=".jpg,.png,.pdf" -->
+                <input type="file" name="uploadFile" class="form-control" accept=".pdf,.doc,.docx,.txt,.jpg" />
                 <span asp-validation-for="TestResultsFile" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Diagnosis" class="control-label"></label>
-                <input asp-for="Diagnosis" class="form-control" />
+                <textarea asp-for="Diagnosis" class="form-control"></textarea>
+                @* <input asp-for="Diagnosis" class="form-control" /> *@
                 <span asp-validation-for="Diagnosis" class="text-danger"></span>
             </div>
 
@@ -59,5 +62,5 @@
 </div>
 
 <div>
-    <a asp-action="Index" class="btn btn-info">回病歷列表</a>
+    <a asp-action="Index" class="btn btn-info">回病歷管理</a>
 </div>

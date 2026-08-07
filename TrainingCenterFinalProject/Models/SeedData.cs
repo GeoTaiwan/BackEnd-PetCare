@@ -19,10 +19,12 @@ namespace TrainingCenterFinalProject.Models
                 // ==========================================
                 if (!context.Occupations.Any())
                 {
+                    var occAdmin = new Occupations { OccupationID = "O00", OccupationName = "獸醫管理" };
                     var occVet = new Occupations { OccupationID = "O01", OccupationName = "獸醫師" };
+                    var occVetDefault = new Occupations { OccupationID = "O09", OccupationName = "預設獸醫師" };
                     var occGroomer = new Occupations { OccupationID = "O11", OccupationName = "寵物美容師" };
-                    var occAdmin = new Occupations { OccupationID = "O00", OccupationName = "院長" };
-                    context.Occupations.AddRange(occVet, occGroomer, occAdmin);
+                    
+                    context.Occupations.AddRange(occVet, occGroomer, occAdmin,occVetDefault);
                     context.SaveChanges();
                 }
 
@@ -34,7 +36,7 @@ namespace TrainingCenterFinalProject.Models
                 {
                     // 因為這裡獨立於下方的變數，我們直接使用已知的 UserID 與 InstitutionID 來建立關聯
                     context.Employments.AddRange(
-                         new Employment { UserID = "U202607280002", InstitutionID = "I00001", OccupationID = "O01", Status = "Active", LicenseNumber = "VET-123456", StartDate = now.AddYears(-2) },
+                         new Employment { UserID = "U202607280002", InstitutionID = "I00001", OccupationID = "O09", Status = "Active", LicenseNumber = "VET-123456", StartDate = now.AddYears(-2) },
                          new Employment { UserID = "U202607280003", InstitutionID = "I00002", OccupationID = "O02", Status = "Active", LicenseNumber = "GROOM-654321", StartDate = now.AddYears(-1) }
                      );
                     context.SaveChanges();
@@ -63,7 +65,7 @@ namespace TrainingCenterFinalProject.Models
                 // 2. 建立 使用者基本資料 (UserProfile)
                 // ==========================================
                 var admin = new UserProfile { UserID = "U202607280001", Name = "系統管理員", Phone = "0900000000", Authorization = 9, Email = "admin@test.com", Status = 1, JoinDate = now };
-                var vet = new UserProfile { UserID = "U202607280002", Name = "王大明", Phone = "0911111111", Authorization = 2, Email = "vet@test.com", Status = 1, JoinDate = now };
+                var vet = new UserProfile { UserID = "U202607280002", Name = "預設獸醫", Phone = "0911111111", Authorization = 2, Email = "vet@test.com", Status = 1, JoinDate = now };
                 var groomer = new UserProfile { UserID = "U202607280003", Name = "陳美容", Phone = "0922222222", Authorization = 1, Email = "groomer@test.com", Status = 1, JoinDate = now };
                 var owner = new UserProfile { UserID = "U202607280004", Name = "林飼主", Phone = "0933333333", Authorization = 0, Email = "owner@test.com", Status = 1, JoinDate = now };
                 context.UserProfiles.AddRange(admin, vet, groomer, owner);
