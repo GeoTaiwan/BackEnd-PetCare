@@ -1,0 +1,59 @@
+@model TrainingCenterFinalProject.Models.Pet
+
+@{
+    // ViewData["Title"] = "Details";
+    bool hasPhoto = string.IsNullOrEmpty(Model.ProfilePhotoUrl) ? false : true;
+}
+<div class="text-center">
+    <h1>@ViewData["Title"]</h1>
+</div>
+<div class="container align-content-center">
+
+<div class="card mb-3" >
+    <div class="row g-0">
+        <div class="col col-md-5">
+                @if (hasPhoto)
+                {
+                    <img src="@Model.ProfilePhotoUrl?v=@DateTime.Now.Ticks" class="img-fluid rounded-start" alt="...">
+                }
+                else
+                {
+                    <img src="~/images/cat.jpg" class="img-fluid rounded-start" alt="...">
+                }
+            </div>
+        <div class="col col-md-7">
+            <div class="card-body">
+                <h5 class="card-title text-center">@Html.DisplayName(Model.Name)</h5>
+                <div class="row">
+                    <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.Species)</div>
+                    <div class="col-8 card-text">@Html.DisplayName(Model.Species)</div>
+                </div>
+                <div class="row">
+                    <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.Breed)</div>
+                    <div class="col-8 card-text">@Html.DisplayName(Model.Breed)</div>
+                </div>
+                    <div class="row">
+                        <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.Gender)</div>
+                        <div class="col-8 card-text">@Html.DisplayName(Model.Gender)</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.DateOfBirth)</div>
+                        <div class="col-8 card-text">@Html.DisplayFor(m=>m.DateOfBirth)</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.MicrochipNo)</div>
+                        <div class="col-8 card-text">@Html.DisplayFor(m=>m.Breed)</div>
+                    </div>
+                <div class="row">
+                    <div class="col-12 card-text"><small class="text-body-secondary">@Html.Raw((Model.SpecialNotes??"").Replace("\r\n","<br>"))</small></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-petid="@Model?.PetID" class="btn btn-warning">編輯</a>
+    <a asp-action="Index" class="btn btn-info">回到寵物列表</a>
+</div>

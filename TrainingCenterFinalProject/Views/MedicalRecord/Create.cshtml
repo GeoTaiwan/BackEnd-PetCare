@@ -1,0 +1,63 @@
+@model TrainingCenterFinalProject.Models.MedicalRecord
+
+@{
+    // ViewData["Title"] = "Create";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@* <h4>MedicalRecord</h4>
+<hr /> *@
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="PetID" class="control-label"></label>
+                @* <input asp-for="PetID" class="form-control" /> *@
+                <select asp-for="PetID" asp-items="ViewBag.PetList" class="form-control"></select>
+                <span asp-validation-for="PetID" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="VetID" class="control-label"></label>
+                <input asp-for="VetID" class="form-control" />
+                <span asp-validation-for="VetID" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="VisitDate" class="control-label"></label>
+                <input asp-for="VisitDate" class="form-control" />
+                <span asp-validation-for="VisitDate" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Symptoms" class="control-label"></label>
+                <input asp-for="Symptoms" class="form-control" />
+                <span asp-validation-for="Symptoms" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="TestResultsFile" class="control-label"></label>
+                <input asp-for="TestResultsFile" class="form-control" />
+                <span asp-validation-for="TestResultsFile" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Diagnosis" class="control-label"></label>
+                <input asp-for="Diagnosis" class="form-control" />
+                <span asp-validation-for="Diagnosis" class="text-danger"></span>
+            </div>
+
+           
+            <div class="">
+                <input type="submit" value="確定建立" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" class="btn btn-info">回病歷列表</a>
+</div>

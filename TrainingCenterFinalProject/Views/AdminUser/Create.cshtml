@@ -1,0 +1,97 @@
+﻿@model TrainingCenterFinalProject.ViewModels.AdminUserCreateViewModel
+
+@{
+    ViewData["Title"] = "新增使用者";
+    Layout = "_Layout"; // 假設有後台專屬版面
+}
+
+<div class="container mt-4">
+    <h2>新增使用者</h2>
+    <hr />
+
+    <form asp-action="Create" method="post" class="needs-validation">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="row">
+            <!-- 左欄：基本資料 -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Phone" class="form-label"></label>
+                    <input asp-for="Phone" class="form-control" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control" />
+                    <div class="form-text">管理員建立帳號時，必須給予一組初始密碼。</div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- 右欄：詳細資訊與權限 -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label asp-for="Gender" class="form-label"></label>
+                    <select asp-for="Gender" class="form-select">
+                        <option value="">未指定</option>
+                        <option value="true">男性</option>
+                        <option value="false">女性</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="DateOfBirth" class="form-label"></label>
+                    <input asp-for="DateOfBirth" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Address" class="form-label"></label>
+                    <input asp-for="Address" class="form-control" />
+                </div>
+
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label asp-for="Authorization" class="form-label"></label>
+                        <select asp-for="Authorization" class="form-select">
+                            <option value="0">一般會員 (0)</option>
+                            <option value="1">員工 (1)</option>
+                            <option value="9">管理員 (9)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-6 mb-3">
+                        <label asp-for="Status" class="form-label"></label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="1">啟用中 (1)</option>
+                            <option value="0">停權/未驗證 (0)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">建立帳號</button>
+            <a asp-action="Index" class="btn btn-outline-secondary ms-2">返回列表</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,67 @@
+﻿@model TrainingCenterFinalProject.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "會員登入";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-center mb-4">會員登入</h3>
+
+                    <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+
+                        <!-- 顯示整體錯誤訊息 -->
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Account" class="form-label"></label>
+                            <input asp-for="Account" class="form-control" placeholder="請輸入 Email 或 使用者代號" />
+                            <span asp-validation-for="Account" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" class="form-control" placeholder="請輸入密碼" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input asp-for="RememberMe" class="form-check-input" />
+                            <label asp-for="RememberMe" class="form-check-label"></label>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">登入</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="mt-4 text-center">
+    <p>或使用其他帳號登入：</p>
+
+    <!-- Google 登入按鈕 -->
+    <a asp-action="ExternalLogin"
+       asp-route-provider="Google"
+       class="btn btn-outline-danger me-2">
+        <i class="bi bi-google"></i> Google 登入
+    </a>
+
+    <!-- LINE 登入按鈕 -->
+    <a asp-action="ExternalLogin"
+       asp-route-provider="Line"
+       class="btn btn-outline-success">
+        <i class="bi bi-chat-fill"></i> LINE 登入
+    </a>
+</div>
+@section Scripts {
+    <!-- 載入前端驗證腳本 (jQuery Validation) -->
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

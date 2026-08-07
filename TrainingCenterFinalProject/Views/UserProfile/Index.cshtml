@@ -1,0 +1,91 @@
+@model IEnumerable<TrainingCenterFinalProject.Models.UserProfile>
+
+@{
+    // ViewData["Title"] = "使用者列表";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a class="btn btn-success" asp-action="Create">建立使用者</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Phone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Authorization)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Gender)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateOfBirth)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.JoinDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.UserID)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Phone)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Authorization)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Gender)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.DateOfBirth)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Address)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.JoinDate)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Email)
+            </td>
+            
+            <td>
+                <a asp-action="Edit" asp-route-userid="@item.UserID" class="btn btn-warning">編輯</a>
+                <a asp-action="Details" asp-route-userid="@item.UserID" class="btn btn-info">詳細資料</a>
+                <a asp-action="Delete" asp-route-userid="@item.UserID" class="btn btn-danger">刪除</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,98 @@
+@model IEnumerable<TrainingCenterFinalProject.Models.MedicalRecord>
+
+@{
+    // ViewData["Title"] = "Index";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    @* @if (Model.FirstOrDefault().Pet.) *@
+    @if (ViewBag.noPet)
+    {
+        <a asp-action="Create" asp-controller="Pet" asp-route-fromMR="true" class="btn btn-info">新増寵物</a>
+    } else
+    {
+        <a asp-action="Create" asp-route-petid='@ViewData["petid"]' class="btn btn-info">新増病歴</a>
+    }
+
+    <form asp-action="Index" method="get" class="form-inline">
+        <div class="input-group">
+            <span class="input-group-text">篩選寵物</span>
+            <!--
+                name="petId" 會對應到 Controller 的參數
+                asp-items="ViewBag.PetList" 會綁定 Controller 傳過來的 SelectList
+                onchange 自動提交表單
+            -->
+            <select name="petId" class="form-select" asp-items="ViewBag.PetList" onchange="this.form.submit()">
+                <option value="">所有寵物</option>
+            </select>
+        </div>
+    </form>
+</p>
+
+@if (Model.Any())
+{
+    
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Pet.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Vet.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VisitDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Symptoms)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TestResultsFile)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Diagnosis)
+            </th>
+            
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.Pet.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Vet.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.VisitDate)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Symptoms)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.TestResultsFile)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Diagnosis)
+            </td>
+           
+            <td>
+                <a asp-action="Edit" asp-route-recordid="@item.RecordID" class="btn btn-warning">編輯</a>
+                <a asp-action="Details" asp-route-id="@item.RecordID" class="btn btn-info">詳細資料</a>
+                <a asp-action="Delete" asp-route-id="@item.RecordID" class="btn btn-danger">刪除</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+} else
+{
+    <div class="text-center">
+        <h1>目前尚無@(ViewBag.noPet ? "寵物" : "病歴")</h1>
+    </div>
+}
