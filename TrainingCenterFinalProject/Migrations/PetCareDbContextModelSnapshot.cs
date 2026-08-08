@@ -358,6 +358,30 @@ namespace TrainingCenterFinalProject.Migrations
                     b.ToTable("Pets");
                 });
 
+            modelBuilder.Entity("TrainingCenterFinalProject.Models.PetWeight", b =>
+                {
+                    b.Property<int>("PetWeightID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PetWeightID"));
+
+                    b.Property<int>("PetID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("RecordDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Weight")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.HasKey("PetWeightID");
+
+                    b.HasIndex("PetID");
+
+                    b.ToTable("PetWeight");
+                });
+
             modelBuilder.Entity("TrainingCenterFinalProject.Models.Prescription", b =>
                 {
                     b.Property<int>("PrescriptionID")
@@ -762,6 +786,17 @@ namespace TrainingCenterFinalProject.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("TrainingCenterFinalProject.Models.PetWeight", b =>
+                {
+                    b.HasOne("TrainingCenterFinalProject.Models.Pet", "Pet")
+                        .WithMany("PetWeights")
+                        .HasForeignKey("PetID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Pet");
+                });
+
             modelBuilder.Entity("TrainingCenterFinalProject.Models.Prescription", b =>
                 {
                     b.HasOne("TrainingCenterFinalProject.Models.MedicalRecord", "MedicalRecord")
@@ -872,6 +907,8 @@ namespace TrainingCenterFinalProject.Migrations
                     b.Navigation("CareGroomingLogs");
 
                     b.Navigation("MedicalRecords");
+
+                    b.Navigation("PetWeights");
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.UserCredential", b =>
