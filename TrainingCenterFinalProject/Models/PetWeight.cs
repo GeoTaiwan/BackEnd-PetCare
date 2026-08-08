@@ -24,7 +24,7 @@ namespace TrainingCenterFinalProject.Models
         [Required(ErrorMessage = "必填")]
         [Display(Name = "測量日期")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime RecordDate { get; set; } = DateTime.Now; // 預設為當下時間
+        public DateTime RecordDate { get; set; }  // 預設為當下時間
 
         // === Foreign Key (加上 ? 繞過驗證) ===
         [ForeignKey(nameof(PetID))]

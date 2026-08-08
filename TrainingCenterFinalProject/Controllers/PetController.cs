@@ -39,12 +39,13 @@ public class PetController : Controller
         }
 
         var pet = await _context.Pets
+            .Include(p => p.PetWeights.OrderByDescending(w=>w.RecordDate))
             .FirstOrDefaultAsync(m => m.PetID == petid);
         if (pet == null)
         {
             return NotFound();
         }
-
+        
         return View(pet);
     }
 

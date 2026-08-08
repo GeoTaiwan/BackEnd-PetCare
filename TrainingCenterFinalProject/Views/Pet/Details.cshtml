@@ -9,9 +9,9 @@
 </div>
 <div class="container align-content-center">
 
-<div class="card mb-3" >
-    <div class="row g-0">
-        <div class="col col-md-5">
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="col col-md-5">
                 @if (hasPhoto)
                 {
                     <img src="@Model.ProfilePhotoUrl?v=@DateTime.Now.Ticks" class="img-fluid rounded-start" alt="...">
@@ -21,39 +21,92 @@
                     <img src="~/images/cat.jpg" class="img-fluid rounded-start" alt="...">
                 }
             </div>
-        <div class="col col-md-7">
-            <div class="card-body">
-                <h5 class="card-title text-center">@Html.DisplayName(Model.Name)</h5>
-                <div class="row">
-                    <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.Species)</div>
-                    <div class="col-8 card-text">@Html.DisplayName(Model.Species)</div>
-                </div>
-                <div class="row">
-                    <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.Breed)</div>
-                    <div class="col-8 card-text">@Html.DisplayName(Model.Breed)</div>
-                </div>
+            <div class="col col-md-7">
+                <div class="card-body">
+                    <h5 class="card-title text-center">@Html.DisplayName(Model.Name)</h5>
+                    <div class="row">
+                        <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.Species)</div>
+                        <div class="col-8 card-text">@Html.DisplayName(Model.Species)</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.Breed)</div>
+                        <div class="col-8 card-text">@Html.DisplayName(Model.Breed)</div>
+                    </div>
                     <div class="row">
                         <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.Gender)</div>
                         <div class="col-8 card-text">@Html.DisplayName(Model.Gender)</div>
                     </div>
                     <div class="row">
                         <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.DateOfBirth)</div>
-                        <div class="col-8 card-text">@Html.DisplayFor(m=>m.DateOfBirth)</div>
+                        <div class="col-8 card-text">@Html.DisplayFor(m => m.DateOfBirth)</div>
                     </div>
                     <div class="row">
                         <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.MicrochipNo)</div>
-                        <div class="col-8 card-text">@Html.DisplayFor(m=>m.Breed)</div>
+                        <div class="col-8 card-text">@Html.DisplayFor(m => m.MicrochipNo)</div>
                     </div>
-                <div class="row">
-                    <div class="col-12 card-text"><small class="text-body-secondary">@Html.Raw((Model.SpecialNotes??"").Replace("\r\n","<br>"))</small></div>
+
+                    <div class="row">
+                        @* 使用 FirstOrDefault() 讓 DisplayNameFor 可以安全地抓到屬性名稱 (不會發生 Null 例外) *@
+                        <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.PetWeights.FirstOrDefault().Weight)</div>
+
+                        <div class="col-8 card-text">
+                            @* 判斷是否有體重紀錄 *@
+                            @if (Model.PetWeights != null && Model.PetWeights.Any())
+                            {
+                                // 將紀錄依照測量日期 (RecordDate) 由新到舊排序，並取出最新的一筆
+                                var latestWeight = Model.PetWeights.OrderByDescending(w => w.RecordDate).First();
+
+                                <span>@latestWeight.Weight (@latestWeight.RecordDate.ToString("MM-dd HH:mm"))</span>
+                                <a asp-action="Index" asp-controller="PetWeight" asp-route-petid="@Model.PetID" class="btn btn-info">
+                                    體重紀錄
+                                </a>
+                            }
+                            else
+                            {
+                                // 若無紀錄則顯示提示文字
+                                <span class="text-muted">目前尚無紀錄</span>
+                            }
+                            
+                            <a asp-action="Create" asp-controller="PetWeight" asp-route-petid="@Model.PetID" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#newWeight">
+                                新增紀錄
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 card-text"><small class="text-body-secondary">@Html.Raw((Model.SpecialNotes ?? "").Replace("\r\n", "<br>"))</small></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-</div>
 
 <div>
     <a asp-action="Edit" asp-route-petid="@Model?.PetID" class="btn btn-warning">編輯</a>
     <a asp-action="Index" class="btn btn-info">回到寵物列表</a>
+</div>
+
+<div class="modal fade" tabindex="-1" id="newWeight">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">新增體重紀錄</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Create" asp-controller="PetWeight" asp-route-petid="@Model.PetID">
+                    <div class="input-group mb-3">
+                        <input asp-for="PetWeights.FirstOrDefault().Weight" class="form-control text-end" aria-describedby="basic-addon2" required />
+                        @* <input type="number" name="Weight" step="0.01" class="form-control mb-3" /> *@
+                        <span class="input-group-text justify-content-center" id="basic-addon2" style="width:120px;">KG</span>
+                    </div>
+                    <input type="submit" value="確定新增" class="btn btn-primary" />
+                </form>
+            </div>
+            @* <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
+                <button type="button" class="btn btn-primary">確定新增</button>
+            </div> *@
+        </div>
+    </div>
 </div>
