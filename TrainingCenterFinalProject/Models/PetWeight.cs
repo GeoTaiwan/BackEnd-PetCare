@@ -13,7 +13,7 @@ namespace TrainingCenterFinalProject.Models
 
         [Required(ErrorMessage = "必填")]
         [Display(Name = "寵物唯一識別碼")]
-        public int PetID { get; set; }
+        public int PetID { get; set; } 
 
         [Required(ErrorMessage = "必填")]
         [Display(Name = "體重(kg)")]

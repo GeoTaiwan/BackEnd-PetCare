@@ -212,7 +212,12 @@ public class PetController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int? petid)
     {
+        if (petid == null)
+        {
+            return NotFound();
+        }
         var pet = await _context.Pets.FindAsync(petid);
+        
         if (pet != null)
         {
             // 💡 新增：刪除寵物前，先檢查並刪除實體照片
@@ -227,6 +232,15 @@ public class PetController : Controller
                 {
                     System.IO.File.Delete(filePath);
                 }
+            }
+            var petWeights = await _context.PetWeight.Where(w => w.PetID == petid).ToListAsync();
+            var medRecord = await _context.MedicalRecords.Where(m=>m.PetID == petid).ToListAsync();
+            if (petWeights.Any())
+            {
+                _context.PetWeight.RemoveRange(petWeights);
+            }
+            if (medRecord.Any()) { 
+                _context.MedicalRecords.RemoveRange(medRecord);
             }
             _context.Pets.Remove(pet);
         }

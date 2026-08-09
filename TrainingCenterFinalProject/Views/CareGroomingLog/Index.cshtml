@@ -1,0 +1,77 @@
+@model IEnumerable<TrainingCenterFinalProject.Models.CareGroomingLog>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PetID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StaffID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LogDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ActivityDetails)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DietNotes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Pet)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Staff)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LogPhotos)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.PetID)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.StaffID)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.LogDate)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ActivityDetails)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.DietNotes)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Pet)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Staff)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.LogPhotos)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.LogID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.LogID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.LogID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
