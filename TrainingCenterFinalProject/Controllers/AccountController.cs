@@ -260,7 +260,7 @@ namespace TrainingCenterFinalProject.Controllers
                     UserID = newUserId,
                     // 這裡假設 "LOC" (Local) 是你在 UserCredential 表中代表「本地帳密登入」的代碼 (長度3)
                     // 請確認這個值存在於你的 UserCredential 資料表中！
-                    CredentialID = "LOC",
+                    CredentialID = "C01",
                     Identifier = model.Email, // 本地登入通常把 Email 視為登入帳號 (Identifier)
                     PasswordHash = passwordHash,
                     PasswordSalt = passwordSalt,

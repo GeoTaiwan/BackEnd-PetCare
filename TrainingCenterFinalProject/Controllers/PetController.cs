@@ -235,6 +235,7 @@ public class PetController : Controller
             }
             var petWeights = await _context.PetWeight.Where(w => w.PetID == petid).ToListAsync();
             var medRecord = await _context.MedicalRecords.Where(m=>m.PetID == petid).ToListAsync();
+            //var careLog = await _context.CareGroomingLogs.Where(cg => cg.PetID == petid).ToListAsync();
             if (petWeights.Any())
             {
                 _context.PetWeight.RemoveRange(petWeights);
@@ -242,6 +243,10 @@ public class PetController : Controller
             if (medRecord.Any()) { 
                 _context.MedicalRecords.RemoveRange(medRecord);
             }
+            //if (careLog.Any())
+            //{
+            //    _context.CareGroomingLogs.RemoveRange(careLog);
+            //}
             _context.Pets.Remove(pet);
         }
 

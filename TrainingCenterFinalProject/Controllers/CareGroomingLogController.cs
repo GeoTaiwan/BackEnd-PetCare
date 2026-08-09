@@ -15,7 +15,11 @@ public class CareGroomingLogController : Controller
     // GET: CAREGROOMINGLOGS
     public async Task<IActionResult> Index()    
     {
-        return View(await _context.CareGroomingLogs.ToListAsync());
+        var careLog = await _context.CareGroomingLogs
+            .Include(cg => cg.Pet)
+            .Include(cg=>cg.Staff)
+            .ToListAsync();
+        return View(careLog);
     }
 
     // GET: CAREGROOMINGLOGS/Details/5
@@ -66,11 +70,16 @@ public class CareGroomingLogController : Controller
             return NotFound();
         }
 
-        var caregroominglog = await _context.CareGroomingLogs.FindAsync(logid);
+        var caregroominglog = await _context.CareGroomingLogs
+        .Include(cg => cg.Staff)         // 關聯 員工資料 (UserProfiles)
+        .Include(cg => cg.Pet)           // 關聯 寵物資料 (Pets)
+        .Include(cg => cg.LogPhotos)     // 關聯 多張照片資料 (LogPhotos)
+        .FirstOrDefaultAsync(cg => cg.LogID == logid); // 替代原本的 FindAsync
         if (caregroominglog == null)
         {
             return NotFound();
         }
+        
         return View(caregroominglog);
     }
 

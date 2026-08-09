@@ -1,67 +1,50 @@
 @model TrainingCenterFinalProject.Models.CareGroomingLog
 
 @{
-    ViewData["Title"] = "Edit";
+    // ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>@ViewData["Title"]</h1>
 
-<h4>CareGroomingLog</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="LogID" />
-            <div class="form-group">
-                <label asp-for="PetID" class="control-label"></label>
-                <input asp-for="PetID" class="form-control" />
-                <span asp-validation-for="PetID" class="text-danger"></span>
+            <input type="hidden" asp-for="PetID" />
+            <input type="hidden" asp-for="StaffID" />
+
+            <div class="mb-3">
+                <label asp-for="Staff.Name" class="control-label">照護者</label>
+                <input asp-for="Staff.Name" class="form-control" disabled readonly/>
+                <span asp-validation-for="Staff.Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="StaffID" class="control-label"></label>
-                <input asp-for="StaffID" class="form-control" />
-                <span asp-validation-for="StaffID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="LogDate" class="control-label"></label>
-                <input asp-for="LogDate" class="form-control" />
+                <input asp-for="LogDate" class="form-control" disabled readonly />
                 <span asp-validation-for="LogDate" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="ActivityDetails" class="control-label"></label>
-                <input asp-for="ActivityDetails" class="form-control" />
+                <textarea asp-for="ActivityDetails" class="form-control"></textarea>
                 <span asp-validation-for="ActivityDetails" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="DietNotes" class="control-label"></label>
-                <input asp-for="DietNotes" class="form-control" />
+                <textarea asp-for="DietNotes" class="form-control"></textarea>
                 <span asp-validation-for="DietNotes" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Pet" class="control-label"></label>
-                <input asp-for="Pet" class="form-control" />
-                <span asp-validation-for="Pet" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Staff" class="control-label"></label>
-                <input asp-for="Staff" class="form-control" />
-                <span asp-validation-for="Staff" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LogPhotos" class="control-label"></label>
-                <input asp-for="LogPhotos" class="form-control" />
-                <span asp-validation-for="LogPhotos" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            
+            <div class="mb-3">
+                <input type="submit" value="確定更新" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-info">回日誌列表</a>
 </div>
 
 @section Scripts {

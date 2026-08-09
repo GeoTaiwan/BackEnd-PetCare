@@ -1,22 +1,22 @@
 @model IEnumerable<TrainingCenterFinalProject.Models.CareGroomingLog>
 
 @{
-    ViewData["Title"] = "Index";
+    // ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>@ViewData["Title"]</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">新增資料</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.PetID)
+                @Html.DisplayNameFor(model => model.Pet.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.StaffID)
+                @Html.DisplayNameFor(model => model.Staff.Name)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.LogDate)
@@ -27,15 +27,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.DietNotes)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Pet)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Staff)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LogPhotos)
-            </th>
+            
             <th></th>
         </tr>
     </thead>
@@ -43,10 +35,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(model => item.PetID)
+                @Html.DisplayFor(model => item.Pet.Name)
             </td>
             <td>
-                @Html.DisplayFor(model => item.StaffID)
+                @Html.DisplayFor(model => item.Staff.Name)
             </td>
             <td>
                 @Html.DisplayFor(model => item.LogDate)
@@ -57,19 +49,11 @@
             <td>
                 @Html.DisplayFor(model => item.DietNotes)
             </td>
+            
             <td>
-                @Html.DisplayFor(model => item.Pet)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Staff)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.LogPhotos)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.LogID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.LogID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.LogID">Delete</a>
+                <a asp-action="Edit" asp-route-logid="@item.LogID" class="btn btn-warning">編輯</a>
+                <a asp-action="Details" asp-route-logid="@item.LogID" class="btn btn-info">詳細資料</a>
+                <a asp-action="Delete" asp-route-logid="@item.LogID" class="btn btn-danger">刪除</a>
             </td>
         </tr>
 }
