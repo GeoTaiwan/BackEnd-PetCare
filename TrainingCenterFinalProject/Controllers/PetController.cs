@@ -140,7 +140,7 @@ public class PetController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? petid, [Bind("PetID,Name,Species,Breed,Gender,DateOfBirth,MicrochipNo,SpecialNotes,ProfilePhotoUrl,UploadPhoto")] Pet pet)
+    public async Task<IActionResult> Edit(int? petid, [Bind("PetID,Name,Species,Breed,Gender,DateOfBirth,MicrochipNo,SpecialNotes,ProfilePhotoUrl,UploadPhoto")] Pet pet,bool fromdetails=false)
     {
         if (petid != pet.PetID) return NotFound();
 
@@ -198,6 +198,10 @@ public class PetController : Controller
             {
                 if (!PetExists(pet.PetID)) return NotFound();
                 else throw;
+            }
+            if (fromdetails)
+            {
+                return RedirectToAction(nameof(Details),nameof(PetController).Replace("Controller",""), new {petid = pet.PetID});
             }
             return RedirectToAction(nameof(Index));
         }
