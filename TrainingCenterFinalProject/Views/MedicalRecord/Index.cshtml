@@ -41,7 +41,7 @@
                 @Html.DisplayNameFor(model => model.Pet.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Vet.Name)
+                獸醫@(Html.DisplayNameFor(model => model.Vet.Name))
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.VisitDate)
@@ -75,7 +75,25 @@
                 @Html.DisplayFor(model => item.Symptoms)
             </td>
             <td>
-                @Html.DisplayFor(model => item.TestResultsFile)
+                        @* 判斷資料庫中是否有檔案名稱 *@
+                        @if (!string.IsNullOrEmpty(item.TestResultsFile))
+                        {
+                            
+                            <a asp-controller="MedicalRecord"
+                               asp-action="DownloadFile"
+                               asp-route-fileName="@item.TestResultsFile"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-download"></i> 下載檔案
+                            </a>
+
+                            @* 註：如果你想讓使用者點擊時「另開視窗預覽(如圖片或PDF)」，可以拿掉 download 屬性，加上 target="_blank" *@
+                            @* <a href="~/upload/mrFiles/@item.TestResultsFile" target="_blank">預覽檔案</a> *@
+                        }
+                        else
+                        {
+                            <span class="text-muted">無附件</span>
+                        }
+                @* @Html.DisplayFor(model => item.TestResultsFile) *@
             </td>
             <td>
                 @Html.DisplayFor(model => item.Diagnosis)

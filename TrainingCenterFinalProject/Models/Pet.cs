@@ -66,5 +66,6 @@ namespace TrainingCenterFinalProject.Models
         public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
         public virtual ICollection<MedicalRecord> MedicalRecords { get; set; } = new List<MedicalRecord>();
         public virtual ICollection<CareGroomingLog> CareGroomingLogs { get; set; } = new List<CareGroomingLog>();
+        public virtual ICollection<PetWeight> PetWeights { get; set; } = new List<PetWeight>();
     }
 }

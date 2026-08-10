@@ -4,6 +4,7 @@ namespace TrainingCenterFinalProject.Models
 {
     public class PetCareDbContext : DbContext
     {
+        
         public PetCareDbContext()
         {
         }
@@ -30,6 +31,8 @@ namespace TrainingCenterFinalProject.Models
         public virtual DbSet<LogPhoto> LogPhotos { get; set; } = null!;
         public virtual DbSet<TaskSchedule> TaskSchedules { get; set; } = null!;
         public virtual DbSet<SysMenu> SysMenus { get; set; } = null!;
+        public DbSet<Occupations> Occupations { get; set; } = null!;
+        public DbSet<PetWeight> PetWeight { get; set; } = null!;
 
         // ==========================================
         // OnModelCreating - 進階設定與關聯定義

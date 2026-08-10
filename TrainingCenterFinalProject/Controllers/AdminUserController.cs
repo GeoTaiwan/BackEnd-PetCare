@@ -80,6 +80,86 @@ namespace TrainingCenterFinalProject.Controllers
             return View(model);
         }
 
+        // GET: 顯示重設密碼畫面
+        [HttpGet]
+        public async Task<IActionResult> ResetPassword(string userid)
+        {
+            if (string.IsNullOrEmpty(userid))
+            {
+                return NotFound();
+            }
+
+            // 去資料庫找這位使用者
+            var user = await _context.UserProfiles.FindAsync(userid);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // 將資料帶入 ViewModel 傳給前端
+            var model = new AdminResetPasswordViewModel
+            {
+                UserID = user.UserID,
+                UserName = user.Name
+            };
+
+            return View(model);
+        }
+
+        // POST: 處理重設密碼邏輯
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(AdminResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // 1. 尋找該使用者的本地登入憑證
+            // ⚠️ 注意：你的 AccountController 註冊時用 "LOC"，而 AdminUser Create 用 "C01"。
+            // 請確認你的本地登入 CredentialID 到底是哪一個，這裡假設是 "C01"
+            var credential = await _context.UserCredentialDetails
+                .FirstOrDefaultAsync(c => c.UserID == model.UserID && (c.CredentialID == "C01" || c.CredentialID == "LOC"));
+
+            // 2. 呼叫原本寫好的方法，產生新的 Hash 與 Salt
+            CreatePasswordHash(model.NewPassword, out string newPasswordHash, out string newPasswordSalt);
+
+            if (credential != null)
+            {
+                // 情況 A：使用者本來就有密碼，直接更新
+                credential.PasswordHash = newPasswordHash;
+                credential.PasswordSalt = newPasswordSalt;
+                _context.Update(credential);
+            }
+            else
+            {
+                // 情況 B：使用者原本可能是用第三方 (Google/Line) 登入，沒有密碼紀錄
+                // 幫他新增一筆本地登入的紀錄
+                var user = await _context.UserProfiles.FindAsync(model.UserID);
+                if (user == null) return NotFound();
+
+                var newCredential = new UserCredentialDetail
+                {
+                    UserID = model.UserID,
+                    CredentialID = "C01", // 或 "LOC"，請統一你的系統代碼
+                    Identifier = user.Email, // 通常帳號是 Email
+                    PasswordHash = newPasswordHash,
+                    PasswordSalt = newPasswordSalt,
+                    CreatedDate = DateTime.Now
+                };
+                _context.UserCredentialDetails.Add(newCredential);
+            }
+
+            // 3. 儲存變更
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"已經成功將 {model.UserName} 的密碼重設！";
+
+            // 導回管理員的使用者列表頁
+            return RedirectToAction(nameof(Index),"UserProfile");
+        }
+
         // ==========================================
         // 核心邏輯：產生 U + yyyyMMdd + 4碼流水號
         // ==========================================

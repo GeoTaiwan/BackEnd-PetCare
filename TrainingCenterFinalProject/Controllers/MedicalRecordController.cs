@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -85,11 +84,42 @@ public class MedicalRecordController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("RecordID,PetID,VetID,VisitDate,Symptoms,TestResultsFile,Diagnosis,Pet,Vet,RecordDiagnoses,Prescriptions")] MedicalRecord medicalrecord)
+    public async Task<IActionResult> Create(MedicalRecord medicalrecord, IFormFile? uploadFile)
     {
+        string defaultVet = "U202607280002";
+        medicalrecord.VetID = defaultVet;
+        ModelState.Remove(nameof(medicalrecord.VetID));
         var pet = await _context.Pets.ToListAsync();
         if (ModelState.IsValid)
         {
+            // 判斷使用者是否有上傳檔案
+            if (uploadFile != null && uploadFile.Length > 0)
+            {
+                // 1. 設定存檔路徑 (wwwroot/upload/mrFiles)
+                string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "mrFiles");
+
+                // 如果資料夾不存在，則建立它
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                // 2. 產生唯一的檔案名稱 (避免檔名重複覆蓋)
+                // 例如: 5b6c8f9d-1234-abcd_原本檔名.pdf
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(uploadFile.FileName);
+
+                // 3. 組合完整實體路徑
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                // 4. 將檔案寫入伺服器
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await uploadFile.CopyToAsync(fileStream);
+                }
+
+                // 5. 將檔案名稱 (或相對路徑) 存入 Model 中，準備寫入資料庫
+                medicalrecord.TestResultsFile = uniqueFileName;
+            }
             _context.Add(medicalrecord);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -181,7 +211,26 @@ public class MedicalRecordController : Controller
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
+    public IActionResult DownloadFile(string fileName)
+    {
+        // 1. 檢查檔名是否為空
+        if (string.IsNullOrEmpty(fileName))
+        {
+            return NotFound("沒有提供檔名。");
+        }
 
+        // 2. 組合出實體的完整路徑
+        string filePath = Path.Combine(_env.WebRootPath, "uploads", "mrFiles", fileName);
+
+        // 3. 檢查實體檔案到底存不存在
+        if (!System.IO.File.Exists(filePath))
+        {
+            return NotFound($"伺服器上找不到檔案: {fileName}");
+        }
+
+        // 4. 回傳檔案 (application/octet-stream 代表強制下載)
+        return PhysicalFile(filePath, "application/octet-stream", fileName);
+    }
     private bool MedicalRecordExists(int? recordid)
     {
         return _context.MedicalRecords.Any(e => e.RecordID == recordid);

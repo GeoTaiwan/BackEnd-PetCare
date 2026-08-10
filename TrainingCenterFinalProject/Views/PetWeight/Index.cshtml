@@ -1,0 +1,128 @@
+@model IEnumerable<TrainingCenterFinalProject.Models.PetWeight>
+
+@{
+    // ViewData["Title"] = "Index";
+}
+
+<h1>@Html.DisplayFor(m=>m.FirstOrDefault().Pet.Name)@ViewData["Title"]</h1>
+
+<p>
+    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#newWeight">
+        新增紀錄
+    </button>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            
+            <th>
+                @Html.DisplayNameFor(model => model.Weight)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RecordDate)
+            </th>
+            
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            
+            <td>
+                @Html.DisplayFor(model => item.Weight)
+            </td>
+            <td>
+                @item.RecordDate.ToString("MM/dd HH:mm:ss")
+            </td>
+            
+            <td>
+                @* <a asp-action="Edit" asp-route-petweightid="@item.PetWeightID">編輯</a> *@
+                    <button type="button" class="btn btn-warning"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editWeight"
+                            data-id="@item.PetWeightID"
+                            data-weight="@item.Weight">
+                        編輯
+                    </button>
+                <form asp-action="Delete" asp-route-petweightid="@item.PetWeightID" class="d-inline-block">
+                    <input type="submit" value="刪除" onclick="return confirm('確定刪除？')" class="btn btn-danger" />
+                </form>
+                
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+<div class="modal fade" tabindex="-1" id="editWeight">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">編輯紀錄</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Edit" asp-controller="PetWeight">
+                    <input type="hidden" name="PetWeightID" id="modalPetWeightID" />
+                    
+                    <div class="input-group mb-3">
+                        <input type="number" step="0.01" name="Weight" id="modalWeight" class="form-control text-end" required />
+                        <span class="input-group-text justify-content-center" id="basic-addon2" style="width:120px;">KG</span>
+                    </div>
+                    <input type="submit" value="確定修改" class="btn btn-primary" />
+                </form>
+            </div>
+           
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="newWeight"> <!-- 建議加上 fade 讓彈出有動畫 -->
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">新增體重紀錄</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- 指定好 Controller 與 Action，使用 post -->
+                <form asp-action="Create" asp-controller="PetWeight" method="post">
+                    
+                    <!-- 💡 關鍵技巧：從網址 (例如 ?petid=5) 直接抓出 ID 藏在這裡，
+                         這樣就算寵物目前 0 筆紀錄，也能成功抓到 PetID！ -->
+                    <input type="hidden" name="PetID" value="@Context.Request.Query["petid"]" />
+                    <input type="hidden" name="fromindex" value="true" />
+                    <div class="input-group mb-3">
+                        <!-- 拿掉 asp-for，換成乾淨的 name="Weight" -->
+                        <input type="number" step="0.01" name="Weight" class="form-control text-end" placeholder="0.00" required />
+                        <span class="input-group-text justify-content-center" style="width:120px;">KG</span>
+                    </div>
+                    
+                    <input type="submit" value="確定新增" class="btn btn-primary w-100" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var editModal = document.getElementById('editWeight');
+
+            // 當 Modal 準備要顯示時觸發
+            editModal.addEventListener('show.bs.modal', function(event) {
+                // 1. 抓到是哪一顆按鈕被點擊 (event.relatedTarget)
+                var button = event.relatedTarget;
+
+                // 2. 從按鈕的 data-* 屬性中把值抓出來
+                var id = button.getAttribute('data-id');
+                var weight = button.getAttribute('data-weight');
+
+                // 3. 把值填進 Modal 裡面的對應欄位
+                document.getElementById('modalPetWeightID').value = id;
+                document.getElementById('modalWeight').value = weight;
+            });
+        });
+    </script>
+}
