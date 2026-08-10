@@ -19,25 +19,26 @@ public class MedicalRecordController : Controller
     }
 
     // GET: MEDICALRECORDS
-    public async Task<IActionResult> Index(int petid=0)    
+    public async Task<IActionResult> Index(int petid = 0)
     {
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var myRecords = _context.MedicalRecords
             .Include(m => m.Pet)
             .Include(m => m.Vet)
             .Where(m => m.Pet.OwnerID == currentUserId)
+            .OrderByDescending(m=>m.VisitDate)
             .AsQueryable();
 
         if (petid > 0)
         {
-            myRecords = myRecords.Where(r=>r.PetID == petid);
+            myRecords = myRecords.Where(r => r.PetID == petid);
         }
 
-        var pet = await _context.Pets.Where(p=>p.OwnerID==currentUserId).ToListAsync();
+        var pet = await _context.Pets.Where(p => p.OwnerID == currentUserId).ToListAsync();
         ViewBag.noPet = !pet.Any();
-        
+
         // 建立 SelectList，參數依序為：資料來源、Value 欄位、Text 欄位、當前選中的值
-        ViewBag.PetList = new SelectList(pet,"PetID","Name",petid);
+        ViewBag.PetList = new SelectList(pet, "PetID", "Name", petid);
         ViewData["petid"] = petid;
 
         return View(await myRecords.ToListAsync());
@@ -62,19 +63,21 @@ public class MedicalRecordController : Controller
     }
 
     // GET: MEDICALRECORDS/Create
-    public async Task<IActionResult> Create(int petid=0)
+    public async Task<IActionResult> Create(int petid = 0, bool fromDetails = false)
     {
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var pet = await _context.Pets.Where(p => p.OwnerID == currentUserId).ToListAsync();
-        if (pet != null) { 
-            if (petid == 0)
+        if (pet != null)
         {
-            petid=pet.FirstOrDefault().PetID;
-        }
-        //var pet = await _context.Pets.Where(p => p.OwnerID == currentUserId).ToListAsync();
-        ViewBag.PetList = new SelectList(pet, "PetID", "Name",petid);
-
-        return View();
+            if (petid == 0)
+            {
+                petid = pet.FirstOrDefault().PetID;
+            }
+            //var pet = await _context.Pets.Where(p => p.OwnerID == currentUserId).ToListAsync();
+            ViewBag.PetList = new SelectList(pet, "PetID", "Name", petid);
+            ViewBag.FromDetails = fromDetails;
+            ViewBag.PetID = petid;
+            return View();
         }
         return NotFound();
     }
@@ -84,7 +87,7 @@ public class MedicalRecordController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(MedicalRecord medicalrecord, IFormFile? uploadFile)
+    public async Task<IActionResult> Create(MedicalRecord medicalrecord, IFormFile? uploadFile,bool fromDetails=false)
     {
         string defaultVet = "U202607280002";
         medicalrecord.VetID = defaultVet;
@@ -122,6 +125,10 @@ public class MedicalRecordController : Controller
             }
             _context.Add(medicalrecord);
             await _context.SaveChangesAsync();
+            if (fromDetails)
+            {
+                return RedirectToAction(nameof(Details),nameof(PetController).Replace("Controller",""),new {petid=medicalrecord.PetID });
+            }
             return RedirectToAction(nameof(Index));
         }
         ViewBag.PetList = new SelectList(pet, "PetID", "Name", medicalrecord.PetID);

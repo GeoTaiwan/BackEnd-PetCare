@@ -10,7 +10,7 @@
 <hr /> *@
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create" enctype="multipart/form-data">
+        <form asp-action="Create" asp-route-fromdetails="@ViewBag.FromDetails" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="mb-3">
@@ -60,7 +60,16 @@
         </form>
     </div>
 </div>
-
 <div>
-    <a asp-action="Index" class="btn btn-info">回病歷管理</a>
+@if (ViewBag.FromDetails)
+{
+    
+        <a asp-action="Details" asp-controller="Pet" asp-route-petid="@ViewBag.PetID" class="btn btn-info">回寵物資料</a>
+    
+}else
+{
+    
+        <a asp-action="Index" class="btn btn-info">回病歷管理</a>
+    
+}
 </div>

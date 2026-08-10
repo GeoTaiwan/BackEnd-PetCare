@@ -40,6 +40,8 @@ public class PetController : Controller
 
         var pet = await _context.Pets
             .Include(p => p.PetWeights.OrderByDescending(w=>w.RecordDate))
+            .Include(p=>p.MedicalRecords.OrderByDescending(m=>m.VisitDate))
+            .Include(p=>p.CareGroomingLogs.OrderByDescending(l=>l.LogDate)).ThenInclude(l=>l.Staff) //關聯CareGroomingLog的Staff
             .FirstOrDefaultAsync(m => m.PetID == petid);
         if (pet == null)
         {

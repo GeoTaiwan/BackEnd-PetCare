@@ -64,12 +64,53 @@
                             else
                             {
                                 // 若無紀錄則顯示提示文字
-                                <span class="text-muted">目前尚無紀錄</span>
+                                <span class="text-muted">目前尚無體重紀錄</span>
                             }
                             
-                            <a asp-action="Create" asp-controller="PetWeight" asp-route-petid="@Model.PetID" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#newWeight">
+                            <a asp-action="Create" asp-controller="PetWeight" asp-route-petid="@Model.PetID" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#newWeight">
                                 新增紀錄
                             </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4 card-text fw-bold">最新病歷紀錄</div>
+
+                        <div class="col-8 card-text">
+                            @if (Model.MedicalRecords != null && Model.MedicalRecords.Any())
+                            {
+                                var latestRecord = Model.MedicalRecords.OrderByDescending(m=>m.VisitDate).First();
+                                <span>@latestRecord.Symptoms (@latestRecord.VisitDate.ToString("MM-dd HH:mm"))</span>
+                                <a asp-action="Index" asp-controller="MedicalRecord" asp-route-petid="@Model.PetID" class="btn btn-info">
+                                    病歷紀錄
+                                </a>
+                            }
+                            else
+                            {
+                                // 若無紀錄則顯示提示文字
+                                <span class="text-muted">目前尚無病歷紀錄</span>
+                            }
+                            <a asp-action="Create" asp-controller="MedicalRecord" asp-route-petid="@Model.PetID" asp-route-fromDetails="true" class="btn btn-outline-warning">
+                                新增紀錄
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4 card-text fw-bold">最新照護紀錄</div>
+
+                        <div class="col-8 card-text">
+                            @if (Model.CareGroomingLogs != null && Model.CareGroomingLogs.Any())
+                            {
+                                var latestLog = Model.CareGroomingLogs.OrderByDescending(m => m.LogDate).First();
+                                <span>@latestLog.Staff.Name (@latestLog.LogDate.ToString("MM-dd HH:mm"))</span>
+                                <a asp-action="Index" asp-controller="CareGroomingLog" asp-route-petid="@Model.PetID" class="btn btn-info">
+                                    照護紀錄
+                                </a>
+                            }
+                            else
+                            {
+                                // 若無紀錄則顯示提示文字
+                                <span class="text-muted">目前尚無照護紀錄</span>
+                            }
                         </div>
                     </div>
                     <div class="row">
