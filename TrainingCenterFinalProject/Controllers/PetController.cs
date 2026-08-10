@@ -119,7 +119,7 @@ public class PetController : Controller
     }
 
     // GET: PETS/Edit/5
-    public async Task<IActionResult> Edit(int? petid)
+    public async Task<IActionResult> Edit(int? petid, bool fromdetails=false)
     {
         if (petid == null) return NotFound();
 
@@ -130,7 +130,8 @@ public class PetController : Controller
             .FirstOrDefaultAsync(p => p.PetID == petid && p.OwnerID == currentUserId);
 
         if (pet == null) return NotFound(); // 如果找不到，或根本不是他的寵物，就回傳 404
-
+        ViewBag.FromDetails=fromdetails;
+        ViewBag.PetID = petid;
         return View(pet);
     }
 
