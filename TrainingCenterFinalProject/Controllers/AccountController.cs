@@ -17,6 +17,7 @@ namespace TrainingCenterFinalProject.Controllers
     
     public class AccountController : Controller
     {
+        
         // 假設你的 DbContext 名稱為 PetCareDbContext (依照 appsettings.json 推斷)
         private readonly PetCareDbContext _context;
 
@@ -46,12 +47,30 @@ namespace TrainingCenterFinalProject.Controllers
                 // 1. 去資料庫尋找該帳號 (支援 Email 或 UserID 登入)，並把密碼資料表 (CredentialDetails) 一起 Join 進來
                 var user = await _context.UserProfiles
                     .Include(u => u.CredentialDetails)
+                    .ThenInclude(cd => cd.UserCredential) 
                     .FirstOrDefaultAsync(u => u.Email == model.Account || u.UserID == model.Account);
                 //Debug.WriteLine("user!=null:" + (user!=null));
                 if (user != null)
                 {
+                    // [新增] 檢查是否被停權
+                    if (user.Status != 1)
+                    {
+                        ModelState.AddModelError(string.Empty, "此帳號已被停權，請聯絡管理員。");
+                        return View(model);
+                    }
+                    //若是原本使用第三方登入的使用者，沒有密碼資料，協助使用者建立密碼
+                    //搜尋其它CredentialDetails登入方式，若有找到第三方登入的資料，則提示使用者使用第三方登入。
+                    if (!user.CredentialDetails.Where(cd=>cd.CredentialID == "C01").Any())
+                    {
+                        var thirdPartyCredential = user.CredentialDetails.FirstOrDefault(cd => cd.CredentialID != "C01");
+                        string alert = "此帳號是使用第三方登入，請使用第三方登入方式。登入方式為：" + thirdPartyCredential?.UserCredential.AuthProvider;
+                        ViewData["Alert"] = alert;
+                        return View();
+                    }
+
+
                     // 2. 取得密碼資料 (假設一對一或取最新一筆)
-                    var credential = user.CredentialDetails.FirstOrDefault();
+                    var credential = user.CredentialDetails.FirstOrDefault(cd => cd.CredentialID == "C01");
 
                     // 3. 驗證密碼 (這裡需要換成你的密碼雜湊比對邏輯，例如 BCrypt 或 SHA256)
                     // 範例： if (credential != null && VerifyPassword(model.Password, credential.PasswordHash))
@@ -71,15 +90,22 @@ namespace TrainingCenterFinalProject.Controllers
                     //Debug.WriteLine("isPasswordCorrect:" + isPasswordCorrect);
                     if (isPasswordCorrect)
                     {
-                        
-                        string[] auth = { "Member", "Employee", "Manager", "", "", "", "", "", "", "Admin" };
+                        string roleName = user.Authorization switch
+                        {
+                            0 => "Member",
+                            1 => "Employee",
+                            2 => "Manager",
+                            9 => "Admin",
+                            _ => "Member" // 預設防呆
+                        };
+                        //string[] auth = { "Member", "Employee", "Manager", "", "", "", "", "", "", "Admin" };
                         // 4. 登入成功，核發身分證 (Claims)
                         var claims = new List<Claim>
                         {
                             new Claim(ClaimTypes.NameIdentifier, user.UserID),
                             new Claim(ClaimTypes.Name, user.Name),
                             new Claim(ClaimTypes.Email, user.Email),
-                            new Claim(ClaimTypes.Role,auth[user.Authorization]) // 視登入身份標注
+                            new Claim(ClaimTypes.Role,roleName) // 視登入身份標注
                         };
 
                         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -176,12 +202,19 @@ namespace TrainingCenterFinalProject.Controllers
             // 3. 比對資料庫 UserProfile 是否已有此 Email
             var user = await _context.UserProfiles.FirstOrDefaultAsync(u => u.Email == email);
 
+            // [新增] 如果帳號存在，但狀態不是 1 (正常)，拒絕登入
+            if (user != null && user.Status != 1)
+            {
+                TempData["ErrorMessage"] = "此帳號已被停權，請聯絡管理員。";
+                return RedirectToAction("Login");
+            }
+
             if (user == null)
             {
                 // 情況 A：新使用者 -> 自動建立 UserProfile 帳號資料 (或引導填寫補全資料)
                 user = new UserProfile
                 {
-                    UserID = "U" + DateTime.Now.ToString("yyyyMMddHHmmss"), // 自訂 13 碼 UserID(待修正)
+                    UserID = await GenerateNewUserIdAsync(), // 自訂 13 碼 UserID
                     Name = name ?? "第三方使用者",
                     Email = email,
                     Phone = "未提供",
@@ -192,7 +225,71 @@ namespace TrainingCenterFinalProject.Controllers
 
                 _context.UserProfiles.Add(user);
                 await _context.SaveChangesAsync();
+                //加入第三方登入的資料到CredentialDetails
+                if (result.Properties.Items[".AuthScheme"] == GoogleDefaults.AuthenticationScheme)
+                {
+                    user.CredentialDetails.Add(new UserCredentialDetail
+                    {
+                        UserID = user.UserID,
+                        CredentialID = "C02",
+                        Identifier = email,
+                        CreatedDate = DateTime.Now
+                    });
+                }
+                else if (result.Properties.Items[".AuthScheme"] == LineAuthenticationDefaults.AuthenticationScheme)
+                {
+                    user.CredentialDetails.Add(new UserCredentialDetail
+                    {
+                        UserID = user.UserID,
+                        CredentialID = "C03",
+                        Identifier = email,
+                        CreatedDate = DateTime.Now
+                    });
+                }
+                await _context.SaveChangesAsync();
             }
+            else
+            {
+                //有找到email,加入第三方登入的資料到CredentialDetails
+                //判斷使用google(C02)或line(C03)登入,並加入CredentialDetails
+                if (result.Properties.Items[".AuthScheme"] == GoogleDefaults.AuthenticationScheme)
+                {
+                    if (!user.CredentialDetails.Any(c => c.CredentialID == "C02"))
+                    {
+                        user.CredentialDetails.Add(new UserCredentialDetail
+                        {
+                            UserID = user.UserID,
+                            CredentialID = "C02",
+                            Identifier = email,
+                            CreatedDate = DateTime.Now
+                        });
+                    }
+                }
+                else if (result.Properties.Items[".AuthScheme"] == LineAuthenticationDefaults.AuthenticationScheme)
+                {
+                    if (!user.CredentialDetails.Any(c => c.CredentialID == "C03"))
+                    {
+                        user.CredentialDetails.Add(new UserCredentialDetail
+                        {
+                            UserID = user.UserID,
+                            CredentialID = "C03",
+                            Identifier = email,
+                            CreatedDate = DateTime.Now
+                        });
+                    }
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            // [新增] 根據使用者的 Authorization 決定 Role
+            string roleName = user.Authorization switch
+            {
+                0 => "Member",
+                1 => "Employee",
+                2 => "Manager",
+                9 => "Admin",
+                _ => "Member"
+            };
 
             // 4. 為使用者建立我們網站專屬的 Cookie 登入憑證
             var claims = new List<Claim>
@@ -200,7 +297,7 @@ namespace TrainingCenterFinalProject.Controllers
             new Claim(ClaimTypes.NameIdentifier, user.UserID),
             new Claim(ClaimTypes.Name, user.Name),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, "Member")
+            new Claim(ClaimTypes.Role, roleName)
         };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -237,7 +334,7 @@ namespace TrainingCenterFinalProject.Controllers
                 }
 
                 // 2. 產生唯一的 UserID (符合 nchar(13) 規範)
-                string newUserId = "U" + DateTime.Now.ToString("yyyyMMdd") + new Random().Next(1000, 9999).ToString();
+                string newUserId = await GenerateNewUserIdAsync();
 
                 // 3. 建立 UserProfile 實體
                 var newUser = new UserProfile
@@ -306,6 +403,36 @@ namespace TrainingCenterFinalProject.Controllers
                 // 比對算出來的結果是否與資料庫存的 Hash 一致
                 return computedHashString == storedHash;
             }
+        }
+        private async Task<string> GenerateNewUserIdAsync()
+        {
+            // 1. 取得當天的前綴，例如 "U20260816" (U + 8碼日期)
+            string datePrefix = "U" + DateTime.Now.ToString("yyyyMMdd");
+
+            // 2. 去資料庫找今天建立的「最新一筆」 UserID
+            // 這裡用 StartsWith 找出今天的所有帳號，並用 OrderByDescending 讓流水號最大的排在第一筆
+            var lastUser = await _context.UserProfiles
+                .Where(u => u.UserID.StartsWith(datePrefix))
+                .OrderByDescending(u => u.UserID)
+                .FirstOrDefaultAsync();
+
+            // 3. 計算下一個流水號
+            int nextSequence = 1; // 預設為當天第 1 位
+
+            if (lastUser != null && lastUser.UserID.Length == 13)
+            {
+                // 擷取最後 4 碼 (從索引 9 開始取 4 個字元)
+                string lastSequenceStr = lastUser.UserID.Substring(9, 4);
+
+                // 轉為數字並 +1
+                if (int.TryParse(lastSequenceStr, out int lastSequence))
+                {
+                    nextSequence = lastSequence + 1;
+                }
+            }
+
+            // 4. 組合新的 UserID，ToString("D4") 會自動補零到 4 位數，例如 1 -> "0001"
+            return datePrefix + nextSequence.ToString("D4");
         }
 
     }

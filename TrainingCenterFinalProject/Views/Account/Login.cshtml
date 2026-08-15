@@ -10,9 +10,25 @@
                 <div class="card-body p-4">
                     <h3 class="card-title text-center mb-4">會員登入</h3>
 
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success text-center">
+                            @TempData["SuccessMessage"]
+                        </div>
+                    }
+
+                    @if (ViewData["Alert"] != null)
+                    {
+                        <h6 class="text-danger text-center">@ViewData["Alert"]</h6>
+                    }
+
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <h6 class="text-danger text-center">@TempData["ErrorMessage"]</h6>
+                    }
+
                     <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
 
-                        <!-- 顯示整體錯誤訊息 -->
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                         <div class="mb-3">
@@ -42,12 +58,14 @@
         </div>
     </div>
 </div>
+
 <div class="mt-4 text-center">
     <p>或使用其他帳號登入：</p>
 
     <!-- Google 登入按鈕 -->
     <a asp-action="ExternalLogin"
        asp-route-provider="Google"
+       asp-route-returnUrl="@ViewData["ReturnUrl"]"
        class="btn btn-outline-danger me-2">
         <i class="bi bi-google"></i> Google 登入
     </a>
@@ -55,10 +73,12 @@
     <!-- LINE 登入按鈕 -->
     <a asp-action="ExternalLogin"
        asp-route-provider="Line"
+       asp-route-returnUrl="@ViewData["ReturnUrl"]"
        class="btn btn-outline-success">
         <i class="bi bi-chat-fill"></i> LINE 登入
     </a>
 </div>
+
 @section Scripts {
     <!-- 載入前端驗證腳本 (jQuery Validation) -->
     @{
