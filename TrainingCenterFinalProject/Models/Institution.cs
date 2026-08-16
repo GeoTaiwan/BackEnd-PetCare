@@ -9,7 +9,7 @@ namespace TrainingCenterFinalProject.Models
         [Key]
         [Column(TypeName = "nchar(6)")]
         [Display(Name = "機構唯一識別碼")]
-        public string? InstitutionID { get; set; }
+        public string InstitutionID { get; set; } = null!;
 
         [Required]
         [StringLength(100)]

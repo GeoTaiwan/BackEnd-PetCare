@@ -12,8 +12,8 @@ using TrainingCenterFinalProject.Models;
 namespace TrainingCenterFinalProject.Migrations
 {
     [DbContext(typeof(PetCareDbContext))]
-    [Migration("20260816070852_UpdateInsititution")]
-    partial class UpdateInsititution
+    [Migration("20260816075529_updateInst")]
+    partial class updateInst
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -218,7 +218,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasKey("StatusId");
 
-                    b.ToTable("InstitutionStatus");
+                    b.ToTable("InstitutionStatuses");
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.InstitutionType", b =>
@@ -234,7 +234,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasKey("TypeId");
 
-                    b.ToTable("InstitutionType");
+                    b.ToTable("InstitutionTypes");
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.LogPhoto", b =>
