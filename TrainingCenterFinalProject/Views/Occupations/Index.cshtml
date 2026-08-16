@@ -1,0 +1,121 @@
+@model IEnumerable<TrainingCenterFinalProject.Models.Occupations>
+
+@{
+    // ViewData["Title"] = "Index";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-outline-primary">新增職務</a>
+</p>
+<p>
+    @if (!string.IsNullOrEmpty(TempData["ErrMsg"] as string))
+    {
+        <h3 class="text-danger">@TempData["ErrMsg"]</h3>
+    }
+    @if (!string.IsNullOrEmpty(ViewBag.ErrMsg as string))
+    {
+        <h3 class="text-danger">@ViewBag.ErrMsg</h3>
+    }
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.OccupationID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OccupationName)
+            </th>
+            
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.OccupationID)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.OccupationName)
+            </td>
+            
+            <td>
+                    <button type="button" class="btn btn-outline-warning"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editOccupationModal"
+                            data-id="@item.OccupationID"
+                            data-name="@item.OccupationName">
+                        編輯
+                    </button>
+                <form asp-action="Delete" asp-route-id="@item.OccupationID" method="post" class="d-inline-block">
+                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('確定要刪除這筆資料嗎？');">刪除</button>
+                </form>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<div class="modal fade" tabindex="-1" id="editOccupationModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">編輯職務</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- 設定表單送出的目標 Action -->
+                <form id="editForm" asp-action="Edit" method="post">
+                    <input type="hidden" name="id" id="modal-id" />
+                    <!-- 隱藏欄位：用來傳遞主鍵 ID 給後端 -->
+                    <input type="hidden" name="OccupationID" id="modal-OccupationID" />
+
+                    <div class="mb-3">
+                        <label class="control-label">@Html.DisplayNameFor(model => model.OccupationID)</label>
+                        <!-- 顯示用，通常主鍵不允許修改，所以加上 readonly -->
+                        <input class="form-control" id="modal-OccupationID-Display" readonly disabled/>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="control-label">@Html.DisplayNameFor(model => model.OccupationName)</label>
+                        <input name="OccupationName" id="modal-OccupationName" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3 text-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <input type="submit" value="確定存檔" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        var editModal = document.getElementById('editOccupationModal');
+
+        editModal.addEventListener('show.bs.modal', function(event) {
+            // 觸發 modal 的按鈕
+            var button = event.relatedTarget;
+
+            // 從按鈕的 data-* 屬性中取得資料
+            var id = button.getAttribute('data-id');
+            var name = button.getAttribute('data-name');
+
+            // 找到 Modal 裡面的輸入框
+            var inputId = editModal.querySelector('#modal-OccupationID');
+            var inputIdDisplay = editModal.querySelector('#modal-OccupationID-Display');
+            var inputName = editModal.querySelector('#modal-OccupationName');
+            var inputHiddenId = editModal.querySelector('#modal-id');
+
+            // 將資料塞入輸入框中
+            inputId.value = id;
+            inputIdDisplay.value = id;
+            inputName.value = name;
+            inputHiddenId.value = id;
+        });
+    </script>
+}

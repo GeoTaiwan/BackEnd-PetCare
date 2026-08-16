@@ -1,0 +1,38 @@
+@model TrainingCenterFinalProject.Models.Occupations
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Occupations</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            
+            <div class="mb-3">
+                <label asp-for="OccupationID" class="control-label"></label>
+                <input asp-for="OccupationID" class="form-control" />
+                <span asp-validation-for="OccupationID" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="OccupationName" class="control-label"></label>
+                <input asp-for="OccupationName" class="form-control" />
+                <span asp-validation-for="OccupationName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <input type="submit" value="新增" class="btn btn-outline-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" class="btn btn-outline-info">回到列表</a>
+</div>

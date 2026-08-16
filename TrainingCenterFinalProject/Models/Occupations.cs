@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace TrainingCenterFinalProject.Models
 {
@@ -13,6 +14,7 @@ namespace TrainingCenterFinalProject.Models
         [StringLength(50)]
         public string OccupationName { get; set; } = null!;
         //關聯
+        [ValidateNever]
         public virtual List<Employment> Employment { get; set; } = new List<Employment>();
 
     }
