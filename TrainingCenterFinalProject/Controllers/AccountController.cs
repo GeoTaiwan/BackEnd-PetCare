@@ -189,7 +189,6 @@ namespace TrainingCenterFinalProject.Controllers
             }
 
             // 取得第三方提供的 Claims (例如 Email, Name, ProviderKey 等)
-            var externalClaims = result.Principal.Claims;
             var email = result.Principal.FindFirstValue(ClaimTypes.Email);
             var name = result.Principal.FindFirstValue(ClaimTypes.Name);
 
@@ -200,7 +199,10 @@ namespace TrainingCenterFinalProject.Controllers
             }
 
             // 3. 比對資料庫 UserProfile 是否已有此 Email
-            var user = await _context.UserProfiles.FirstOrDefaultAsync(u => u.Email == email);
+            // [修正1] 這裡必須加上 .Include，否則 user.CredentialDetails 在記憶體中會是空的，導致後面的 .Any() 判斷失準
+            var user = await _context.UserProfiles
+                .Include(u => u.CredentialDetails)
+                .FirstOrDefaultAsync(u => u.Email == email);
 
             // [新增] 如果帳號存在，但狀態不是 1 (正常)，拒絕登入
             if (user != null && user.Status != 1)
@@ -209,79 +211,57 @@ namespace TrainingCenterFinalProject.Controllers
                 return RedirectToAction("Login");
             }
 
+            // 判斷當前是哪種第三方登入 ("C02" 為 Google, "C03" 為 Line)
+            string currentAuthScheme = result.Properties.Items[".AuthScheme"];
+            string targetCredentialId = currentAuthScheme == GoogleDefaults.AuthenticationScheme ? "C02" :
+                                        currentAuthScheme == LineAuthenticationDefaults.AuthenticationScheme ? "C03" : null;
+
             if (user == null)
             {
-                // 情況 A：新使用者 -> 自動建立 UserProfile 帳號資料 (或引導填寫補全資料)
+                // 情況 A：新使用者 -> 自動建立 UserProfile 帳號資料
                 user = new UserProfile
                 {
-                    UserID = await GenerateNewUserIdAsync(), // 自訂 13 碼 UserID
+                    UserID = await GenerateNewUserIdAsync(),
                     Name = name ?? "第三方使用者",
                     Email = email,
-                    Phone = "未提供",
                     JoinDate = DateTime.Now,
                     Status = 1,
                     Authorization = 0
                 };
 
+                // 加入第三方登入的資料到 CredentialDetails
+                if (!string.IsNullOrEmpty(targetCredentialId))
+                {
+                    user.CredentialDetails.Add(new UserCredentialDetail
+                    {
+                        UserID = user.UserID,
+                        CredentialID = targetCredentialId,
+                        Identifier = email,
+                        CreatedDate = DateTime.Now
+                    });
+                }
+
                 _context.UserProfiles.Add(user);
-                await _context.SaveChangesAsync();
-                //加入第三方登入的資料到CredentialDetails
-                if (result.Properties.Items[".AuthScheme"] == GoogleDefaults.AuthenticationScheme)
-                {
-                    user.CredentialDetails.Add(new UserCredentialDetail
-                    {
-                        UserID = user.UserID,
-                        CredentialID = "C02",
-                        Identifier = email,
-                        CreatedDate = DateTime.Now
-                    });
-                }
-                else if (result.Properties.Items[".AuthScheme"] == LineAuthenticationDefaults.AuthenticationScheme)
-                {
-                    user.CredentialDetails.Add(new UserCredentialDetail
-                    {
-                        UserID = user.UserID,
-                        CredentialID = "C03",
-                        Identifier = email,
-                        CreatedDate = DateTime.Now
-                    });
-                }
                 await _context.SaveChangesAsync();
             }
             else
             {
-                //有找到email,加入第三方登入的資料到CredentialDetails
-                //判斷使用google(C02)或line(C03)登入,並加入CredentialDetails
-                if (result.Properties.Items[".AuthScheme"] == GoogleDefaults.AuthenticationScheme)
+                // 情況 B：使用者已存在 -> 檢查是否需要補上第三方登入關聯
+                // [修正2] 修正判斷邏輯，只需確認該 User 是否已經綁定了該 targetCredentialId (如 C02 或 C03)
+                if (!string.IsNullOrEmpty(targetCredentialId) && !user.CredentialDetails.Any(c => c.CredentialID == targetCredentialId))
                 {
-                    if (!user.CredentialDetails.Any(c => c.CredentialID == "C02"))
+                    user.CredentialDetails.Add(new UserCredentialDetail
                     {
-                        user.CredentialDetails.Add(new UserCredentialDetail
-                        {
-                            UserID = user.UserID,
-                            CredentialID = "C02",
-                            Identifier = email,
-                            CreatedDate = DateTime.Now
-                        });
-                    }
+                        UserID = user.UserID,
+                        CredentialID = targetCredentialId,
+                        Identifier = email,
+                        CreatedDate = DateTime.Now
+                    });
+                    await _context.SaveChangesAsync();
                 }
-                else if (result.Properties.Items[".AuthScheme"] == LineAuthenticationDefaults.AuthenticationScheme)
-                {
-                    if (!user.CredentialDetails.Any(c => c.CredentialID == "C03"))
-                    {
-                        user.CredentialDetails.Add(new UserCredentialDetail
-                        {
-                            UserID = user.UserID,
-                            CredentialID = "C03",
-                            Identifier = email,
-                            CreatedDate = DateTime.Now
-                        });
-                    }
-                }
-                await _context.SaveChangesAsync();
             }
 
-            // [新增] 根據使用者的 Authorization 決定 Role
+            // 根據使用者的 Authorization 決定 Role
             string roleName = user.Authorization switch
             {
                 0 => "Member",
@@ -293,12 +273,12 @@ namespace TrainingCenterFinalProject.Controllers
 
             // 4. 為使用者建立我們網站專屬的 Cookie 登入憑證
             var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.UserID),
-            new Claim(ClaimTypes.Name, user.Name),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, roleName)
-        };
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.UserID),
+        new Claim(ClaimTypes.Name, user.Name),
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.Role, roleName)
+    };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
