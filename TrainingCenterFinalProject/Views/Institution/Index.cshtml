@@ -16,7 +16,7 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TypeId)
+                @Html.DisplayNameFor(model => model.InstitutionType.Name)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.LicenseNumber)
@@ -28,7 +28,7 @@
                 @Html.DisplayNameFor(model => model.Address)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.StatusId)
+                @Html.DisplayNameFor(model => model.InstitutionStatus.StatusName)
             </th>
             
             <th></th>
@@ -41,7 +41,7 @@
                 @Html.DisplayFor(model => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(model => item.TypeId)
+                @Html.DisplayFor(model => item.InstitutionType.Name)
             </td>
             <td>
                 @Html.DisplayFor(model => item.LicenseNumber)
@@ -53,13 +53,13 @@
                 @Html.DisplayFor(model => item.Address)
             </td>
             <td>
-                @Html.DisplayFor(model => item.StatusId)
+                @Html.DisplayFor(model => item.InstitutionStatus.StatusName)
             </td>
             
             <td>
                 <a asp-action="Edit" asp-route-id="@item.InstitutionID" class="btn btn-outline-warning">編輯</a>
                 <form asp-action="Delete" asp-route-id="@item.InstitutionID" method="post" class="d-inline-block">
-                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('確定要刪除嗎？')">刪除</button>
+                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('確定要刪除嗎？(包含相關的預約、授權記錄、就業記錄和任務安排)')">刪除</button>
                 </form>
             </td>
         </tr>

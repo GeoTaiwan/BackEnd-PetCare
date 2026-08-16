@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TrainingCenterFinalProject.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 [Authorize(Roles ="Admin")]
 public class InstitutionController : Controller
 {
@@ -16,12 +17,19 @@ public class InstitutionController : Controller
     // GET: INSTITUTIONS
     public async Task<IActionResult> Index()    
     {
-        return View(await _context.Institutions.ToListAsync());
+        var institutions = await _context.Institutions
+            .Include(i=>i.InstitutionStatus)
+            .Include(i => i.InstitutionType)
+            .ToListAsync();
+        return View(institutions);
     }
 
     // GET: INSTITUTIONS/Create
     public IActionResult Create()
     {
+        //將type、status改為下拉選單
+        PopulateInstitutionTypesAndStatuses();
+        
         return View();
     }
 
@@ -36,6 +44,7 @@ public class InstitutionController : Controller
         {
             return BadRequest();
         }
+        ModelState.Remove("InstitutionID"); // 移除 InstitutionID 的驗證，因為我們會自動生成它
         institution.InstitutionID = GenerateInstitutionID();
         if (ModelState.IsValid)
         {
@@ -43,6 +52,8 @@ public class InstitutionController : Controller
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        //將type、status改為下拉選單
+        PopulateInstitutionTypesAndStatuses();
         return View(institution);
     }
 
@@ -59,6 +70,8 @@ public class InstitutionController : Controller
         {
             return NotFound();
         }
+        //將type、status改為下拉選單
+        PopulateInstitutionTypesAndStatuses();
         return View(institution);
     }
 
@@ -94,24 +107,8 @@ public class InstitutionController : Controller
             }
             return RedirectToAction(nameof(Index));
         }
-        return View(institution);
-    }
-
-    // GET: INSTITUTIONS/Delete/5
-    public async Task<IActionResult> Delete(string? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var institution = await _context.Institutions
-            .FirstOrDefaultAsync(m => m.InstitutionID == id);
-        if (institution == null)
-        {
-            return NotFound();
-        }
-
+        //將type、status改為下拉選單
+        PopulateInstitutionTypesAndStatuses();
         return View(institution);
     }
 
@@ -120,6 +117,31 @@ public class InstitutionController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(string? id)
     {
+        if (id == null)
+        {
+            return NotFound();
+        }
+        var appointments = await _context.Appointments.Where(a => a.InstitutionID == id).ToListAsync();
+        if (appointments != null)
+        {
+            _context.Appointments.RemoveRange(appointments);
+        }
+        var authorizations = await _context.AuthorizationRecords.Where(a => a.InstitutionID == id).ToListAsync();
+        if (authorizations != null)
+        {
+            _context.AuthorizationRecords.RemoveRange(authorizations);
+        }
+        var employments = await _context.Employments.Where(e => e.InstitutionID == id).ToListAsync();
+        if (employments != null)
+        {
+            _context.Employments.RemoveRange(employments);
+        }
+        var taskAssignments = await _context.TaskSchedules.Where(t => t.InstitutionID == id).ToListAsync();
+        if (taskAssignments != null)
+        {
+            _context.TaskSchedules.RemoveRange(taskAssignments);
+        }
+        await _context.SaveChangesAsync();
         var institution = await _context.Institutions.FindAsync(id);
         if (institution != null)
         {
@@ -148,6 +170,12 @@ public class InstitutionController : Controller
             newID = "I" + (lastIDNumber + 1).ToString("D5");
         }
         return newID;
+    }
+
+    private void PopulateInstitutionTypesAndStatuses()
+    {
+        ViewBag.InstitutionTypes = new SelectList(_context.InstitutionTypes, "TypeId", "Name");
+        ViewBag.InstitutionStatuses = new SelectList(_context.InstitutionStatuses, "StatusId", "StatusName");
     }
 
 }

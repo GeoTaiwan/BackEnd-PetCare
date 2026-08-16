@@ -19,7 +19,8 @@
 
             <div class="mb-3">
                 <label asp-for="TypeId" class="control-label"></label>
-                <input asp-for="TypeId" class="form-control" />
+                @* <input asp-for="TypeId" class="form-control" /> *@
+                <select asp-for="TypeId" class="form-control" asp-items="ViewBag.InstitutionTypes"></select>
                 <span asp-validation-for="TypeId" class="text-danger"></span>
             </div>
 
@@ -43,12 +44,13 @@
 
             <div class="mb-3">
                 <label asp-for="StatusId" class="control-label"></label>
-                <input asp-for="StatusId" class="form-control" />
+                @* <input asp-for="StatusId" class="form-control" /> *@
+                <select asp-for="StatusId" class="form-control" asp-items="ViewBag.InstitutionStatuses"></select>
                 <span asp-validation-for="StatusId" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
-                <input type="submit" value="確定新增" class="btn btn-primary" />
+                <input type="submit" value="確定新增" class="btn btn-outline-primary" />
             </div>
         </form>
     </div>

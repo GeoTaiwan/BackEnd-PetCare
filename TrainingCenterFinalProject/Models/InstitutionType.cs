@@ -11,6 +11,7 @@ namespace TrainingCenterFinalProject.Models
         public string TypeId { get; set; } = null!;
         [Required]
         [StringLength(100)]
+        [Display(Name = "服務類型")]
         public string Name { get; set; } = null!;
         
         public virtual ICollection<Institution> Institutions { get; set; } = new List<Institution>();
