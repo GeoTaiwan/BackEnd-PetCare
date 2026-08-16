@@ -82,10 +82,28 @@ namespace TrainingCenterFinalProject.Models
                 context.SaveChanges();
 
                 // ==========================================
+                // 4.1 建立 機構 (InstitutionType)
+                // ==========================================
+                context.InstitutionTypes.AddRange(
+                    new InstitutionType { TypeId = "IT01", Name = "動物醫院" },
+                    new InstitutionType { TypeId = "IT02", Name = "寵物美容坊" }
+                );
+                context.SaveChanges();
+
+                // ==========================================
+                // 4.2 建立 機構 (InstitutionStatus)
+                // ==========================================
+                context.InstitutionStatuses.AddRange(
+                    new InstitutionStatus { StatusId = "S01", StatusName = "啟用" },
+                    new InstitutionStatus { StatusId = "S02", StatusName = "停用" }
+                );
+                context.SaveChanges();
+
+                // ==========================================
                 // 4. 建立 機構 (Institution)
                 // ==========================================
-                var clinic = new Institution { InstitutionID = "I00001", Name = "快樂動物醫院", Type = "Clinic", Phone = "07-1234567", Address = "高雄市苓雅區某某路1號", Status = "Active" };
-                var salon = new Institution { InstitutionID = "I00002", Name = "毛小孩美容坊", Type = "Salon", Phone = "07-7654321", Address = "高雄市鳳山區某某路2號", Status = "Active" };
+                var clinic = new Institution { InstitutionID = "I00001", Name = "快樂動物醫院", TypeId = "IT01", Phone = "07-1234567", Address = "高雄市苓雅區某某路1號", StatusId = "S01" };
+                var salon = new Institution { InstitutionID = "I00002", Name = "毛小孩美容坊", TypeId = "IT02", Phone = "07-7654321", Address = "高雄市鳳山區某某路2號", StatusId = "S01" };
                 context.Institutions.AddRange(clinic, salon);
                 context.SaveChanges();
 

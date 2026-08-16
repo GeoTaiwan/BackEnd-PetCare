@@ -17,7 +17,7 @@ namespace TrainingCenterFinalProject.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.10")
+                .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -183,19 +183,55 @@ namespace TrainingCenterFinalProject.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("Status")
+                    b.Property<string>("StatusId")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<string>("TypeId")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .HasColumnType("nvarchar(4)");
+
+                    b.HasKey("InstitutionID");
+
+                    b.HasIndex("StatusId");
+
+                    b.HasIndex("TypeId");
+
+                    b.ToTable("Institutions");
+                });
+
+            modelBuilder.Entity("TrainingCenterFinalProject.Models.InstitutionStatus", b =>
+                {
+                    b.Property<string>("StatusId")
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<string>("StatusName")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("Type")
+                    b.HasKey("StatusId");
+
+                    b.ToTable("InstitutionStatus");
+                });
+
+            modelBuilder.Entity("TrainingCenterFinalProject.Models.InstitutionType", b =>
+                {
+                    b.Property<string>("TypeId")
+                        .HasMaxLength(4)
+                        .HasColumnType("nvarchar(4)");
+
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("InstitutionID");
+                    b.HasKey("TypeId");
 
-                    b.ToTable("Institutions");
+                    b.ToTable("InstitutionType");
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.LogPhoto", b =>
@@ -745,6 +781,25 @@ namespace TrainingCenterFinalProject.Migrations
                     b.Navigation("UserProfile");
                 });
 
+            modelBuilder.Entity("TrainingCenterFinalProject.Models.Institution", b =>
+                {
+                    b.HasOne("TrainingCenterFinalProject.Models.InstitutionStatus", "InstitutionStatus")
+                        .WithMany("Institutions")
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TrainingCenterFinalProject.Models.InstitutionType", "InstitutionType")
+                        .WithMany("Institutions")
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("InstitutionStatus");
+
+                    b.Navigation("InstitutionType");
+                });
+
             modelBuilder.Entity("TrainingCenterFinalProject.Models.LogPhoto", b =>
                 {
                     b.HasOne("TrainingCenterFinalProject.Models.CareGroomingLog", "CareGroomingLog")
@@ -879,6 +934,16 @@ namespace TrainingCenterFinalProject.Migrations
                     b.Navigation("Employments");
 
                     b.Navigation("TaskSchedules");
+                });
+
+            modelBuilder.Entity("TrainingCenterFinalProject.Models.InstitutionStatus", b =>
+                {
+                    b.Navigation("Institutions");
+                });
+
+            modelBuilder.Entity("TrainingCenterFinalProject.Models.InstitutionType", b =>
+                {
+                    b.Navigation("Institutions");
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.MedicalRecord", b =>

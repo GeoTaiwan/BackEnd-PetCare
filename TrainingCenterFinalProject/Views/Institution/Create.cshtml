@@ -1,0 +1,64 @@
+@model TrainingCenterFinalProject.Models.Institution
+
+@{
+    // ViewData["Title"] = "Create";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="TypeId" class="control-label"></label>
+                <input asp-for="TypeId" class="form-control" />
+                <span asp-validation-for="TypeId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="LicenseNumber" class="control-label"></label>
+                <input asp-for="LicenseNumber" class="form-control" />
+                <span asp-validation-for="LicenseNumber" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Phone" class="control-label"></label>
+                <input asp-for="Phone" class="form-control" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Address" class="control-label"></label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="StatusId" class="control-label"></label>
+                <input asp-for="StatusId" class="form-control" />
+                <span asp-validation-for="StatusId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <input type="submit" value="確定新增" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" class="btn btn-outline-info">回到機構列表</a>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

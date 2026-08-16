@@ -18,6 +18,8 @@ namespace TrainingCenterFinalProject.Models
         public virtual DbSet<UserProfile> UserProfiles { get; set; } = null!;
         public virtual DbSet<UserCredentialDetail> UserCredentialDetails { get; set; } = null!;
         public virtual DbSet<UserCredential> UserCredentials { get; set; } = null!;
+        public virtual DbSet<InstitutionType> InstitutionTypes { get; set; } = null!;
+        public virtual DbSet<InstitutionStatus> InstitutionStatuses { get; set; } = null!;
         public virtual DbSet<Institution> Institutions { get; set; } = null!;
         public virtual DbSet<Employment> Employments { get; set; } = null!;
         public virtual DbSet<Pet> Pets { get; set; } = null!;
