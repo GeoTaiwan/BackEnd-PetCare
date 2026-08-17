@@ -1,0 +1,59 @@
+﻿@model TrainingCenterFinalProject.ViewModels.RegisterViewModel
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">會員註冊 - 填寫基本資料</h3>
+                    <p class="text-success text-center">Email 驗證成功！請完成以下資料填寫</p>
+
+                    <form asp-action="Register" method="post">
+                        <!-- Email (唯讀) -->
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" readonly />
+                        </div>
+
+                        <!-- 姓名 -->
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" placeholder="請輸入真實姓名" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <!-- 電話 -->
+                        <div class="mb-3">
+                            <label asp-for="Phone" class="form-label"></label>
+                            <input asp-for="Phone" class="form-control" placeholder="請輸入聯絡電話" />
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+
+                        <!-- 密碼 -->
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" class="form-control" placeholder="請設定至少 6 位數密碼" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <!-- 確認密碼 -->
+                        <div class="mb-4">
+                            <label asp-for="ConfirmPassword" class="form-label"></label>
+                            <input asp-for="ConfirmPassword" class="form-control" placeholder="請再次輸入密碼" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">完成註冊</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 引用前端驗證腳本 -->
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,16 @@
+﻿@model TrainingCenterFinalProject.ViewModels.VerifyCodeViewModel
+<h2>會員註冊 - 步驟 2</h2>
+<p>驗證碼已發送至：<strong>@Model.Email</strong></p>
+
+<form asp-action="VerifyCode" method="post">
+    <input type="hidden" asp-for="Email" />
+
+    <div>
+        <label asp-for="Code">請輸入 6 位數驗證碼</label>
+        <input asp-for="Code" class="form-control" maxlength="6" />
+        <span asp-validation-for="Code" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">確認驗證碼</button>
+    <a asp-action="SendCode" class="btn btn-secondary mt-3">重新輸入 Email</a>
+</form>

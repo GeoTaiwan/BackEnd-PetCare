@@ -1,0 +1,11 @@
+﻿@model TrainingCenterFinalProject.ViewModels.SendCodeViewModel
+<h2>會員註冊 - 步驟 1</h2>
+<h4>請輸入您的 Email以接收驗證碼</h4>
+<form asp-action="SendCode">
+	<div>
+		<label asp-for="Email"></label>
+		<input asp-for="Email" class="form-control"  placeholder="example@example.com"/>
+		<span asp-validation-for="Email" class="text-danger"></span>
+	</div>
+	<button type="submit" class="btn btn-primary mt-3">發送驗證碼</button>
+</form>

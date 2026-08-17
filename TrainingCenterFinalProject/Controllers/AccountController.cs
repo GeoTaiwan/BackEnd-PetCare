@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.Diagnostics;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -20,10 +22,12 @@ namespace TrainingCenterFinalProject.Controllers
         
         // 假設你的 DbContext 名稱為 PetCareDbContext (依照 appsettings.json 推斷)
         private readonly PetCareDbContext _context;
+        private readonly IMemoryCache _cache;
 
-        public AccountController(PetCareDbContext context)
+        public AccountController(PetCareDbContext context, IMemoryCache cache)
         {
             _context = context;
+            _cache = cache;
         }
 
         // GET: 顯示登入畫面
@@ -288,13 +292,95 @@ namespace TrainingCenterFinalProject.Controllers
 
             return LocalRedirect(returnUrl);
         }
+        //發送驗證碼
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult SendCode()
+        {
+            return View();
+        }
+        //發送驗證碼
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public IActionResult SendCode(SendCodeViewModel model)
+        {
+            if (model == null)
+            {
+                return NotFound();
+            }
+            var user = _context.UserProfiles
+                .Include(u => u.CredentialDetails.Where(c=>c.CredentialID =="C01"))
+                .FirstOrDefault(u => u.Email == model.Email);
+            if (user != null && user.CredentialDetails.Any())
+            {
+                ModelState.AddModelError("Email", "此 Email 已被註冊過");
+                return View();
+            }
+            if (!ModelState.IsValid) return View(model);
+
+            // 產生 6 位數隨機驗證碼
+            string otpCode = new Random().Next(100000, 999999).ToString();
+
+            // 將驗證碼存入 MemoryCache，設定 5 分鐘後過期，Key 為 Email
+            _cache.Set($"OTP_{model.Email}", otpCode, TimeSpan.FromMinutes(5));
+
+            // TODO: 在此處呼叫寄信服務 (例如 MailKit 或 SendGrid) 將 otpCode 寄給使用者
+            Console.WriteLine($"[模擬寄信] {model.Email} 的驗證碼為: {otpCode}");
+
+            // 導向步驟 2
+            return RedirectToAction("VerifyCode", new { email = model.Email });
+        }
+
+        //驗證碼驗證
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult VerifyCode(string email)
+        {
+            Console.WriteLine($"[模擬寄信] {email} 的驗證碼為: { _cache.Get($"OTP_{email}")}");
+            if (string.IsNullOrEmpty(email)) return RedirectToAction("SendCode");
+
+            return View(new VerifyCodeViewModel { Email = email });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public IActionResult VerifyCode(VerifyCodeViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            // 從 Cache 取出驗證碼進行比對
+            if (_cache.TryGetValue($"OTP_{model.Email}", out string savedCode))
+            {
+                if (savedCode == model.Code)
+                {
+                    // 驗證成功，清除 Cache
+                    _cache.Remove($"OTP_{model.Email}");
+
+                    // 使用 TempData 授權使用者進入步驟 3 (TempData 讀取一次後即失效)
+                    TempData["VerifiedEmail"] = model.Email;
+                    return RedirectToAction("Register");
+                }
+            }
+
+            ModelState.AddModelError("Code", "驗證碼錯誤或已過期");
+            return View(model);
+        }
 
         // GET: 顯示註冊畫面
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register()
         {
-            return View();
+            var verifiedEmail = TempData["VerifiedEmail"]?.ToString();
+            if (string.IsNullOrEmpty(verifiedEmail))
+            {
+                return RedirectToAction("SendCode");
+            }
+
+            TempData.Keep("VerifiedEmail");
+            return View(new RegisterViewModel { Email = verifiedEmail });
         }
 
         // POST: 處理註冊資料
@@ -303,56 +389,71 @@ namespace TrainingCenterFinalProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            var verifiedEmail = TempData["VerifiedEmail"]?.ToString();
+            if (string.IsNullOrEmpty(verifiedEmail) || verifiedEmail != model.Email)
             {
-                // 1. 檢查 Email 是否已被註冊
-                var isEmailExist = await _context.UserProfiles.AnyAsync(u => u.Email == model.Email);
-                if (isEmailExist)
-                {
-                    ModelState.AddModelError("Email", "這個電子郵件已經被註冊過了。");
-                    return View(model);
-                }
-
-                // 2. 產生唯一的 UserID (符合 nchar(13) 規範)
-                string newUserId = await GenerateNewUserIdAsync();
-
-                // 3. 建立 UserProfile 實體
-                var newUser = new UserProfile
-                {
-                    UserID = newUserId,
-                    Name = model.Name,
-                    Email = model.Email,
-                    Phone = model.Phone,
-                    Authorization = 0,
-                    Status = 1,
-                    JoinDate = DateTime.Now
-                };
-
-                // 4. 產生密碼的 Hash (雜湊值) 與 Salt (鹽值)
-                CreatePasswordHash(model.Password, out string passwordHash, out string passwordSalt);
-
-                // 5. 建立 UserCredentialDetail 關聯實體
-                newUser.CredentialDetails.Add(new UserCredentialDetail
-                {
-                    UserID = newUserId,
-                    // 這裡假設 "LOC" (Local) 是你在 UserCredential 表中代表「本地帳密登入」的代碼 (長度3)
-                    // 請確認這個值存在於你的 UserCredential 資料表中！
-                    CredentialID = "C01",
-                    Identifier = model.Email, // 本地登入通常把 Email 視為登入帳號 (Identifier)
-                    PasswordHash = passwordHash,
-                    PasswordSalt = passwordSalt,
-                    CreatedDate = DateTime.Now
-                });
-
-                // 6. 存入資料庫
-                _context.UserProfiles.Add(newUser);
-                await _context.SaveChangesAsync();
-
-                TempData["SuccessMessage"] = "註冊成功，請登入！";
-                return RedirectToAction("Login");
+                return RedirectToAction("SendCode");
             }
 
-            return View(model);
+            if (!ModelState.IsValid)
+            {
+                TempData.Keep("VerifiedEmail");
+                return View(model);
+            }
+
+            // 1. 產生 13 碼的 UserID (對應 UserProfile.UserID 的 nchar(13))
+            // 這裡使用：前兩碼年份 + 月日時分秒 (共12碼) + 1碼隨機數 = 13碼
+            string newUserId = await GenerateNewUserIdAsync();
+
+            // 2. 處理密碼雜湊 (Hash 與 Salt)
+            CreatePasswordHash(model.Password, out string passwordHash, out string passwordSalt);
+            //byte[] saltBytes = RandomNumberGenerator.GetBytes(128 / 8); // 產生 Salt
+            //string base64Salt = Convert.ToBase64String(saltBytes);
+
+            //string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+            //    password: model.Password,
+            //    salt: saltBytes,
+            //    prf: KeyDerivationPrf.HMACSHA256,
+            //    iterationCount: 100000,
+            //    numBytesRequested: 256 / 8));
+
+            // 3. 建立 UserProfile 物件
+            var newUser = new UserProfile
+            {
+                UserID = newUserId,
+                Name = model.Name,
+                Phone = model.Phone,
+                Email = model.Email,
+                Authorization = 0,       // 預設權限
+                Status = 0,              // 預設帳號狀態
+                JoinDate = DateTime.Now
+            };
+
+            // 4. 建立 UserCredentialDetail 物件
+            var newCredential = new UserCredentialDetail
+            {
+                UserID = newUserId,
+                CredentialID = "C01", // 注意：需確保 UserCredential 表中有 CredentialID 為 "C01" (對應 nchar(3)) 的資料，代表「本地密碼登入」
+                Identifier = model.Email,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt,
+                CreatedDate = DateTime.Now
+            };
+
+            // 5. 寫入資料庫並儲存
+            _context.UserProfiles.Add(newUser);
+            _context.UserCredentialDetails.Add(newCredential);
+
+            await _context.SaveChangesAsync();
+
+            // 註冊成功，清空 TempData
+            TempData.Remove("VerifiedEmail");
+
+            // TODO: 可在此處改為 TempData["SuccessMessage"] = "註冊成功" 並導向登入頁
+            //return Content("註冊成功！歡迎加入。");
+            TempData["RegisterSuccess"] = "註冊成功！歡迎加入，請重新登入。";
+
+            return RedirectToAction("Login", "Account"); // 替換成你實際的登入 Action 與 Controller
         }
 
         private void CreatePasswordHash(string password, out string passwordHash, out string passwordSalt)

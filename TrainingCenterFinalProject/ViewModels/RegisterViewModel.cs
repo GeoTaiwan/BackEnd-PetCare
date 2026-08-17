@@ -4,32 +4,31 @@ namespace TrainingCenterFinalProject.ViewModels
 {
     public class RegisterViewModel
     {
-        [Required(ErrorMessage = "必填")]
+        [Required]
+        [Display(Name = "帳號 (Email)")]
+        public string Email { get; set; } // 唯讀，從 TempData 帶入
+
+        [Required(ErrorMessage = "請填寫姓名")]
         [StringLength(100, ErrorMessage = "最長100字")]
         [Display(Name = "姓名")]
-        public string Name { get; set; } = null!;
+        public string Name { get; set; }
 
-        [Required(ErrorMessage = "必填")]
-        [EmailAddress(ErrorMessage = "請填入e-mail格式")]
-        [StringLength(60, ErrorMessage = "最長60字")]
-        [Display(Name = "電子郵件")]
-        public string Email { get; set; } = null!;
-
-        [Required(ErrorMessage = "必填")]
+        // 新增 Phone 對應 UserProfile.Phone
+        [Required(ErrorMessage = "請填寫電話")]
         [StringLength(20, ErrorMessage = "最長20字")]
         [Display(Name = "電話")]
-        public string Phone { get; set; } = null!;
+        public string Phone { get; set; }
 
-        [Required(ErrorMessage = "必填")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "密碼長度必須介於6到100個字元")]
+        [Required(ErrorMessage = "請輸入密碼")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "密碼至少需要 6 個字元")]
         [DataType(DataType.Password)]
         [Display(Name = "密碼")]
-        public string Password { get; set; } = null!;
+        public string Password { get; set; }
 
-        [Required(ErrorMessage = "必填")]
+        [Required(ErrorMessage = "請確認密碼")]
         [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "兩次輸入的密碼不一致")]
         [Display(Name = "確認密碼")]
-        [Compare("Password", ErrorMessage = "密碼與確認密碼不相符")]
-        public string ConfirmPassword { get; set; } = null!;
+        public string ConfirmPassword { get; set; }
     }
 }
