@@ -59,7 +59,7 @@ namespace TrainingCenterFinalProject.Controllers
                     // [新增] 檢查是否被停權
                     if (user.Status != 1)
                     {
-                        ModelState.AddModelError(string.Empty, "此帳號已被停權，請聯絡管理員。");
+                        ModelState.AddModelError(string.Empty, "此帳號已被停權或尚未啟用，請聯絡管理員。");
                         return View(model);
                     }
                     //若是原本使用第三方登入的使用者，沒有密碼資料，協助使用者建立密碼
@@ -425,7 +425,7 @@ namespace TrainingCenterFinalProject.Controllers
                 Phone = model.Phone,
                 Email = model.Email,
                 Authorization = 0,       // 預設權限
-                Status = 0,              // 預設帳號狀態
+                Status = 1,              // 預設帳號狀態為啟用(因已驗證 Email)
                 JoinDate = DateTime.Now
             };
 

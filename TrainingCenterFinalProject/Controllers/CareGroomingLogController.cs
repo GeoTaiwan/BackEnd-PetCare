@@ -1,23 +1,29 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using TrainingCenterFinalProject.Models;
 
 public class CareGroomingLogController : Controller
 {
     private readonly PetCareDbContext _context;
+    //private readonly IWebHostEnvironment _env;
 
     public CareGroomingLogController(PetCareDbContext context)
     {
         _context = context;
+        //_env = env;
     }
 
     // GET: CAREGROOMINGLOGS
     public async Task<IActionResult> Index()    
     {
+        var loginuserid = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var careLog = await _context.CareGroomingLogs
             .Include(cg => cg.Pet)
+            .ThenInclude(p => p.Owner)
             .Include(cg=>cg.Staff)
+            .Where(cg => cg.Pet.OwnerID == loginuserid) 
             .ToListAsync();
         return View(careLog);
     }
