@@ -1,13 +1,13 @@
 @model IEnumerable<TrainingCenterFinalProject.Models.Employment>
 
 @{
-    ViewData["Title"] = "Index";
+    // ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>@ViewData["Title"]</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">新增員工</a>
 </p>
 <table class="table">
     <thead>
@@ -30,15 +30,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.EndDate)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UserProfile)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Institution)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OccupationDetails)
-            </th>
+            
             <th></th>
         </tr>
     </thead>
@@ -63,15 +55,7 @@
             <td>
                 @Html.DisplayFor(model => item.EndDate)
             </td>
-            <td>
-                @Html.DisplayFor(model => item.UserProfile)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Institution)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.OccupationDetails)
-            </td>
+            
             <td>
                 <a asp-action="Edit" asp-route-id="@item.UserID">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.UserID">Details</a> |

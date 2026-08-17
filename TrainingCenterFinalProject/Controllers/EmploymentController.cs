@@ -47,7 +47,7 @@ public class EmploymentController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("UserID,InstitutionID,OccupationID,Status,LicenseNumber,StartDate,EndDate,UserProfile,Institution,OccupationDetails")] Employment employment)
+    public async Task<IActionResult> Create(Employment employment)
     {
         if (ModelState.IsValid)
         {
