@@ -58,6 +58,7 @@ public class InstitutionController : Controller
     }
 
     // GET: INSTITUTIONS/Edit/5
+    [Authorize(Roles = "VetManage,BeautyManage,NannyManage")]
     public async Task<IActionResult> Edit(string? id)
     {
         if (id == null)

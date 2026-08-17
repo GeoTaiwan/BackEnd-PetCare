@@ -1,10 +1,11 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SqlServer.Server;
 using System.Security.Claims;
 using TrainingCenterFinalProject.Models;
-
+//[Authorize(Roles = "Member,VetManage")]
 public class PetController : Controller
 {
     private readonly PetCareDbContext _context;
