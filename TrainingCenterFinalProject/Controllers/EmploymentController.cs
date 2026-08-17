@@ -18,23 +18,6 @@ public class EmploymentController : Controller
         return View(await _context.Employments.ToListAsync());
     }
 
-    // GET: EMPLOYMENTS/Details/5
-    public async Task<IActionResult> Details(string? userid)
-    {
-        if (userid == null)
-        {
-            return NotFound();
-        }
-
-        var employment = await _context.Employments
-            .FirstOrDefaultAsync(m => m.UserID == userid);
-        if (employment == null)
-        {
-            return NotFound();
-        }
-
-        return View(employment);
-    }
 
     // GET: EMPLOYMENTS/Create
     public IActionResult Create()
@@ -59,14 +42,14 @@ public class EmploymentController : Controller
     }
 
     // GET: EMPLOYMENTS/Edit/5
-    public async Task<IActionResult> Edit(string? userid)
+    public async Task<IActionResult> Edit(string? id)
     {
-        if (userid == null)
+        if (id == null)
         {
             return NotFound();
         }
 
-        var employment = await _context.Employments.FindAsync(userid);
+        var employment = await _context.Employments.FindAsync(id);
         if (employment == null)
         {
             return NotFound();
@@ -79,9 +62,9 @@ public class EmploymentController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(string? userid, [Bind("UserID,InstitutionID,OccupationID,Status,LicenseNumber,StartDate,EndDate,UserProfile,Institution,OccupationDetails")] Employment employment)
+    public async Task<IActionResult> Edit(string? id, Employment employment)
     {
-        if (userid != employment.UserID)
+        if (id != employment.UserID)
         {
             return NotFound();
         }

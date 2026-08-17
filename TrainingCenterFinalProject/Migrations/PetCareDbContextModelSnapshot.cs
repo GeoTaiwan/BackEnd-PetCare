@@ -53,7 +53,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasIndex("PetID");
 
-                    b.ToTable("Appointments");
+                    b.ToTable("Appointments", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.AuthorizationRecord", b =>
@@ -85,7 +85,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasIndex("PetID");
 
-                    b.ToTable("AuthorizationRecords");
+                    b.ToTable("AuthorizationRecords", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.CareGroomingLog", b =>
@@ -119,7 +119,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasIndex("StaffID");
 
-                    b.ToTable("CareGroomingLogs");
+                    b.ToTable("CareGroomingLogs", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.Employment", b =>
@@ -156,7 +156,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasIndex("OccupationID");
 
-                    b.ToTable("Employments");
+                    b.ToTable("Employments", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.Institution", b =>
@@ -185,12 +185,10 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.Property<string>("StatusId")
                         .IsRequired()
-                        .HasMaxLength(3)
                         .HasColumnType("nvarchar(3)");
 
                     b.Property<string>("TypeId")
                         .IsRequired()
-                        .HasMaxLength(4)
                         .HasColumnType("nvarchar(4)");
 
                     b.HasKey("InstitutionID");
@@ -199,7 +197,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("Institutions");
+                    b.ToTable("Institutions", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.InstitutionStatus", b =>
@@ -215,7 +213,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasKey("StatusId");
 
-                    b.ToTable("InstitutionStatuses");
+                    b.ToTable("InstitutionStatuses", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.InstitutionType", b =>
@@ -231,7 +229,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasKey("TypeId");
 
-                    b.ToTable("InstitutionTypes");
+                    b.ToTable("InstitutionTypes", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.LogPhoto", b =>
@@ -254,7 +252,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasIndex("LogID");
 
-                    b.ToTable("LogPhotos");
+                    b.ToTable("LogPhotos", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.MedicalRecord", b =>
@@ -291,7 +289,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasIndex("VetID");
 
-                    b.ToTable("MedicalRecords");
+                    b.ToTable("MedicalRecords", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.MedicalVocabularyDictionary", b =>
@@ -325,7 +323,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasKey("TermID");
 
-                    b.ToTable("MedicalVocabularyDictionaries");
+                    b.ToTable("MedicalVocabularyDictionaries", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.Occupations", b =>
@@ -340,7 +338,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasKey("OccupationID");
 
-                    b.ToTable("Occupations");
+                    b.ToTable("Occupations", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.Pet", b =>
@@ -391,7 +389,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasIndex("OwnerID");
 
-                    b.ToTable("Pets");
+                    b.ToTable("Pets", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.PetWeight", b =>
@@ -415,7 +413,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasIndex("PetID");
 
-                    b.ToTable("PetWeight");
+                    b.ToTable("PetWeight", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.Prescription", b =>
@@ -451,7 +449,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasIndex("RecordID");
 
-                    b.ToTable("Prescriptions");
+                    b.ToTable("Prescriptions", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.RecordDiagnosis", b =>
@@ -484,7 +482,22 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasIndex("TermID");
 
-                    b.ToTable("RecordDiagnoses");
+                    b.ToTable("RecordDiagnoses", (string)null);
+                });
+
+            modelBuilder.Entity("TrainingCenterFinalProject.Models.Role", b =>
+                {
+                    b.Property<byte>("Id")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Role", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.SysMenu", b =>
@@ -526,7 +539,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasKey("MenuId");
 
-                    b.ToTable("SysMenus");
+                    b.ToTable("SysMenus", (string)null);
 
                     b.HasData(
                         new
@@ -600,7 +613,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasIndex("StaffID");
 
-                    b.ToTable("TaskSchedules");
+                    b.ToTable("TaskSchedules", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.UserCredential", b =>
@@ -615,7 +628,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasKey("CredentialID");
 
-                    b.ToTable("UserCredentials");
+                    b.ToTable("UserCredentials", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.UserCredentialDetail", b =>
@@ -648,7 +661,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasIndex("CredentialID");
 
-                    b.ToTable("UserCredentialDetails");
+                    b.ToTable("UserCredentialDetails", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.UserProfile", b =>
@@ -694,7 +707,9 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.HasKey("UserID");
 
-                    b.ToTable("UserProfiles");
+                    b.HasIndex("Authorization");
+
+                    b.ToTable("UserProfiles", (string)null);
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.Appointment", b =>
@@ -920,6 +935,17 @@ namespace TrainingCenterFinalProject.Migrations
                     b.Navigation("UserProfile");
                 });
 
+            modelBuilder.Entity("TrainingCenterFinalProject.Models.UserProfile", b =>
+                {
+                    b.HasOne("TrainingCenterFinalProject.Models.Role", "Role")
+                        .WithMany("UserProfiles")
+                        .HasForeignKey("Authorization")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("TrainingCenterFinalProject.Models.CareGroomingLog", b =>
                 {
                     b.Navigation("LogPhotos");
@@ -974,6 +1000,11 @@ namespace TrainingCenterFinalProject.Migrations
                     b.Navigation("MedicalRecords");
 
                     b.Navigation("PetWeights");
+                });
+
+            modelBuilder.Entity("TrainingCenterFinalProject.Models.Role", b =>
+                {
+                    b.Navigation("UserProfiles");
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.UserCredential", b =>

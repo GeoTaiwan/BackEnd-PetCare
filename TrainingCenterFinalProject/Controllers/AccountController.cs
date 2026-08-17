@@ -52,6 +52,7 @@ namespace TrainingCenterFinalProject.Controllers
                 var user = await _context.UserProfiles
                     .Include(u => u.CredentialDetails)
                     .ThenInclude(cd => cd.UserCredential) 
+                    .Include(u => u.Role)
                     .FirstOrDefaultAsync(u => u.Email == model.Account || u.UserID == model.Account);
                 //Debug.WriteLine("user!=null:" + (user!=null));
                 if (user != null)
@@ -94,14 +95,14 @@ namespace TrainingCenterFinalProject.Controllers
                     //Debug.WriteLine("isPasswordCorrect:" + isPasswordCorrect);
                     if (isPasswordCorrect)
                     {
-                        string roleName = user.Authorization switch
-                        {
-                            0 => "Member",
-                            1 => "Employee",
-                            2 => "Manager",
-                            9 => "Admin",
-                            _ => "Member" // 預設防呆
-                        };
+                        //string roleName = user.Authorization switch
+                        //{
+                        //    0 => "Member",
+                        //    1 => "Employee",
+                        //    2 => "Manager",
+                        //    9 => "Admin",
+                        //    _ => "Member" // 預設防呆
+                        //};
                         //string[] auth = { "Member", "Employee", "Manager", "", "", "", "", "", "", "Admin" };
                         // 4. 登入成功，核發身分證 (Claims)
                         var claims = new List<Claim>
@@ -109,7 +110,7 @@ namespace TrainingCenterFinalProject.Controllers
                             new Claim(ClaimTypes.NameIdentifier, user.UserID),
                             new Claim(ClaimTypes.Name, user.Name),
                             new Claim(ClaimTypes.Email, user.Email),
-                            new Claim(ClaimTypes.Role,roleName) // 視登入身份標注
+                            new Claim(ClaimTypes.Role,user.Role.RoleName) // 視登入身份標注
                         };
 
                         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -206,6 +207,7 @@ namespace TrainingCenterFinalProject.Controllers
             // [修正1] 這裡必須加上 .Include，否則 user.CredentialDetails 在記憶體中會是空的，導致後面的 .Any() 判斷失準
             var user = await _context.UserProfiles
                 .Include(u => u.CredentialDetails)
+                .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Email == email);
 
             // [新增] 如果帳號存在，但狀態不是 1 (正常)，拒絕登入
@@ -266,14 +268,14 @@ namespace TrainingCenterFinalProject.Controllers
             }
 
             // 根據使用者的 Authorization 決定 Role
-            string roleName = user.Authorization switch
-            {
-                0 => "Member",
-                1 => "Employee",
-                2 => "Manager",
-                9 => "Admin",
-                _ => "Member"
-            };
+            //string roleName = user.Authorization switch
+            //{
+            //    0 => "Member",
+            //    1 => "Employee",
+            //    2 => "Manager",
+            //    9 => "Admin",
+            //    _ => "Member"
+            //};
 
             // 4. 為使用者建立我們網站專屬的 Cookie 登入憑證
             var claims = new List<Claim>
@@ -281,7 +283,7 @@ namespace TrainingCenterFinalProject.Controllers
         new Claim(ClaimTypes.NameIdentifier, user.UserID),
         new Claim(ClaimTypes.Name, user.Name),
         new Claim(ClaimTypes.Email, user.Email),
-        new Claim(ClaimTypes.Role, roleName)
+        new Claim(ClaimTypes.Role, user.Role.RoleName)
     };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

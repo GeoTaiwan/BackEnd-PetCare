@@ -21,6 +21,7 @@ namespace TrainingCenterFinalProject.Models
         public string Phone { get; set; } = null!;
         [Required(ErrorMessage = "必填")]
         [Display(Name = "網站權限")]
+        [ForeignKey(nameof(Role))]
         public byte Authorization {  get; set; } = 0;
         [Display(Name = "性別")]
         public bool? Gender { get; set; }
@@ -49,6 +50,7 @@ namespace TrainingCenterFinalProject.Models
 
         public virtual ICollection<UserCredentialDetail> CredentialDetails { get; set; } = new List<UserCredentialDetail>();
         public virtual ICollection<Employment> Employments { get; set; } = new List<Employment>();
+        public virtual Role Role { get; set; }= null!;
 
         [InverseProperty(nameof(Pet.Owner))]
         public virtual ICollection<Pet> Pets { get; set; } = new List<Pet>();

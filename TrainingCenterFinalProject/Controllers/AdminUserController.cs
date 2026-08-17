@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TrainingCenterFinalProject.Models;
 using TrainingCenterFinalProject.ViewModels;
@@ -19,8 +20,11 @@ namespace TrainingCenterFinalProject.Controllers
 
         // GET: 顯示建立畫面
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            //建立role的下拉選單
+            var roles = await _context.Role.ToListAsync();
+            ViewBag.Authlist = new SelectList(roles, "Id", "RoleName");
             return View();
         }
 
@@ -35,6 +39,8 @@ namespace TrainingCenterFinalProject.Controllers
                 if (await _context.UserProfiles.AnyAsync(u => u.Email == model.Email))
                 {
                     ModelState.AddModelError("Email", "此電子郵件已被使用。");
+                    var roles = await _context.Role.ToListAsync();
+                    ViewBag.Authlist = new SelectList(roles, "Id", "RoleName");
                     return View(model);
                 }
 
@@ -74,9 +80,10 @@ namespace TrainingCenterFinalProject.Controllers
                 await _context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = $"成功建立使用者，帳號代碼為：{newUserId}";
-                return RedirectToAction(nameof(Index)); // 導回列表頁
+                return RedirectToAction("Index","UserProfile"); // 導回列表頁
             }
-
+            //var roles = await _context.Role.ToListAsync();
+            //ViewBag.Authlist = new SelectList(roles, "Id", "RoleName");
             return View(model);
         }
 
