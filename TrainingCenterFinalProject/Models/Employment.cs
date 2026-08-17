@@ -10,6 +10,7 @@ namespace TrainingCenterFinalProject.Models
     {
         [Column(TypeName = "nchar(13)")]
         [Display(Name = "使用者代號")]
+        [Key]
         public string UserID { get; set; } = null!;
 
         [Column(TypeName = "nchar(6)")]
