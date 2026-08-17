@@ -452,8 +452,8 @@ namespace TrainingCenterFinalProject.Controllers
             // TODO: 可在此處改為 TempData["SuccessMessage"] = "註冊成功" 並導向登入頁
             //return Content("註冊成功！歡迎加入。");
             TempData["RegisterSuccess"] = "註冊成功！歡迎加入，請重新登入。";
-
-            return RedirectToAction("Login", "Account"); // 替換成你實際的登入 Action 與 Controller
+            TempData["Email"] = model.Email; // 將 Email 存入 TempData 以便登入頁面填入
+            return RedirectToAction("Login", "Account"); 
         }
 
         private void CreatePasswordHash(string password, out string passwordHash, out string passwordSalt)

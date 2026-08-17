@@ -84,4 +84,34 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @{
+        // 先將 TempData 轉型為字串存入區域變數
+        var registerSuccessMsg = TempData["RegisterSuccess"] as string;
+		var email = TempData["Email"] as string;
+    }
+
+    <!-- 檢查區域變數是否有值 -->
+    @if (!string.IsNullOrEmpty(registerSuccessMsg))
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: '成功！',
+                    // 直接輸出剛剛存起來的區域變數
+                    text: '@Html.Raw(registerSuccessMsg)',
+                    icon: 'success',
+                    confirmButtonText: '確定',
+                    confirmButtonColor: '#198754'
+                });
+                
+                // 如果有 email，將其填入帳號欄位
+                var email = '@Html.Raw(email)';
+                if (email) {
+                    document.querySelector('input[name="Account"]').value = email;
+                }
+            });
+        </script>
+    }
 }
