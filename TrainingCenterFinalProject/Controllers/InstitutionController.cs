@@ -26,9 +26,36 @@ public class InstitutionController : Controller
         return View(institutions);
     }
 
+    public IActionResult Details(string? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+        var institution = _context.Institutions
+            .Include(i => i.InstitutionStatus)
+            .Include(i => i.InstitutionType)
+            .Include(i => i.Owner)
+            .FirstOrDefault(m => m.InstitutionID == id);
+        if (institution == null)
+        {
+            return NotFound();
+        }
+        return View(institution);
+    }
+
     // GET: INSTITUTIONS/Create
     public IActionResult Create()
     {
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        //到資料庫查詢是否機構已在申請中
+        var institution = _context.Institutions.FirstOrDefault(i => i.OwnerID == currentUserId && i.StatusId == "S00");
+        bool alreadyApplying = institution != null;
+        if (alreadyApplying)
+        {
+            TempData["ErrorMessage"] = "機構正在申請中。";
+            return RedirectToAction("Details",new { id = institution.InstitutionID });
+        }
         //將type、status改為下拉選單
         PopulateInstitutionTypesAndStatuses();
         
