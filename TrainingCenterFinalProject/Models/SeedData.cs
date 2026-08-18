@@ -16,19 +16,19 @@ namespace TrainingCenterFinalProject.Models
 
 
 
-                // ==========================================
-                // ★ 獨立區塊：檢查並建立 職位 (Occupations)
-                // ==========================================
-                if (!context.Occupations.Any())
-                {
-                    var occAdmin = new Occupations { OccupationID = "O00", OccupationName = "獸醫管理" };
-                    var occVet = new Occupations { OccupationID = "O01", OccupationName = "獸醫師" };
-                    var occVetDefault = new Occupations { OccupationID = "O09", OccupationName = "預設獸醫師" };
-                    var occGroomer = new Occupations { OccupationID = "O11", OccupationName = "寵物美容師" };
+                //// ==========================================
+                //// ★ 獨立區塊：檢查並建立 職位 (Occupations)
+                //// ==========================================
+                //if (!context.Occupations.Any())
+                //{
+                //    var occAdmin = new Occupations { OccupationID = "O00", OccupationName = "獸醫管理" };
+                //    var occVet = new Occupations { OccupationID = "O01", OccupationName = "獸醫師" };
+                //    var occVetDefault = new Occupations { OccupationID = "O09", OccupationName = "預設獸醫師" };
+                //    var occGroomer = new Occupations { OccupationID = "O11", OccupationName = "寵物美容師" };
                     
-                    context.Occupations.AddRange(occVet, occGroomer, occAdmin,occVetDefault);
-                    context.SaveChanges();
-                }
+                //    context.Occupations.AddRange(occVet, occGroomer, occAdmin,occVetDefault);
+                //    context.SaveChanges();
+                //}
 
 
                 // ==========================================
@@ -61,9 +61,10 @@ namespace TrainingCenterFinalProject.Models
                 var vet = new UserProfile { UserID = "U202607280002", Name = "預設獸醫", Phone = "0911111111", Authorization = 2, Email = "vet@test.com", Status = 1, JoinDate = now };
                 var groomer = new UserProfile { UserID = "U202607280003", Name = "陳美容", Phone = "0922222222", Authorization = 1, Email = "groomer@test.com", Status = 1, JoinDate = now };
                 var owner = new UserProfile { UserID = "U202607280004", Name = "林飼主", Phone = "0933333333", Authorization = 0, Email = "owner@test.com", Status = 1, JoinDate = now };
+                var vetManage = new UserProfile { UserID = "U202607280005", Name = "獸醫管理", Phone = "0933333333", Authorization = 0, Email = "vetManage@test.com", Status = 1, JoinDate = now };
                 if (!context.UserProfiles.Any())
                 {
-                    context.UserProfiles.AddRange(admin, vet, groomer, owner);
+                    context.UserProfiles.AddRange(admin, vet, groomer, owner, vetManage);
                     context.SaveChanges();
                 }
                 
@@ -73,11 +74,12 @@ namespace TrainingCenterFinalProject.Models
                 // ==========================================
                 if (!context.UserCredentialDetails.Any())
                 {
-                    CreatePasswordHash("123456", out string passwordHash, out string passwordSalt);
+                    CreatePasswordHash("123", out string passwordHash, out string passwordSalt);
                     context.UserCredentialDetails.AddRange(
-                        new UserCredentialDetail { UserID = admin.UserID, CredentialID = credLocal.CredentialID, Identifier = "admin", PasswordHash = passwordHash, PasswordSalt = passwordSalt, CreatedDate = now },
+                        new UserCredentialDetail { UserID = admin.UserID, CredentialID = credLocal.CredentialID, Identifier = "admin@test.com", PasswordHash = passwordHash, PasswordSalt = passwordSalt, CreatedDate = now },
                         new UserCredentialDetail { UserID = vet.UserID, CredentialID = credLocal.CredentialID, Identifier = vet.Email, PasswordHash = passwordHash, PasswordSalt = passwordSalt, CreatedDate = now },
-                        new UserCredentialDetail { UserID = owner.UserID, CredentialID = credGoogle.CredentialID, Identifier = "google_id_12345", CreatedDate = now }
+                        new UserCredentialDetail { UserID = owner.UserID, CredentialID = credGoogle.CredentialID, Identifier = "owner@test.com", CreatedDate = now },
+                        new UserCredentialDetail { UserID = vetManage.UserID, CredentialID = credLocal.CredentialID, Identifier = vetManage.Email, PasswordHash = passwordHash, PasswordSalt = passwordSalt, CreatedDate = now }
                     );
                     context.SaveChanges();
                 }
@@ -87,13 +89,16 @@ namespace TrainingCenterFinalProject.Models
                 // ==========================================
                 if (!context.Occupations.Any())
                 {
-                    var occAdmin = new Occupations { OccupationID = "O00", OccupationName = "獸醫管理" };
+                    var occAdmin = new Occupations { OccupationID = "O00", OccupationName = "機構管理者" };
                     var occVet = new Occupations { OccupationID = "O01", OccupationName = "獸醫師" };
-                    var occVetDefault = new Occupations { OccupationID = "O09", OccupationName = "預設獸醫師" };
+                    var occVetAssis = new Occupations { OccupationID = "O02", OccupationName = "獸醫助理" };
+                    var occVetDefault = new Occupations { OccupationID = "O09", OccupationName = "預設獸醫" };
                     var occGroomer = new Occupations { OccupationID = "O11", OccupationName = "寵物美容師" };
-                    var occOwner = new Occupations { OccupationID = "O20", OccupationName = "機構負責人" }; // 新增
+                    var occGroomerDefault = new Occupations { OccupationID = "O19", OccupationName = "預設美容師" };
+                    var occOwner = new Occupations { OccupationID = "O21", OccupationName = "寵物保姆" };
+                    var occOwnerDefault = new Occupations { OccupationID = "O29", OccupationName = "預設保姆" };
 
-                    context.Occupations.AddRange(occVet, occGroomer, occAdmin, occVetDefault, occOwner); // 加入 occOwner
+                    context.Occupations.AddRange(occAdmin,occVet, occVetAssis, occVetDefault, occGroomer, occGroomerDefault, occOwner, occOwnerDefault ); 
                     context.SaveChanges();
                 }
 

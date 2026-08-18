@@ -61,11 +61,13 @@ public class InstitutionController : Controller
 
         ModelState.Remove("InstitutionID"); // 系統自動產生
         ModelState.Remove("StatusId");      // 不採用表單輸入，一律進審核
+        ModelState.Remove("OwnerID");       // 不採用表單輸入，讀取登入者資訊
         institution.StatusId = "S00";       // 審核中
-
+        institution.OwnerID = currentUserId;
         if (!ModelState.IsValid)
         {
             PopulateInstitutionTypesAndStatuses();
+            ModelState.AddModelError("", "請確認所有欄位皆已正確填寫。");
             return View(institution);
         }
 
@@ -87,14 +89,14 @@ public class InstitutionController : Controller
                     InstitutionID = institution.InstitutionID,
                     OccupationID = "O00",
                     Status = "Active",
-                    LicenseNumber = institution.LicenseNumber ?? "PENDING", // 見下方說明
+                    LicenseNumber = institution.LicenseNumber ?? "PENDING", // 見下方說明(管理者不一定有執照號碼)
                     StartDate = DateTime.Now
                 });
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
                 TempData["SuccessMessage"] = "機構申請已送出，請等待管理員審核。";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index","Home");
             }
             catch (DbUpdateException) when (attempt < maxRetries - 1)
             {
@@ -152,7 +154,7 @@ public class InstitutionController : Controller
         {
             return NotFound();
         }
-
+        
         if (ModelState.IsValid)
         {
             try
