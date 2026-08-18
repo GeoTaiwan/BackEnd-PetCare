@@ -44,6 +44,9 @@ namespace TrainingCenterFinalProject.Models
         [StringLength(255)]
         [Display(Name = "機構營業地址")]
         public string Address { get; set; } = null!;
+        [ForeignKey("UserProfile")]
+        [Length(13, 13, ErrorMessage = "格式錯誤")]
+        public string OwnerID { get; set; } = null!;
 
         [Required]
         //[StringLength(3,MinimumLength =3, ErrorMessage = "請輸入3位數的狀態代碼")]
@@ -64,7 +67,7 @@ namespace TrainingCenterFinalProject.Models
         public virtual InstitutionType InstitutionType { get; set; } = null!;
         [ValidateNever]
         public virtual InstitutionStatus InstitutionStatus { get; set; } = null!;
-
-
+        [ValidateNever]
+        public virtual UserProfile Owner { get; set; } = null!;
     }
 }

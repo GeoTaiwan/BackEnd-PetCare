@@ -30,6 +30,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.InstitutionStatus.StatusName)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Owner.Name)
+            </th>
             
             <th></th>
         </tr>
@@ -55,7 +58,9 @@
             <td>
                 @Html.DisplayFor(model => item.InstitutionStatus.StatusName)
             </td>
-            
+            <td>
+                @Html.DisplayFor(model => item.Owner.Name)
+            </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.InstitutionID" class="btn btn-outline-warning">編輯</a>
                 <form asp-action="Delete" asp-route-id="@item.InstitutionID" method="post" class="d-inline-block">

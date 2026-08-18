@@ -81,7 +81,21 @@ namespace TrainingCenterFinalProject.Models
                     );
                     context.SaveChanges();
                 }
-                
+
+                // ==========================================
+                // ★ 獨立區塊：檢查並建立 職位 (Occupations)
+                // ==========================================
+                if (!context.Occupations.Any())
+                {
+                    var occAdmin = new Occupations { OccupationID = "O00", OccupationName = "獸醫管理" };
+                    var occVet = new Occupations { OccupationID = "O01", OccupationName = "獸醫師" };
+                    var occVetDefault = new Occupations { OccupationID = "O09", OccupationName = "預設獸醫師" };
+                    var occGroomer = new Occupations { OccupationID = "O11", OccupationName = "寵物美容師" };
+                    var occOwner = new Occupations { OccupationID = "O20", OccupationName = "機構負責人" }; // 新增
+
+                    context.Occupations.AddRange(occVet, occGroomer, occAdmin, occVetDefault, occOwner); // 加入 occOwner
+                    context.SaveChanges();
+                }
 
                 // ==========================================
                 // 4.1 建立 機構 (InstitutionType)
@@ -101,6 +115,7 @@ namespace TrainingCenterFinalProject.Models
                 if (!context.InstitutionStatuses.Any())
                 {
                     context.InstitutionStatuses.AddRange(
+                        new InstitutionStatus { StatusId = "S00", StatusName = "審核中" }, // 新增
                         new InstitutionStatus { StatusId = "S01", StatusName = "啟用" },
                         new InstitutionStatus { StatusId = "S02", StatusName = "停用" }
                     );
@@ -111,8 +126,8 @@ namespace TrainingCenterFinalProject.Models
                 // 4. 建立 機構 (Institution)
                 // ==========================================
 
-                var clinic = new Institution { InstitutionID = "I00001", Name = "快樂動物醫院", TypeId = "IT01", Phone = "07-1234567", Address = "高雄市苓雅區某某路1號", StatusId = "S01" };
-                var salon = new Institution { InstitutionID = "I00002", Name = "毛小孩美容坊", TypeId = "IT02", Phone = "07-7654321", Address = "高雄市鳳山區某某路2號", StatusId = "S01" };
+                var clinic = new Institution { InstitutionID = "I00001", Name = "快樂動物醫院", TypeId = "IT01", Phone = "07-1234567", Address = "高雄市苓雅區某某路1號", StatusId = "S01",OwnerID= "U202607280002" };
+                var salon = new Institution { InstitutionID = "I00002", Name = "毛小孩美容坊", TypeId = "IT02", Phone = "07-7654321", Address = "高雄市鳳山區某某路2號", StatusId = "S01",OwnerID= "U202607280003" };
                 if (!context.Institutions.Any())
                 {
                     context.Institutions.AddRange(clinic, salon);

@@ -1,10 +1,10 @@
 
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TrainingCenterFinalProject.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-[Authorize(Roles ="Admin")]
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using TrainingCenterFinalProject.Models;
 public class InstitutionController : Controller
 {
     private readonly PetCareDbContext _context;
@@ -15,11 +15,13 @@ public class InstitutionController : Controller
     }
 
     // GET: INSTITUTIONS
+    [Authorize(Roles ="Admin")]
     public async Task<IActionResult> Index()    
     {
         var institutions = await _context.Institutions
             .Include(i=>i.InstitutionStatus)
             .Include(i => i.InstitutionType)
+            .Include(i=>i.Owner)
             .ToListAsync();
         return View(institutions);
     }
@@ -40,25 +42,88 @@ public class InstitutionController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Institution institution)
     {
-        if(institution == null)
+        if (institution == null) return BadRequest();
+
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+        // 商業規則：一人只能擔任一間機構的負責人
+        bool alreadyOwns = await _context.Employments.AnyAsync(e =>
+            e.UserID == currentUserId &&
+            e.OccupationID == "O00" &&
+            e.Status == "Active");
+
+        if (alreadyOwns)
         {
-            return BadRequest();
+            ModelState.AddModelError("", "您已經是某機構的負責人，無法重複申請。");
+            PopulateInstitutionTypesAndStatuses();
+            return View(institution);
         }
-        ModelState.Remove("InstitutionID"); // 移除 InstitutionID 的驗證，因為我們會自動生成它
-        institution.InstitutionID = GenerateInstitutionID();
-        if (ModelState.IsValid)
+
+        ModelState.Remove("InstitutionID"); // 系統自動產生
+        ModelState.Remove("StatusId");      // 不採用表單輸入，一律進審核
+        institution.StatusId = "S00";       // 審核中
+
+        if (!ModelState.IsValid)
         {
-            _context.Add(institution);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            PopulateInstitutionTypesAndStatuses();
+            return View(institution);
         }
-        //將type、status改為下拉選單
+
+        // 重試機制：處理 InstitutionID 併發衝突（原本 GenerateInstitutionID 沒有防護）
+        const int maxRetries = 3;
+        for (int attempt = 0; attempt < maxRetries; attempt++)
+        {
+            institution.InstitutionID = await GenerateInstitutionIDAsync();
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                _context.Institutions.Add(institution);
+                await _context.SaveChangesAsync();
+
+                _context.Employments.Add(new Employment
+                {
+                    UserID = currentUserId,
+                    InstitutionID = institution.InstitutionID,
+                    OccupationID = "O00",
+                    Status = "Active",
+                    LicenseNumber = institution.LicenseNumber ?? "PENDING", // 見下方說明
+                    StartDate = DateTime.Now
+                });
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                TempData["SuccessMessage"] = "機構申請已送出，請等待管理員審核。";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException) when (attempt < maxRetries - 1)
+            {
+                await transaction.RollbackAsync();
+                _context.Entry(institution).State = EntityState.Detached;
+                // 迴圈繼續，重新產生 ID 再試一次
+            }
+        }
+
+        ModelState.AddModelError("", "系統忙碌，請稍後再試一次。");
         PopulateInstitutionTypesAndStatuses();
         return View(institution);
     }
 
+    // 原本的 GenerateInstitutionID() 改成 async 版本
+    private async Task<string> GenerateInstitutionIDAsync()
+    {
+        var lastInstitution = await _context.Institutions
+            .OrderByDescending(i => i.InstitutionID)
+            .FirstOrDefaultAsync();
+
+        if (lastInstitution == null) return "I00001";
+
+        int lastIDNumber = int.Parse(lastInstitution.InstitutionID.Substring(1));
+        return "I" + (lastIDNumber + 1).ToString("D5");
+    }
+
     // GET: INSTITUTIONS/Edit/5
-    [Authorize(Roles = "VetManage,BeautyManage,NannyManage")]
+    
     public async Task<IActionResult> Edit(string? id)
     {
         if (id == null)

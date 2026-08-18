@@ -64,6 +64,7 @@ namespace TrainingCenterFinalProject.Models
         [InverseProperty(nameof(TaskSchedule.Staff))]
         public virtual ICollection<TaskSchedule> StaffTaskSchedules { get; set; } = new List<TaskSchedule>();
 
-
+        [InverseProperty(nameof(Institution.Owner))]
+        public virtual ICollection<Institution> OwnedInstitutions { get; set; } = new List<Institution>();
     }
 }
