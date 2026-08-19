@@ -1,0 +1,77 @@
+@model IEnumerable<TrainingCenterFinalProject.Models.SysMenu>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.MenuName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ControllerName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ActionName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IconClass)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SortOrder)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RequiredAuthLevel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ParentId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsVisible)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.MenuName)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ControllerName)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ActionName)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.IconClass)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.SortOrder)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.RequiredAuthLevel)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ParentId)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.IsVisible)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.MenuId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.MenuId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.MenuId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
