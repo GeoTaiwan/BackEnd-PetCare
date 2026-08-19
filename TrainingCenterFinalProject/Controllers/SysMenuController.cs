@@ -60,14 +60,14 @@ public class SysMenuController : Controller
     }
 
     // GET: SYSMENUS/Edit/5
-    public async Task<IActionResult> Edit(int? menuid)
+    public async Task<IActionResult> Edit(int? id)
     {
-        if (menuid == null)
+        if (id == null)
         {
             return NotFound();
         }
 
-        var sysmenu = await _context.SysMenus.FindAsync(menuid);
+        var sysmenu = await _context.SysMenus.FindAsync(id);
         if (sysmenu == null)
         {
             return NotFound();
@@ -80,9 +80,9 @@ public class SysMenuController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? menuid, [Bind("MenuId,MenuName,ControllerName,ActionName,IconClass,SortOrder,RequiredAuthLevel,ParentId,IsVisible")] SysMenu sysmenu)
+    public async Task<IActionResult> Edit(int? id, SysMenu sysmenu)
     {
-        if (menuid != sysmenu.MenuId)
+        if (id != sysmenu.MenuId)
         {
             return NotFound();
         }

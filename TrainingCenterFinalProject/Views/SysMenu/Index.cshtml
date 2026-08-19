@@ -1,17 +1,20 @@
 @model IEnumerable<TrainingCenterFinalProject.Models.SysMenu>
 
 @{
-    ViewData["Title"] = "Index";
+    // ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>@ViewData["Title"]</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-outline-primary">建立新選單</a>
 </p>
-<table class="table">
+<table class="table table-hover">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.MenuId)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.MenuName)
             </th>
@@ -43,6 +46,9 @@
 @foreach (var item in Model) {
         <tr>
             <td>
+                @Html.DisplayFor(model => item.MenuId)
+            </td>
+            <td>
                 @Html.DisplayFor(model => item.MenuName)
             </td>
             <td>
@@ -67,9 +73,11 @@
                 @Html.DisplayFor(model => item.IsVisible)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.MenuId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.MenuId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.MenuId">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.MenuId" class="btn btn-outline-warning">編輯</a>
+                @* <a asp-action="Delete" asp-route-id="@item.MenuId" class="btn btn-outline-danger">刪除</a> *@
+                <form asp-action="Delete" asp-route-id="@item.MenuId" method="post" class="d-inline-block">
+                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('確定要刪除這個選單嗎？');">刪除</button>
+                </form>
             </td>
         </tr>
 }

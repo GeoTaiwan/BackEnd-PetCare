@@ -10,9 +10,9 @@ namespace TrainingCenterFinalProject.Models
         [Display(Name = "選單識別碼")]
         public int MenuId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "選單名稱為必填欄位")]
         [StringLength(50)]
-        [Display(Name = "選單名稱 (用於 Title 與 Layout)")]
+        [Display(Name = "選單名稱")]
         public string MenuName { get; set; } = null!;
 
         [StringLength(50)]
@@ -24,20 +24,21 @@ namespace TrainingCenterFinalProject.Models
         public string? ActionName { get; set; }
 
         [StringLength(255)]
-        [Display(Name = "Icon 圖示 (可選)")]
+        [Display(Name = "Icon 圖示")]
         public string? IconClass { get; set; }
 
         [Display(Name = "排序順序")]
         public int SortOrder { get; set; } = 0;
 
-        [Display(Name = "需要的權限層級 (對應 UserProfile.Authorization)")]
+        [Display(Name = "權限層級")]
+        [Required(ErrorMessage = "需要的權限層級為必填欄位")]
         public byte RequiredAuthLevel { get; set; } = 0;
 
-        [Display(Name = "父選單 ID (用於多層級選單)")]
+        [Display(Name = "父選單ID")]
         public int? ParentId { get; set; }
 
-        [Required]
-        [Display(Name = "是否顯示在導覽列")]
+        [Required(ErrorMessage = "是否顯示在導覽列為必填欄位")]
+        [Display(Name = "是否顯示")]
         public bool IsVisible { get; set; } = true;
     }
 }
