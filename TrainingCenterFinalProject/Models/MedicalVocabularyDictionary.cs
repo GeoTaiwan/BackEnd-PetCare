@@ -9,7 +9,7 @@ namespace TrainingCenterFinalProject.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Display(Name = "詞彙唯一識別碼")]
+        [Display(Name = "詞彙識別碼")]
         public int TermID { get; set; }
 
         [Required]
@@ -32,7 +32,8 @@ namespace TrainingCenterFinalProject.Models
         public string? Description { get; set; }
 
         [Required]
-        [Display(Name = "平台最後更新時間")]
+        [Display(Name = "最後更新時間")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}")]
         public DateTime UpdatedAt { get; set; }
 
         // === Navigation Property ===

@@ -1,60 +1,64 @@
 @model TrainingCenterFinalProject.Models.MedicalVocabularyDictionary
 
 @{
-    ViewData["Title"] = "Create";
+    // ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1>@ViewData["Title"]</h1>
 
-<h4>MedicalVocabularyDictionary</h4>
-<hr />
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="TermCode" class="control-label"></label>
                 <input asp-for="TermCode" class="form-control" />
                 <span asp-validation-for="TermCode" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="Category" class="control-label"></label>
                 <input asp-for="Category" class="form-control" />
                 <span asp-validation-for="Category" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="TermName" class="control-label"></label>
                 <input asp-for="TermName" class="form-control" />
                 <span asp-validation-for="TermName" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            @* <div class="mb-3">
                 <label asp-for="UpdatedAt" class="control-label"></label>
                 <input asp-for="UpdatedAt" class="form-control" />
                 <span asp-validation-for="UpdatedAt" class="text-danger"></span>
-            </div>
+            </div> *@
 
-            <div class="form-group">
+            @* <div class="mb-3">
                 <label asp-for="RecordDiagnoses" class="control-label"></label>
                 <input asp-for="RecordDiagnoses" class="form-control" />
                 <span asp-validation-for="RecordDiagnoses" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            </div> *@
+            <div class="mb-3">
+                <input type="submit" value="確定新增" class="btn btn-outline-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-outline-info">返回列表</a>
 </div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

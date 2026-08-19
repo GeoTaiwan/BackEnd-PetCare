@@ -48,8 +48,13 @@ public class MedicalVocabularyDictionaryController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("TermID,TermCode,Category,TermName,Description,UpdatedAt,RecordDiagnoses")] MedicalVocabularyDictionary medicalvocabularydictionary)
+    public async Task<IActionResult> Create(MedicalVocabularyDictionary medicalvocabularydictionary)
     {
+        if (medicalvocabularydictionary == null) { 
+            return NotFound();
+        }
+        ModelState.Remove("UpdatedAt");
+        medicalvocabularydictionary.UpdatedAt = DateTime.Now;
         if (ModelState.IsValid)
         {
             _context.Add(medicalvocabularydictionary);
@@ -60,14 +65,14 @@ public class MedicalVocabularyDictionaryController : Controller
     }
 
     // GET: MEDICALVOCABULARYDICTIONARYS/Edit/5
-    public async Task<IActionResult> Edit(int? termid)
+    public async Task<IActionResult> Edit(int? id)
     {
-        if (termid == null)
+        if (id == null)
         {
             return NotFound();
         }
 
-        var medicalvocabularydictionary = await _context.MedicalVocabularyDictionaries.FindAsync(termid);
+        var medicalvocabularydictionary = await _context.MedicalVocabularyDictionaries.FindAsync(id);
         if (medicalvocabularydictionary == null)
         {
             return NotFound();
@@ -80,13 +85,14 @@ public class MedicalVocabularyDictionaryController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? termid, [Bind("TermID,TermCode,Category,TermName,Description,UpdatedAt,RecordDiagnoses")] MedicalVocabularyDictionary medicalvocabularydictionary)
+    public async Task<IActionResult> Edit(int? id,MedicalVocabularyDictionary medicalvocabularydictionary)
     {
-        if (termid != medicalvocabularydictionary.TermID)
+        if (id != medicalvocabularydictionary.TermID)
         {
             return NotFound();
         }
-
+        ModelState.Remove("UpdatedAt"); 
+        medicalvocabularydictionary.UpdatedAt = DateTime.Now; 
         if (ModelState.IsValid)
         {
             try
@@ -111,15 +117,15 @@ public class MedicalVocabularyDictionaryController : Controller
     }
 
     // GET: MEDICALVOCABULARYDICTIONARYS/Delete/5
-    public async Task<IActionResult> Delete(int? termid)
+    public async Task<IActionResult> Delete(int? id)
     {
-        if (termid == null)
+        if (id == null)
         {
             return NotFound();
         }
 
         var medicalvocabularydictionary = await _context.MedicalVocabularyDictionaries
-            .FirstOrDefaultAsync(m => m.TermID == termid);
+            .FirstOrDefaultAsync(m => m.TermID == id);
         if (medicalvocabularydictionary == null)
         {
             return NotFound();
@@ -131,9 +137,9 @@ public class MedicalVocabularyDictionaryController : Controller
     // POST: MEDICALVOCABULARYDICTIONARYS/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? termid)
+    public async Task<IActionResult> DeleteConfirmed(int? id)
     {
-        var medicalvocabularydictionary = await _context.MedicalVocabularyDictionaries.FindAsync(termid);
+        var medicalvocabularydictionary = await _context.MedicalVocabularyDictionaries.FindAsync(id);
         if (medicalvocabularydictionary != null)
         {
             _context.MedicalVocabularyDictionaries.Remove(medicalvocabularydictionary);

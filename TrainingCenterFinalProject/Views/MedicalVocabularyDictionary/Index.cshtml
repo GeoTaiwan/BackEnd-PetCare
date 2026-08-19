@@ -1,17 +1,20 @@
 @model IEnumerable<TrainingCenterFinalProject.Models.MedicalVocabularyDictionary>
 
 @{
-    ViewData["Title"] = "Index";
+    // ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>@ViewData["Title"]</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-outline-primary">新增詞彙</a>
 </p>
 <table class="table">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TermID)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.TermCode)
             </th>
@@ -27,15 +30,18 @@
             <th>
                 @Html.DisplayNameFor(model => model.UpdatedAt)
             </th>
-            <th>
+            @* <th>
                 @Html.DisplayNameFor(model => model.RecordDiagnoses)
-            </th>
+            </th> *@
             <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>
+                @Html.DisplayFor(model => item.TermID)
+            </td>
             <td>
                 @Html.DisplayFor(model => item.TermCode)
             </td>
@@ -51,13 +57,12 @@
             <td>
                 @Html.DisplayFor(model => item.UpdatedAt)
             </td>
-            <td>
+            @* <td>
                 @Html.DisplayFor(model => item.RecordDiagnoses)
-            </td>
+            </td> *@
             <td>
-                <a asp-action="Edit" asp-route-id="@item.TermID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.TermID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.TermID">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.TermID" class="btn btn-outline-warning">編輯</a>
+                <a asp-action="Delete" asp-route-id="@item.TermID" class="btn btn-outline-danger">刪除</a>
             </td>
         </tr>
 }
