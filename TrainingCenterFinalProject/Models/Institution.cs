@@ -17,7 +17,7 @@ namespace TrainingCenterFinalProject.Models
 
         [Key]
         [Column(TypeName = "nchar(6)")]
-        [Display(Name = "機構唯一識別碼")]
+        [Display(Name = "機構識別碼")]
         public string InstitutionID { get; set; } = null!;
 
         [Required]
@@ -45,7 +45,8 @@ namespace TrainingCenterFinalProject.Models
         [Display(Name = "機構營業地址")]
         public string Address { get; set; } = null!;
         [ForeignKey("UserProfile")]
-        [Length(13, 13, ErrorMessage = "格式錯誤")]
+        [StringLength(13, MinimumLength = 13, ErrorMessage = "格式錯誤")]
+        [Display(Name = "負責人代碼")]
         public string OwnerID { get; set; } = null!;
 
         [Required]

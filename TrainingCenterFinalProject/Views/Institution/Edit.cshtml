@@ -9,9 +9,9 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" asp-route-fromDetails="@ViewBag.FromDetails">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="InstitutionID" />
+            
             <div class="mb-3">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
@@ -38,23 +38,37 @@
                 <input asp-for="Address" class="form-control" />
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
-            <div class="mb-3">
-                <label asp-for="StatusId" class="control-label"></label>
-                @* <input asp-for="StatusId" class="form-control" /> *@
-                <select asp-for="StatusId" class="form-control" asp-items="ViewBag.InstitutionStatuses"></select>
-                <span asp-validation-for="StatusId" class="text-danger"></span>
-            </div>
-            
+			@if (!(ViewBag.FromDetails==null?false:ViewBag.FromDetails))
+			{
+                <input type="hidden" asp-for="InstitutionID" />
+                <input type="hidden" asp-for="OwnerID" />
+                <div class="mb-3">
+                    <label asp-for="StatusId" class="control-label"></label>
+                    @* <input asp-for="StatusId" class="form-control" /> *@
+                    <select asp-for="StatusId" class="form-control" asp-items="ViewBag.InstitutionStatuses"></select>
+                    <span asp-validation-for="StatusId" class="text-danger"></span>
+                </div>
+            }
             <div class="mb-3">
                 <input type="submit" value="確定修改" class="btn btn-outline-primary" />
             </div>
         </form>
     </div>
 </div>
+@if (ViewBag.fromDetails != null && ViewBag.fromDetails == true)
+{
+	<div class="mb-3">
+		<a asp-action="Details" asp-route-id="@Model.InstitutionID" class="btn btn-outline-secondary">返回</a>
+	</div>
+}
+else
+{
+    <div>
+        <a asp-action="Index" class="btn btn-outline-info">回到機構列表</a>
+    </div>
+}
 
-<div>
-    <a asp-action="Index" class="btn btn-outline-info">回到機構列表</a>
-</div>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

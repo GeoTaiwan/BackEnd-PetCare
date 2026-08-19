@@ -153,7 +153,7 @@ public class InstitutionController : Controller
 
     // GET: INSTITUTIONS/Edit/5
     
-    public async Task<IActionResult> Edit(string? id)
+    public async Task<IActionResult> Edit(string? id, bool fromDetails = false)
     {
         if (id == null)
         {
@@ -167,6 +167,7 @@ public class InstitutionController : Controller
         }
         //將type、status改為下拉選單
         PopulateInstitutionTypesAndStatuses();
+        ViewBag.FromDetails = fromDetails; // 傳遞參數到 View
         return View(institution);
     }
 
@@ -175,11 +176,22 @@ public class InstitutionController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(string? id, Institution institution)
+    public async Task<IActionResult> Edit(Institution institution, bool fromDetails = false)
     {
-        if (id != institution.InstitutionID)
+        if (institution == null)
         {
-            return NotFound();
+            return NotFound("1");
+        }
+        
+        if (fromDetails)
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            ModelState.Remove("InstitutionID");
+            ModelState.Remove("StatusId");
+            ModelState.Remove("OwnerID");
+            institution.StatusId = "S00"; // 審核中
+            institution.OwnerID = currentUserId;
+            institution.InstitutionID = await _context.Institutions.Where(i => i.OwnerID == currentUserId).Select(i => i.InstitutionID).FirstOrDefaultAsync(); // 保留原本的 InstitutionID
         }
         
         if (ModelState.IsValid)
@@ -193,12 +205,16 @@ public class InstitutionController : Controller
             {
                 if (!InstitutionExists(institution.InstitutionID))
                 {
-                    return NotFound();
+                    return NotFound("3");
                 }
                 else
                 {
                     throw;
                 }
+            }
+            if (fromDetails)
+            {
+                return RedirectToAction("Details", new { id = institution.InstitutionID });
             }
             return RedirectToAction(nameof(Index));
         }

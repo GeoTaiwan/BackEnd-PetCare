@@ -1,115 +1,90 @@
 @model TrainingCenterFinalProject.Models.Institution
 
 @{
-    ViewData["Title"] = "Details";
+    // ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>@ViewData["Title"]</h1>
+
+<div class="container">
+    <h3 class="text-danger">請等待審核通過</h3>
+    <hr />
+    <div class="row fs-3">
+        @*左半*@
+        <div class="col-lg-6">
+            <div class="row mb-3">
+				<div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.InstitutionID)</span>
+                </div>
+				<div class="col-8">
+                    <span>@Html.DisplayFor(model => model.InstitutionID)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.Name)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.Name)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.LicenseNumber)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.LicenseNumber)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.Phone)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.Phone)</span>
+                </div>
+            </div>
+        </div>
+        @*右半*@
+        <div class="col-lg-6">
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.Address)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.Address)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.InstitutionStatus.StatusName)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.InstitutionStatus.StatusName)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.InstitutionType.Name)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.InstitutionType.Name)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">負責人@(@Html.DisplayNameFor(model => model.Owner.Name))</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.Owner.Name)</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
 
 <div>
-    <h4>Institution</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TypeId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TypeId)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LicenseNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LicenseNumber)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Phone)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Phone)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Address)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OwnerID)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OwnerID)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StatusId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StatusId)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Employments)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Employments)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AuthorizationRecords)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AuthorizationRecords)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Appointments)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Appointments)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TaskSchedules)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TaskSchedules)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.InstitutionType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.InstitutionType)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.InstitutionStatus)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.InstitutionStatus)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Owner)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Owner)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.InstitutionID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model?.InstitutionID" asp-route-fromDetails="true" class="btn btn-warning">編輯</a>
+    @* <a asp-action="Index" class="btn btn-info">返回列表</a> *@
 </div>

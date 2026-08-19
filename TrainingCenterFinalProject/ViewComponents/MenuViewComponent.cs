@@ -37,9 +37,9 @@ namespace TrainingCenterFinalProject.ViewComponents
                 }
             }
 
-            // 3. 從資料庫撈出：(a) 設定為顯示 且 (b) 權限等級小於等於該使用者的選單
+            // 3. 從資料庫撈出：(a) 設定為顯示 且 (b) 權限等級等於該使用者的選單
             var menus = await _db.SysMenus
-                .Where(m => m.IsVisible == true && m.RequiredAuthLevel <= userAuthLevel)
+                .Where(m => m.IsVisible == true && m.RequiredAuthLevel == userAuthLevel)
                 .OrderBy(m => m.SortOrder)
                 .ToListAsync();
 
