@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Filters;
-using TrainingCenterFinalProject.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,6 +1,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Models;
 
 public class OccupationsController : Controller

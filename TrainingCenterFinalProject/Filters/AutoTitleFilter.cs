@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Linq;
-using TrainingCenterFinalProject.Models;
+using TrainingCenterFinalProject.Data;
 
 namespace TrainingCenterFinalProject.Filters
 {

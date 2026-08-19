@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Models;
 
 public class PetWeightController : Controller

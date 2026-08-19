@@ -2,8 +2,9 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using TrainingCenterFinalProject.Models;
 
-namespace TrainingCenterFinalProject.Models
+namespace TrainingCenterFinalProject.Data
 {
     public static class SeedData
     {

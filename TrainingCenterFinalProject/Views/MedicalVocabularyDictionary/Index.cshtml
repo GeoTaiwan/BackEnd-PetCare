@@ -1,0 +1,65 @@
+@model IEnumerable<TrainingCenterFinalProject.Models.MedicalVocabularyDictionary>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TermCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TermName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UpdatedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RecordDiagnoses)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.TermCode)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Category)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.TermName)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.UpdatedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.RecordDiagnoses)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.TermID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.TermID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.TermID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

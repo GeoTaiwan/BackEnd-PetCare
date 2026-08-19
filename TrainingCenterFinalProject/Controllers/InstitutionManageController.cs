@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TrainingCenterFinalProject.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using TrainingCenterFinalProject.Data;
 [Authorize(Roles = "VetManage,BeautyManage,NannyManage")]
 public class InstitutionManageController : Controller
 {

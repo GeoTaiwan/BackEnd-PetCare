@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using TrainingCenterFinalProject.Models;
+using TrainingCenterFinalProject.Data;
 
 namespace TrainingCenterFinalProject.ViewComponents
 {

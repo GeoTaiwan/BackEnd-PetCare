@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TrainingCenterFinalProject.Models;
 
-namespace TrainingCenterFinalProject.Models
+namespace TrainingCenterFinalProject.Data
 {
     public class PetCareDbContext : DbContext
     {

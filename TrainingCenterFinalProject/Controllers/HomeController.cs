@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using TrainingCenterFinalProject.Models;
+using TrainingCenterFinalProject.ViewModels;
 
 namespace TrainingCenterFinalProject.Controllers
 {

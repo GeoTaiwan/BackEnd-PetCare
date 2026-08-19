@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SqlServer.Server;
 using System.Security.Claims;
+using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Models;
 //[Authorize(Roles = "Member,VetManage")]
 public class PetController : Controller

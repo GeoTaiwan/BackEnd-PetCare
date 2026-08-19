@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using System.Security.Claims;
+using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Models;
 //飼主用controller
 //獸醫端另算

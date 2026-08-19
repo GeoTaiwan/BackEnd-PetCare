@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Models;
 using TrainingCenterFinalProject.ViewModels;
 

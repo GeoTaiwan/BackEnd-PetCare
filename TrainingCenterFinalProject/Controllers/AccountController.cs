@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Models;
 using TrainingCenterFinalProject.ViewModels;
 
