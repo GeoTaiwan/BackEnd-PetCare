@@ -18,9 +18,8 @@ namespace TrainingCenterFinalProject.Models
         [StringLength(255)]
         [Display(Name = "實況照片儲存網址")]
         public string ImageURL { get; set; } = null!;
-        [Required]
         [Display(Name = "上傳時間")]
-        public DateTime CreatedDate { get; set; } = DateTime.Now; // 預設值為目前時間
+        public DateTime? CreatedDate { get; set; } // 預設值為目前時間
         // === Foreign Key (加上 ? 繞過驗證) ===
         [ForeignKey(nameof(LogID))]
         public virtual CareGroomingLog? CareGroomingLog { get; set; }
