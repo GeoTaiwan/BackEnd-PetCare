@@ -83,6 +83,10 @@ namespace TrainingCenterFinalProject.Data
                 .HasForeignKey(lp => lp.LogID)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<LogPhoto>()
+                .Property(lp => lp.CreatedDate)
+                .HasDefaultValueSql("GETDATE()");
+
             // 3. 設定特定欄位的預設值 (Default Values)
             // 雖然 Entity 已使用 [DatabaseGenerated]，但若要在 DB 層級產生 Constraint，可寫在這裡
             modelBuilder.Entity<UserProfile>()
