@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrainingCenterFinalProject.Data;
 
-
 #nullable disable
 
 namespace TrainingCenterFinalProject.Migrations
@@ -181,6 +180,7 @@ namespace TrainingCenterFinalProject.Migrations
 
                     b.Property<string>("OwnerID")
                         .IsRequired()
+                        .HasMaxLength(13)
                         .HasColumnType("nchar(13)");
 
                     b.Property<string>("Phone")
@@ -246,6 +246,9 @@ namespace TrainingCenterFinalProject.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PhotoID"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ImageURL")
                         .IsRequired()
