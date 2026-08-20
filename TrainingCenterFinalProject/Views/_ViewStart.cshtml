@@ -1,3 +1,8 @@
-﻿@{
-    Layout = "_Layout";
+﻿@using System.Security.Claims
+@{
+    // var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+    var roleClaim = User.FindFirst(ClaimTypes.Role);
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    // Layout = controller.Contains("Admin") ? "_AdminLayout" : "_Layout";
+    Layout = roleClaim != null && roleClaim.Value == "Admin" ? "_AdminLayout" : "_Layout";
 }
