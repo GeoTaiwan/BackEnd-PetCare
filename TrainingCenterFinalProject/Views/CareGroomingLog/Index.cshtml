@@ -7,16 +7,16 @@
 <h1>@ViewData["Title"]</h1>
 
 <p>
-    <a asp-action="Create">新增資料</a>
+    <a asp-action="Create" class="btn btn-primary">新增資料</a>
 </p>
-<table class="table">
+<table class="table table-hover">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Pet.Name)
+        <tr >
+            <th class="text-nowrap">
+                @Html.DisplayNameFor(model => model.Pet.Name)    
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Staff.Name)
+            <th class="text-nowrap">
+                照護者@(@Html.DisplayNameFor(model => model.Staff.Name))
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.LogDate)
@@ -33,7 +33,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr class="position-relative">
             <td>
                 @Html.DisplayFor(model => item.Pet.Name)
             </td>
@@ -51,9 +51,9 @@
             </td>
             
             <td>
-                <a asp-action="Edit" asp-route-logid="@item.LogID" class="btn btn-warning">編輯</a>
-                <a asp-action="Details" asp-route-logid="@item.LogID" class="btn btn-info">詳細資料</a>
-                <a asp-action="Delete" asp-route-logid="@item.LogID" class="btn btn-danger">刪除</a>
+                <a asp-action="Edit" asp-route-logid="@item.LogID" class="btn btn-warning position-relative z-2">編輯</a>
+                <a asp-action="Details" asp-route-logid="@item.LogID" class="stretched-link"></a>
+                <a asp-action="Delete" asp-route-logid="@item.LogID" class="btn btn-danger position-relative z-2">刪除</a>
             </td>
         </tr>
 }

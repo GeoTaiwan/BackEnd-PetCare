@@ -38,6 +38,9 @@ public class CareGroomingLogController : Controller
         }
 
         var caregroominglog = await _context.CareGroomingLogs
+            .Include(cg => cg.Pet)
+            .Include(cg => cg.Staff)
+            .Include(cg => cg.LogPhotos)
             .FirstOrDefaultAsync(m => m.LogID == logid);
         if (caregroominglog == null)
         {

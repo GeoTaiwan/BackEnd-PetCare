@@ -1,0 +1,38 @@
+@model TrainingCenterFinalProject.Models.LogPhoto
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>LogPhoto</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.LogID)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.LogID)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ImageURL)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ImageURL)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CareGroomingLog)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CareGroomingLog)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.PhotoID">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
