@@ -54,7 +54,7 @@ public class InstitutionController : Controller
         bool alreadyApplying = institution != null;
         if (alreadyApplying)
         {
-            TempData["ErrorMessage"] = "機構正在申請中。";
+            //TempData["ErrorMessage"] = "機構正在申請中。";
             return RedirectToAction("Details",new { id = institution.InstitutionID });
         }
         //將type、status改為下拉選單
@@ -123,7 +123,7 @@ public class InstitutionController : Controller
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                TempData["SuccessMessage"] = "機構申請已送出，請等待管理員審核。";
+                //TempData["SuccessMessage"] = "機構申請已送出，請等待管理員審核。";
                 return RedirectToAction("Index","Home");
             }
             catch (DbUpdateException) when (attempt < maxRetries - 1)

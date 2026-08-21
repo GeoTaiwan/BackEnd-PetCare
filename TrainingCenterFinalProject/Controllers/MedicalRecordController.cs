@@ -57,6 +57,7 @@ public class MedicalRecordController : Controller
             .Include(m=>m.Pet)
             .Include(m => m.Vet)
             .Include(m=>m.RecordDiagnoses)
+            .ThenInclude(rd=> rd.MedicalVocabularyDictionary)
             .Include(m=>m.Prescriptions)
             .Where(m => m.RecordID == id)
             .FirstOrDefaultAsync();
