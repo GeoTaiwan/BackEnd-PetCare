@@ -7,10 +7,11 @@ using TrainingCenterFinalProject.Data;
 public class LogPhotoController : Controller
 {
     private readonly PetCareDbContext _context;
-
-    public LogPhotoController(PetCareDbContext context)
+    private readonly IWebHostEnvironment _env;
+    public LogPhotoController(PetCareDbContext context, IWebHostEnvironment env)
     {
         _context = context;
+        _env = env;
     }
 
     // GET: LOGPHOTOS
@@ -38,8 +39,9 @@ public class LogPhotoController : Controller
     }
 
     // GET: LOGPHOTOS/Create
-    public IActionResult Create()
+    public IActionResult Create(int logid=1)
     {
+        ViewData["LogID"] = logid;
         return View();
     }
 
@@ -48,8 +50,9 @@ public class LogPhotoController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("PhotoID,LogID,ImageURL,CareGroomingLog")] LogPhoto logphoto)
+    public async Task<IActionResult> Create(LogPhoto logphoto,List<IFormFile>? uploadedFiles)
     {
+        ModelState.Remove("ImageURL");
         if (ModelState.IsValid)
         {
             _context.Add(logphoto);

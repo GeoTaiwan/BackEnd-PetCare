@@ -1,10 +1,10 @@
 @model IEnumerable<TrainingCenterFinalProject.Models.LogPhoto>
 
 @{
-    ViewData["Title"] = "Index";
+    // ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>@ViewData["Title"]</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -19,7 +19,7 @@
                 @Html.DisplayNameFor(model => model.ImageURL)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CareGroomingLog)
+                @Html.DisplayNameFor(model => model.CreatedDate)
             </th>
             <th></th>
         </tr>
@@ -34,12 +34,12 @@
                 @Html.DisplayFor(model => item.ImageURL)
             </td>
             <td>
-                @Html.DisplayFor(model => item.CareGroomingLog)
+                @Html.DisplayFor(model => item.CreatedDate)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.PhotoID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.PhotoID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.PhotoID">Delete</a>
+                <a asp-action="Edit" asp-route-photoid="@item.PhotoID">Edit</a> |
+                <a asp-action="Details" asp-route-photoid="@item.PhotoID">Details</a> |
+                <a asp-action="Delete" asp-route-photoid="@item.PhotoID">Delete</a>
             </td>
         </tr>
 }

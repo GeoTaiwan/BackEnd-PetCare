@@ -10,19 +10,24 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
                 <label asp-for="LogID" class="control-label"></label>
-                <input asp-for="LogID" class="form-control" />
+                <input asp-for="LogID" class="form-control" value="@ViewData["LogID"]" readonly />
                 <span asp-validation-for="LogID" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="ImageURL" class="control-label"></label>
-                <input asp-for="ImageURL" class="form-control" />
+            @* <div class="form-group">
+                <label asp-for="ImageURL" class="control-label">上傳照片</label>
+                <input name="uploadPhoto" class="form-control" type="file" />
                 <span asp-validation-for="ImageURL" class="text-danger"></span>
+            </div> *@
+            <div class="mb-3">
+                <label for="photos" class="form-label">選擇多張照片：</label>
+                <!-- multiple 允許選取多個檔案，accept 限制只能選圖片 -->
+                <input type="file" name="uploadedFiles" id="photos" multiple accept="image/*" class="form-control" />
             </div>
 
             <div class="form-group">

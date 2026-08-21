@@ -172,4 +172,7 @@ public class CareGroomingLogController : Controller
     {
         return _context.CareGroomingLogs.Any(e => e.LogID == logid);
     }
+
+    
+
 }
