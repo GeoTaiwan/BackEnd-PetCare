@@ -63,7 +63,7 @@
 				<span>無檢驗報告</span>
 				//新增報告
 				<button class="btn btn-warning" data-bs-toggle="collapse" data-bs-target="#collapseFile" type="button">上傳檔案</button>
-				<form asp-action="UploadFile" asp-route-recordid="@Model.RecordID" enctype="multipart/form-data" class="collapse" id="collapseFile">
+				<form asp-action="UploadFile" asp-route-recordid="@Model.RecordID" asp-route-fromdetails="true" enctype="multipart/form-data" class="collapse" id="collapseFile">
 						<input type="file" name="uploadFile" class="form-control" accept=".pdf,.doc,.docx,.txt,.jpg" />
 						<input type="hidden" name="existingFileName" value="@(String.IsNullOrEmpty(Model.TestResultsFile) ? "" : Model.TestResultsFile)" />
 						<input type="submit" class="btn btn-primary" value="確定上傳" />

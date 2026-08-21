@@ -56,6 +56,8 @@ public class MedicalRecordController : Controller
         var medicalrecord = await _context.MedicalRecords
             .Include(m=>m.Pet)
             .Include(m => m.Vet)
+            .Include(m=>m.RecordDiagnoses)
+            .Include(m=>m.Prescriptions)
             .Where(m => m.RecordID == id)
             .FirstOrDefaultAsync();
         if (medicalrecord == null)
@@ -203,7 +205,7 @@ public class MedicalRecordController : Controller
 
     // post 建立上傳檔案的 action
     [HttpPost]
-    public async Task<IActionResult> UploadFile(IFormFile uploadFile, int recordid)
+    public async Task<IActionResult> UploadFile(IFormFile uploadFile, int recordid , bool fromdetails = false)
     {
         if (uploadFile != null && uploadFile.Length > 0)
         {
@@ -216,7 +218,11 @@ public class MedicalRecordController : Controller
                 _context.Update(medicalrecord);
                 await _context.SaveChangesAsync();
             }
-            return RedirectToAction(nameof(Details), new { id = recordid });
+            if (fromdetails)
+            {
+                return RedirectToAction(nameof(Details), new { id = recordid });
+            }
+            return RedirectToAction(nameof(Index));
         }
         return BadRequest("No file uploaded.");
     }
@@ -323,11 +329,19 @@ public class MedicalRecordController : Controller
     // POST: MEDICALRECORDS/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? recordid)
+    public async Task<IActionResult> DeleteConfirmed(int? id)
     {
-        var medicalrecord = await _context.MedicalRecords.FindAsync(recordid);
+        var medicalrecord = await _context.MedicalRecords.FindAsync(id);
         if (medicalrecord != null)
         {
+            // 刪除上傳的檔案
+            var filePath = Path.Combine(_env.WebRootPath, "uploads", "mrFiles", medicalrecord.TestResultsFile);
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+            
+
             _context.MedicalRecords.Remove(medicalrecord);
         }
 
