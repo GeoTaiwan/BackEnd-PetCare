@@ -2,6 +2,7 @@
 
 @{
     // ViewData["Title"] = "Edit";
+	bool fromDetails = ViewBag.FromDetails ?? false;
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -9,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" asp-route-fromDetails="@fromDetails">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="LogID" />
             <input type="hidden" asp-for="PetID" />
@@ -42,10 +43,19 @@
         </form>
     </div>
 </div>
+@if (fromDetails)
+{
+	<div>
+		<a asp-action="Details" asp-route-logid="@Model?.LogID" class="btn btn-info">回照護明細</a>
+	</div>
+}
+else
+{
+	<div>
+		<a asp-action="Index" class="btn btn-info">回日誌列表</a>
+	</div>
+}   
 
-<div>
-    <a asp-action="Index" class="btn btn-info">回日誌列表</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -73,7 +73,7 @@ public class CareGroomingLogController : Controller
     }
 
     // GET: CAREGROOMINGLOGS/Edit/5
-    public async Task<IActionResult> Edit(int? logid)
+    public async Task<IActionResult> Edit(int? logid, bool fromDetails = false)
     {
         if (logid == null)
         {
@@ -89,7 +89,7 @@ public class CareGroomingLogController : Controller
         {
             return NotFound();
         }
-        
+        ViewBag.FromDetails = fromDetails;
         return View(caregroominglog);
     }
 
@@ -98,7 +98,7 @@ public class CareGroomingLogController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? logid, [Bind("LogID,PetID,StaffID,LogDate,ActivityDetails,DietNotes,Pet,Staff,LogPhotos")] CareGroomingLog caregroominglog)
+    public async Task<IActionResult> Edit(int? logid, [Bind("LogID,PetID,StaffID,LogDate,ActivityDetails,DietNotes,Pet,Staff,LogPhotos")] CareGroomingLog caregroominglog, bool fromDetails = false)
     {
         if (logid != caregroominglog.LogID)
         {
@@ -123,7 +123,14 @@ public class CareGroomingLogController : Controller
                     throw;
                 }
             }
-            return RedirectToAction(nameof(Index));
+            if (fromDetails)
+            {
+                return RedirectToAction("Details", new { logid = caregroominglog.LogID });
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
         }
         return View(caregroominglog);
     }
