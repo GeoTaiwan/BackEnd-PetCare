@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
 	<div class="col-md-4">
-		<form asp-action="Edit" enctype="multipart/form-data">
+		<form asp-action="Edit" enctype="multipart/form-data" asp-route-fromDetails="@fromDetails">
 			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 			<input type="hidden" asp-for="RecordID" />
 			<input type="hidden" asp-for="PetID" />
@@ -45,6 +45,14 @@
 					   class="btn btn-sm btn-outline-primary">
 						<i class="bi bi-download"></i> 					<span>@Model.TestResultsFile.Substring(37)</span>
 					</a>
+					@*建立刪除檔案的功能*@
+					<button type="submit"
+							asp-action="DeleteFile"
+							asp-route-recordid="@Model.RecordID"
+							class="btn btn-sm btn-danger"
+							onclick="return confirm('確定要永久刪除這個檔案嗎？');">
+						<i class="bi bi-trash"></i> 刪除檔案
+					</button>
 					@*建立修改檔案的功能*@
 					<button class="btn btn-warning" data-bs-toggle="collapse" data-bs-target="#collapseFile" type="button">修改檔案</button>
 					<div class="collapse" id="collapseFile">

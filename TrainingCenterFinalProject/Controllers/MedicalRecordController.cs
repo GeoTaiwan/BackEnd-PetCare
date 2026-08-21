@@ -56,7 +56,8 @@ public class MedicalRecordController : Controller
         var medicalrecord = await _context.MedicalRecords
             .Include(m=>m.Pet)
             .Include(m => m.Vet)
-            .FirstOrDefaultAsync(m => m.RecordID == id);
+            .Where(m => m.RecordID == id)
+            .FirstOrDefaultAsync();
         if (medicalrecord == null)
         {
             return NotFound();
@@ -138,6 +139,88 @@ public class MedicalRecordController : Controller
         return View(medicalrecord);
     }
 
+    //將上傳檔案的行為抽離成一個方法，方便在所有action中重複使用
+    private async Task<string> SaveUploadFile(IFormFile uploadFile)
+    {
+        if (uploadFile != null && uploadFile.Length > 0)
+        {
+            // 1. 設定存檔路徑 (wwwroot/upload/mrFiles)
+            string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "mrFiles");
+            // 如果資料夾不存在，則建立它
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+            // 2. 產生唯一的檔案名稱 (避免檔名重複覆蓋)
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(uploadFile.FileName);
+            // 3. 組合完整實體路徑
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            // 4. 將檔案寫入伺服器
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await uploadFile.CopyToAsync(fileStream);
+            }
+            // 5. 回傳檔案名稱給前端，前端可以將其存入表單中
+            return uniqueFileName;
+        }
+        return null;
+    }
+
+    // post 建立移除檔案的 action
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteFile(int recordid, bool fromdetails = false)
+    {
+        // 1. 從資料庫撈出該筆醫療紀錄
+        var medicalRecord = await _context.MedicalRecords.FirstOrDefaultAsync(m => m.RecordID == recordid);
+
+        if (medicalRecord == null)
+        {
+            return NotFound();
+        }
+
+        // 2. 確認有檔案紀錄存在
+        if (!string.IsNullOrEmpty(medicalRecord.TestResultsFile))
+        {
+            // 3. 組合實體檔案路徑並刪除伺服器上的檔案
+            string filePath = Path.Combine(_env.WebRootPath, "uploads", "mrFiles", medicalRecord.TestResultsFile);
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+
+            // 4. 將資料庫中該筆紀錄的檔案欄位設為 null，並儲存變更
+            medicalRecord.TestResultsFile = null;
+            await _context.SaveChangesAsync();
+        }
+        if (fromdetails) {
+            return RedirectToAction(nameof(Details), new { id = recordid });
+        }
+        // 5. 刪除成功後，重新導向回原本的 Edit 頁面
+        // 這裡會觸發 GET: MedicalRecord/Edit?recordid=xxx
+        return RedirectToAction(nameof(Edit), new { recordid = recordid });
+    }
+
+    // post 建立上傳檔案的 action
+    [HttpPost]
+    public async Task<IActionResult> UploadFile(IFormFile uploadFile, int recordid)
+    {
+        if (uploadFile != null && uploadFile.Length > 0)
+        {
+            string uniqueFileName = await SaveUploadFile(uploadFile);
+            //更新資料庫中的檔案名稱欄位
+            var medicalrecord = await _context.MedicalRecords.FindAsync(recordid);
+            if (medicalrecord != null)
+            {
+                medicalrecord.TestResultsFile = uniqueFileName;
+                _context.Update(medicalrecord);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Details), new { id = recordid });
+        }
+        return BadRequest("No file uploaded.");
+    }
+
     // GET: MEDICALRECORDS/Edit/5
     public async Task<IActionResult> Edit(int? recordid, bool fromDetails = false)
     {
@@ -163,7 +246,7 @@ public class MedicalRecordController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? recordid, MedicalRecord medicalrecord, IFormFile? uploadFile, string? existingFileName)
+    public async Task<IActionResult> Edit(int? recordid, MedicalRecord medicalrecord, IFormFile? uploadFile, string? existingFileName, bool fromDetails = false)
     {
         if (recordid != medicalrecord.RecordID)
         {
@@ -189,27 +272,9 @@ public class MedicalRecordController : Controller
                             System.IO.File.Delete(oldFilePath);
                         }
                     }
-                    // 1. 設定存檔路徑 (wwwroot/upload/mrFiles)
-                    string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "mrFiles");
 
-                    // 如果資料夾不存在，則建立它
-                    if (!Directory.Exists(uploadsFolder))
-                    {
-                        Directory.CreateDirectory(uploadsFolder);
-                    }
-
-                    // 2. 產生唯一的檔案名稱 (避免檔名重複覆蓋)
-                    // 例如: 5b6c8f9d-1234-abcd_原本檔名.pdf
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(uploadFile.FileName);
-
-                    // 3. 組合完整實體路徑
-                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                    // 4. 將檔案寫入伺服器
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await uploadFile.CopyToAsync(fileStream);
-                    }
+                    //呼叫 SaveUploadFile 方法來儲存新的檔案
+                    string uniqueFileName = await SaveUploadFile(uploadFile);
 
                     // 5. 將檔案名稱 (或相對路徑) 存入 Model 中，準備寫入資料庫
                     medicalrecord.TestResultsFile = uniqueFileName;
@@ -227,6 +292,10 @@ public class MedicalRecordController : Controller
                 {
                     throw;
                 }
+            }
+            if (fromDetails)
+            {
+                return RedirectToAction(nameof(Details), nameof(PetController).Replace("Controller", ""), new { petid = medicalrecord.PetID });
             }
             return RedirectToAction(nameof(Index));
         }
