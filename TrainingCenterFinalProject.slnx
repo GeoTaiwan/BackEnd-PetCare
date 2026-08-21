@@ -1,3 +1,7 @@
 <Solution>
-  <Project Path="TrainingCenterFinalProject/TrainingCenterFinalProject.csproj" />
+  <Project Path="PetCare.Access/PetCare.Access.csproj" Id="7c821e8a-4287-4732-9bdb-88a4718360bf" />
+  <Project Path="PetCare.ViewModel/PetCare.ViewModel.csproj" Id="68bf3040-7e8e-493e-a5b4-6f16ed8462d6" />
+  <Project Path="PetCare/PetCareAPI.csproj" Id="87ce90bd-119b-48e8-96e3-1e0afb6f290f" />
+  <Project Path="TrainingCenterFinalProject.Model/PetCare.Model.csproj" Id="cb9c1d39-a1cd-41c4-9796-76bdf8acb1b2" />
+  <Project Path="TrainingCenterFinalProject/PetCare.csproj" />
 </Solution>

@@ -1,79 +1,95 @@
 @model TrainingCenterFinalProject.Models.MedicalRecord
 
 @{
-    ViewData["Title"] = "Edit";
+	// ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
-
-<h4>MedicalRecord</h4>
+<h1>@ViewData["Title"]</h1>
+<h4>@Model.Pet.Name</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="RecordID" />
-            <div class="form-group">
-                <label asp-for="PetID" class="control-label"></label>
-                <input asp-for="PetID" class="form-control" />
-                <span asp-validation-for="PetID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VetID" class="control-label"></label>
-                <input asp-for="VetID" class="form-control" />
-                <span asp-validation-for="VetID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="VisitDate" class="control-label"></label>
-                <input asp-for="VisitDate" class="form-control" />
-                <span asp-validation-for="VisitDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Symptoms" class="control-label"></label>
-                <input asp-for="Symptoms" class="form-control" />
-                <span asp-validation-for="Symptoms" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TestResultsFile" class="control-label"></label>
-                <input asp-for="TestResultsFile" class="form-control" />
-                <span asp-validation-for="TestResultsFile" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Diagnosis" class="control-label"></label>
-                <input asp-for="Diagnosis" class="form-control" />
-                <span asp-validation-for="Diagnosis" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Pet" class="control-label"></label>
-                <input asp-for="Pet" class="form-control" />
-                <span asp-validation-for="Pet" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Vet" class="control-label"></label>
-                <input asp-for="Vet" class="form-control" />
-                <span asp-validation-for="Vet" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RecordDiagnoses" class="control-label"></label>
-                <input asp-for="RecordDiagnoses" class="form-control" />
-                <span asp-validation-for="RecordDiagnoses" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Prescriptions" class="control-label"></label>
-                <input asp-for="Prescriptions" class="form-control" />
-                <span asp-validation-for="Prescriptions" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+	<div class="col-md-4">
+		<form asp-action="Edit" enctype="multipart/form-data">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<input type="hidden" asp-for="RecordID" />
+			<input type="hidden" asp-for="PetID" />
+			<input type="hidden" asp-for="VetID" />
+			<input type="hidden" asp-for="TestResultsFile" />
+			<div class="mb-3">
+				<label class="control-label">負責獸醫</label>
+				<input asp-for="Vet.Name" class="form-control" disabled readonly />
+				@* <span asp-validation-for="Vet.Name" class="text-danger"></span> *@
+			</div>
+			<div class="mb-3">
+				<label asp-for="VisitDate" class="control-label"></label>
+				<input asp-for="VisitDate" class="form-control" />
+				<span asp-validation-for="VisitDate" class="text-danger"></span>
+			</div>
+			<div class="mb-3">
+				<label asp-for="Symptoms" class="control-label"></label>
+				<textarea asp-for="Symptoms" class="form-control"></textarea>
+				<span asp-validation-for="Symptoms" class="text-danger"></span>
+			</div>
+
+			@if (Model.TestResultsFile != null)
+			{
+				<div class="mb-3">
+					<label asp-for="TestResultsFile" class="control-label"></label>
+					<br />
+					<!-- 加上 type="file"，並命名為 uploadFile (這會對應 Controller 的參數) -->
+					<!-- 可選: 使用 accept 限制上傳格式，例如 accept=".jpg,.png,.pdf" -->
+					<a asp-controller="MedicalRecord"
+					   asp-action="DownloadFile"
+					   asp-route-fileName="@Model.TestResultsFile"
+					   class="btn btn-sm btn-outline-primary">
+						<i class="bi bi-download"></i> 					<span>@Model.TestResultsFile.Substring(37)</span>
+					</a>
+					@*建立修改檔案的功能*@
+					<button class="btn btn-warning" data-bs-toggle="collapse" data-bs-target="#collapseFile" type="button">修改檔案</button>
+					<div class="collapse" id="collapseFile">
+						<input type="file" name="uploadFile" class="form-control" accept=".pdf,.doc,.docx,.txt,.jpg" />
+						<input type="hidden" name="existingFileName" value="@(String.IsNullOrEmpty(Model.TestResultsFile) ? "" : Model.TestResultsFile)" />
+					</div>
+				</div>
+			}
+			else
+			{
+				<div class="mb-3">
+					@*加上顯示檔案名稱*@
+					<label asp-for="TestResultsFile" class="control-label"></label>
+					<!-- 加上 type="file"，並命名為 uploadFile (這會對應 Controller 的參數) -->
+					<!-- 可選: 使用 accept 限制上傳格式，例如 accept=".jpg,.png,.pdf" -->
+
+					<input type="file" name="uploadFile" class="form-control" accept=".pdf,.doc,.docx,.txt,.jpg" />
+					<span asp-validation-for="TestResultsFile" class="text-danger"></span>
+				</div>
+			}
+			<div class="mb-3">
+				<label asp-for="Diagnosis" class="control-label"></label>
+				<textarea asp-for="Diagnosis" class="form-control"></textarea>
+				<span asp-validation-for="Diagnosis" class="text-danger"></span>
+			</div>
+
+			<div class="mb-3">
+				<input type="submit" value="確定修改" class="btn btn-primary" />
+			</div>
+		</form>
+	</div>
+
+	@*右半*@
+	<div class="col">
+		<div class="container">
+			<img src="@(Model.Pet.ProfilePhotoUrl)" />
+		</div>
+	</div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+	<a asp-action="Index" class="btn btn-info">回到列表</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
 }

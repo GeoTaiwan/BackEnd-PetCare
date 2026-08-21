@@ -144,7 +144,10 @@ public class MedicalRecordController : Controller
             return NotFound();
         }
 
-        var medicalrecord = await _context.MedicalRecords.FindAsync(recordid);
+        var medicalrecord = await _context.MedicalRecords
+            .Include(mr=>mr.Pet)
+            .Include(mr => mr.Vet)
+            .FirstOrDefaultAsync(mr=>mr.RecordID==recordid);
         if (medicalrecord == null)
         {
             return NotFound();
@@ -157,17 +160,57 @@ public class MedicalRecordController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? recordid, [Bind("RecordID,PetID,VetID,VisitDate,Symptoms,TestResultsFile,Diagnosis,Pet,Vet,RecordDiagnoses,Prescriptions")] MedicalRecord medicalrecord)
+    public async Task<IActionResult> Edit(int? recordid, MedicalRecord medicalrecord, IFormFile? uploadFile, string? existingFileName)
     {
         if (recordid != medicalrecord.RecordID)
         {
             return NotFound();
         }
-
+        ModelState.Remove("Pet");
+        ModelState.Remove("Vet");
+        ModelState.Remove("Vet.Name");
         if (ModelState.IsValid)
         {
             try
             {
+                // 判斷使用者是否有上傳檔案
+                if (uploadFile != null && uploadFile.Length > 0)
+                {
+                    //若原本檔案存在，先刪除原本的檔案
+                    if (!string.IsNullOrEmpty(existingFileName))
+                    {
+                        // 刪除舊檔案
+                        string oldFilePath = Path.Combine(_env.WebRootPath, "uploads", "mrFiles", existingFileName);
+                        if (System.IO.File.Exists(oldFilePath))
+                        {
+                            System.IO.File.Delete(oldFilePath);
+                        }
+                    }
+                    // 1. 設定存檔路徑 (wwwroot/upload/mrFiles)
+                    string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "mrFiles");
+
+                    // 如果資料夾不存在，則建立它
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    // 2. 產生唯一的檔案名稱 (避免檔名重複覆蓋)
+                    // 例如: 5b6c8f9d-1234-abcd_原本檔名.pdf
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(uploadFile.FileName);
+
+                    // 3. 組合完整實體路徑
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    // 4. 將檔案寫入伺服器
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await uploadFile.CopyToAsync(fileStream);
+                    }
+
+                    // 5. 將檔案名稱 (或相對路徑) 存入 Model 中，準備寫入資料庫
+                    medicalrecord.TestResultsFile = uniqueFileName;
+                }
                 _context.Update(medicalrecord);
                 await _context.SaveChangesAsync();
             }

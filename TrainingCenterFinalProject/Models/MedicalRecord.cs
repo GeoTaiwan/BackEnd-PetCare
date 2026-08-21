@@ -23,7 +23,7 @@ namespace TrainingCenterFinalProject.Models
 
         [Required(ErrorMessage ="請選擇日期")]
         [Display(Name = "就診日期與時間")]
-        [DisplayFormat(DataFormatString ="{0:yyyy-MM-dd HH:mm:ss}",ApplyFormatInEditMode =true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}",ApplyFormatInEditMode =true)]
         public DateTime VisitDate { get; set; }
 
         [Column(TypeName = "nvarchar(max)")]
