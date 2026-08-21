@@ -102,6 +102,10 @@ namespace TrainingCenterFinalProject.Data
                 new SysMenu { MenuId = 2, MenuName = "使用者列表", ControllerName = "User", ActionName = "Index", SortOrder = 2, RequiredAuthLevel = 1, IsVisible = true },
                 new SysMenu { MenuId = 3, MenuName = "寵物病歷管理", ControllerName = "MedicalRecord", ActionName = "Index", SortOrder = 3, RequiredAuthLevel = 2, IsVisible = true }
             );
+
+            modelBuilder.Entity<Prescription>()
+                .Property(e => e.CreatedAt)
+                .HasDefaultValueSql("GETDATE()");
         }
     }
 }

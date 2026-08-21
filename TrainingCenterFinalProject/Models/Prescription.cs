@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -33,6 +34,10 @@ namespace TrainingCenterFinalProject.Models
         [Column(TypeName = "nvarchar(max)")]
         [Display(Name = "餵藥指示與注意事項")]
         public string? Instructions { get; set; }
+        //新增建立時間欄位，migration時，將此欄位設為非必要，並在資料庫中給予預設值getdate()，以便在新增資料時自動填入當前時間
+        [Display(Name = "建立時間")]
+        [DataType(DataType.DateTime)]
+        public DateTime CreatedAt { get; set; } 
 
         // === Foreign Key (加上 ? 繞過驗證) ===
         [ForeignKey(nameof(RecordID))]
