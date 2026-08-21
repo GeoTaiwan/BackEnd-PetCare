@@ -61,7 +61,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr class="position-relative">
             <td>
                 @Html.DisplayFor(model => item.Pet.Name)
             </td>
@@ -100,9 +100,12 @@
             </td>
            
             <td>
-                <a asp-action="Edit" asp-route-recordid="@item.RecordID" class="btn btn-warning">編輯</a>
-                <a asp-action="Details" asp-route-id="@item.RecordID" class="btn btn-info">詳細資料</a>
-                <a asp-action="Delete" asp-route-id="@item.RecordID" class="btn btn-danger">刪除</a>
+                <a asp-action="Details" asp-route-id="@item.RecordID" class="stretched-link"></a>
+                <a asp-action="Edit" asp-route-recordid="@item.RecordID" class="btn btn-warning position-relative z-2">編輯</a>
+                @*改為表單刪除鈕*@
+                <form asp-action="Delete" asp-route-id="@item.RecordID" method="post" class="d-inline-block">
+                    <button type="submit" class="btn btn-danger position-relative z-2" onclick="return confirm('確定要刪除這筆病歴嗎？');">刪除</button>
+                </form>
             </td>
         </tr>
 }

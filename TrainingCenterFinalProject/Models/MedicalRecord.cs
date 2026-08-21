@@ -46,7 +46,7 @@ namespace TrainingCenterFinalProject.Models
         public virtual UserProfile? Vet { get; set; }
 
         // === Navigation Properties ===
-        public virtual ICollection<RecordDiagnosis> RecordDiagnoses { get; set; } = new List<RecordDiagnosis>();
-        public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
+        public virtual ICollection<RecordDiagnosis>? RecordDiagnoses { get; set; }
+        public virtual ICollection<Prescription>? Prescriptions { get; set; }
     }
 }
