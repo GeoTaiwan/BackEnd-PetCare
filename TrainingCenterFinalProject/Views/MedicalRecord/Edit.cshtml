@@ -2,6 +2,7 @@
 
 @{
 	// ViewData["Title"] = "Edit";
+	bool fromDetails = ViewBag.FromDetails ?? false;
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -83,10 +84,19 @@
 		</div>
 	</div>
 </div>
+	@if (fromDetails)
+{
+	<div>
+		<a asp-action="Details" asp-route-id="@Model?.RecordID" class="btn btn-info">回到詳細資料</a>
+	</div>
 
-<div>
-	<a asp-action="Index" class="btn btn-info">回到列表</a>
-</div>
+}
+else
+{
+	<div class="mb-3">
+		<a asp-action="Index" class="btn btn-secondary">返回列表</a>
+	</div>
+}
 
 @section Scripts {
 	@{

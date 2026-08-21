@@ -1,29 +1,30 @@
 @model TrainingCenterFinalProject.Models.MedicalRecord
 
 @{
-    ViewData["Title"] = "Details";
+    // ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>@ViewData["Title"]</h1>
 
 <div>
-    <h4>MedicalRecord</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PetID)
+            @(Html.DisplayNameFor(model => model.Pet.Name))
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PetID)
+            @Html.DisplayFor(model => model.Pet.Name)
         </dd>
     </dl>
+    <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.VetID)
+            獸醫@(Html.DisplayNameFor(model => model.Vet.Name))
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.VetID)
+            @Html.DisplayFor(model => model.Vet.Name)
         </dd>
     </dl>
+    <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.VisitDate)
         </dt>
@@ -31,6 +32,7 @@
             @Html.DisplayFor(model => model.VisitDate)
         </dd>
     </dl>
+    <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Symptoms)
         </dt>
@@ -38,13 +40,18 @@
             @Html.DisplayFor(model => model.Symptoms)
         </dd>
     </dl>
+    <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.TestResultsFile)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TestResultsFile)
+            <a asp-controller="MedicalRecord"
+               asp-action="DownloadFile"
+               asp-route-fileName="@Model.TestResultsFile"
+               class="btn btn-outline-primary"><i class="bi bi-download"></i> @Model.TestResultsFile.Substring(37)</a>
         </dd>
     </dl>
+    <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Diagnosis)
         </dt>
@@ -52,36 +59,8 @@
             @Html.DisplayFor(model => model.Diagnosis)
         </dd>
     </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Pet)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Pet)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Vet)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Vet)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RecordDiagnoses)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RecordDiagnoses)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Prescriptions)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Prescriptions)
-        </dd>
-    </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.RecordID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-recordid="@Model?.RecordID" asp-route-fromDetails="true" class="btn btn-warning">編輯</a>
+    <a asp-action="Index" class="btn btn-info">回到列表</a>
 </div>

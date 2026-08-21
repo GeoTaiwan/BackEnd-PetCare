@@ -46,15 +46,17 @@ public class MedicalRecordController : Controller
     }
 
     // GET: MEDICALRECORDS/Details/5
-    public async Task<IActionResult> Details(int? recordid)
+    public async Task<IActionResult> Details(int? id)
     {
-        if (recordid == null)
+        if (id == null)
         {
             return NotFound();
         }
 
         var medicalrecord = await _context.MedicalRecords
-            .FirstOrDefaultAsync(m => m.RecordID == recordid);
+            .Include(m=>m.Pet)
+            .Include(m => m.Vet)
+            .FirstOrDefaultAsync(m => m.RecordID == id);
         if (medicalrecord == null)
         {
             return NotFound();
@@ -137,7 +139,7 @@ public class MedicalRecordController : Controller
     }
 
     // GET: MEDICALRECORDS/Edit/5
-    public async Task<IActionResult> Edit(int? recordid)
+    public async Task<IActionResult> Edit(int? recordid, bool fromDetails = false)
     {
         if (recordid == null)
         {
@@ -152,6 +154,7 @@ public class MedicalRecordController : Controller
         {
             return NotFound();
         }
+        ViewBag.FromDetails = fromDetails;
         return View(medicalrecord);
     }
 
