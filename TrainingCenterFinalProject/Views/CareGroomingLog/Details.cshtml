@@ -72,13 +72,22 @@
     <hr />
     @if (Model.LogPhotos != null && Model.LogPhotos.Any())
     {
-        <div class="row">
+        <div class="row" id="logPhotos">
             @foreach (var photo in Model.LogPhotos)
             {
                 <div class="col-md-3 mb-3">
                     <div class="card">
                         <!-- 假設 ImageURL 儲存的是相對路徑或絕對網址 -->
-                        <img src="~/uploads/logPhotos/@photo.ImageURL" class="card-img-top img-thumbnail" alt="實況照片" style="object-fit: cover; height: 200px;" />
+                        <img src="@photo.ImageURL" class="card-img-top img-thumbnail" alt="實況照片" style="object-fit: cover; height: 200px;" />
+                        <div class="card-body">
+                            <p class="card-text text-center">@photo.CreatedDate</p>
+                        </div>
+                        <div class="footer">
+                            @*刪除鈕使用自訂submit，呼叫在Scripts區塊中的刪除
+                                使用者在刪除照片時不會跳轉頁面，並且可以即時更新照片列表
+                            *@
+                            <a class="btn btn-danger btn-sm" onclick="deletePhoto(event, @photo.PhotoID, @Model.LogID)">刪除</a>
+                        </div>
                     </div>
                 </div>
             }
@@ -90,86 +99,36 @@
     }
 </div>
 
+<div id="uploadPhotos">
+
+</div>
+
 <div class="mt-4">
     <a asp-action="Edit" asp-route-logid="@Model?.LogID" asp-route-fromDetails="true" class="btn btn-warning">編輯</a>
     <a asp-action="Index" class="btn btn-info">返回列表</a>
 </div>
 
-
-@* @model TrainingCenterFinalProject.Models.CareGroomingLog
-
-@{
-    // ViewData["Title"] = "Details";
+@section Scripts {
+    <script>
+        // 這裡可以加入一些 JavaScript 來處理照片的動態載入或其他互動功能
+        $('#uploadPhotos').load("@Url.Action("UploadPhoto", "LogPhoto", new { logid = Model.LogID })");
+        // 刪除照片的 JavaScript 函數
+        function deletePhoto(event, photoId, logId) {
+            event.preventDefault(); // 防止表單提交
+            if (confirm("確定要刪除這張照片嗎？")) {
+                $.ajax({
+                    url: '@Url.Action("DeletePhoto", "LogPhoto")',
+                    type: 'POST',
+                    data: { photoId: photoId, logId: logId },
+                    success: function(result) {
+                        // 刪除成功後重新載入照片列表
+                        $('#logPhotos').load("@Url.Action("UploadPhoto", "LogPhoto", new { logid = Model.LogID })");
+                    },
+                    error: function(xhr, status, error) {
+                        alert("刪除照片時發生錯誤：" + error);
+                    }
+                });
+            }
+        }
+    </script>
 }
-
-<h1>@(Model.Pet.Name)@(ViewData["Title"])</h1>
-
-<div class="container">
-
-</div>
-
-<div>
-    
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PetID)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PetID)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StaffID)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StaffID)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LogDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LogDate)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ActivityDetails)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ActivityDetails)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DietNotes)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DietNotes)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Pet)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Pet)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Staff)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Staff)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LogPhotos)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LogPhotos)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.LogID" class="btn btn-warning">編輯</a>
-    <a asp-action="Index" class="btn btn-info">回到列表</a>
-</div> *@

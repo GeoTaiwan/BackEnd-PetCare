@@ -1,0 +1,8 @@
+﻿@{
+    Layout = null;
+}
+<form asp-action="UploadPhoto" asp-controller="LogPhoto" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="logid" value="@ViewData["LogID"]" class="form-control" />
+    <input type="file" name="uploadedFiles" multiple class="form-control" />
+    <button type="submit" class="form-control btn btn-primary">確定上傳</button>
+</form>

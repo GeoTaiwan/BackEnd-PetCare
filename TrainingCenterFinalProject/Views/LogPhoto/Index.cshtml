@@ -2,13 +2,42 @@
 
 @{
     // ViewData["Title"] = "Index";
+    Layout = null;
 }
 
-<h1>@ViewData["Title"]</h1>
-
-<p>
+@* <p>
     <a asp-action="Create">Create New</a>
-</p>
+</p> *@
+
+<div class="container">
+    <!-- row-cols 決定一列有幾張卡片：手機 2 張，電腦 4 張 -->
+    <div class="row row-cols-2 row-cols-lg-4 g-4">
+        <!-- 照片卡片 1 -->
+        @if (Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="@item.ImageURL" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <p class="card-text text-center">@item.CreatedDate</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>目前尚無照片。</p>
+        }
+
+        
+        
+        <!-- 依此類推重複至 10 張照片... -->
+    </div>
+</div>
+
 <table class="table">
     <thead>
         <tr>
@@ -25,23 +54,24 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.LogID)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.ImageURL)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.CreatedDate)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-photoid="@item.PhotoID">Edit</a> |
-                <a asp-action="Details" asp-route-photoid="@item.PhotoID">Details</a> |
-                <a asp-action="Delete" asp-route-photoid="@item.PhotoID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(model => item.LogID)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.ImageURL)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.CreatedDate)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-photoid="@item.PhotoID">Edit</a> |
+                    <a asp-action="Details" asp-route-photoid="@item.PhotoID">Details</a> |
+                    <a asp-action="Delete" asp-route-photoid="@item.PhotoID">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

@@ -41,6 +41,7 @@ public class LogPhotoController : Controller
     // GET: LOGPHOTOS/Create
     public IActionResult Create(int logid=1)
     {
+        //uploads/logPhotos/
         ViewData["LogID"] = logid;
         return View();
     }
@@ -150,4 +151,73 @@ public class LogPhotoController : Controller
     {
         return _context.LogPhotos.Any(e => e.PhotoID == photoid);
     }
+
+    public IActionResult UploadPhoto(int logid=0)
+    {
+        ViewData["LogID"] = logid;
+        return View();
+    }
+
+    //新增照片上傳功能
+    [HttpPost]
+    public async Task<IActionResult> UploadPhoto(int logid, List<IFormFile> uploadedFiles)
+    {
+        if (uploadedFiles == null || uploadedFiles.Count == 0)
+        {
+            TempData["ErrorMessage"] = "Please select at least one file to upload.";
+            //ModelState.AddModelError("", "Please select at least one file to upload.");
+            return RedirectToAction("Create", new { logid = logid });
+        }
+        foreach (var file in uploadedFiles)
+        {
+            if (file.Length > 0)
+            {
+                // Generate a unique filename
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads/logPhotos");
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                // Ensure the uploads folder exists
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+                // Save the file to the server
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+                // Create a new LogPhoto entry in the database
+                var logPhoto = new LogPhoto
+                {
+                    LogID = logid,
+                    ImageURL = "/uploads/logPhotos/" + uniqueFileName
+                };
+                _context.LogPhotos.Add(logPhoto);
+            }
+        }
+        await _context.SaveChangesAsync();
+        return RedirectToAction("Details", "CareGroomingLog", new { id = logid });
+    }
+    //自訂刪除照片功能，刪除資料庫紀錄與實體檔案
+    //返迴到CareGroomingLog的Details頁面
+    [HttpPost]
+    public async Task<IActionResult> DeletePhoto(int photoid)
+    {
+        var logPhoto = await _context.LogPhotos.FindAsync(photoid);
+        if (logPhoto == null)
+        {
+            return NotFound();
+        }
+        // Delete the file from the server
+        var filePath = Path.Combine(_env.WebRootPath, logPhoto.ImageURL.TrimStart('/'));
+        if (System.IO.File.Exists(filePath))
+        {
+            System.IO.File.Delete(filePath);
+        }
+        // Remove the LogPhoto entry from the database
+        _context.LogPhotos.Remove(logPhoto);
+        await _context.SaveChangesAsync();
+        return RedirectToAction("Details", "CareGroomingLog", new { id = logPhoto.LogID });
+    }
+
 }
