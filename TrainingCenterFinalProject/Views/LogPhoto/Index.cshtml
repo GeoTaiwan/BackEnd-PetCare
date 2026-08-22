@@ -3,75 +3,33 @@
 @{
     // ViewData["Title"] = "Index";
     Layout = null;
+    //修改index頁，提供給CareGroomingLog的Details頁面使用，顯示該紀錄的所有照片
 }
 
-@* <p>
-    <a asp-action="Create">Create New</a>
-</p> *@
-
-<div class="container">
-    <!-- row-cols 決定一列有幾張卡片：手機 2 張，電腦 4 張 -->
-    <div class="row row-cols-2 row-cols-lg-4 g-4">
-        <!-- 照片卡片 1 -->
-        @if (Model.Any())
+@if (Model != null && Model.Any())
+{
+    <div class="row" id="logPhotos">
+        @foreach (var photo in Model)
         {
-            @foreach (var item in Model)
-            {
-                <div class="col">
-                    <div class="card h-100">
-                        <img src="@item.ImageURL" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <p class="card-text text-center">@item.CreatedDate</p>
-                        </div>
+            <div class="col-md-3 mb-3">
+                <div class="card">
+                    <!-- 假設 ImageURL 儲存的是相對路徑或絕對網址 -->
+                    <img src="@photo.ImageURL" class="card-img-top img-thumbnail" alt="實況照片" style="object-fit: cover; height: 200px;" />
+                    <div class="card-body">
+                        <p class="card-text text-center">@photo.CreatedDate</p>
+                    </div>
+                    <div class="footer">
+                        @*刪除鈕使用自訂submit，呼叫在Scripts區塊中的刪除
+                                使用者在刪除照片時不會跳轉頁面，並且可以即時更新照片列表
+                            *@
+                        <a class="btn btn-danger btn-sm" onclick="deletePhoto(event, @photo.PhotoID, @photo.LogID)">刪除</a>
                     </div>
                 </div>
-            }
+            </div>
         }
-        else
-        {
-            <p>目前尚無照片。</p>
-        }
-
-        
-        
-        <!-- 依此類推重複至 10 張照片... -->
     </div>
-</div>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.LogID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ImageURL)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(model => item.LogID)
-                </td>
-                <td>
-                    @Html.DisplayFor(model => item.ImageURL)
-                </td>
-                <td>
-                    @Html.DisplayFor(model => item.CreatedDate)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-photoid="@item.PhotoID">Edit</a> |
-                    <a asp-action="Details" asp-route-photoid="@item.PhotoID">Details</a> |
-                    <a asp-action="Delete" asp-route-photoid="@item.PhotoID">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+}
+else
+{
+    <p class="text-muted">目前沒有上傳任何實況照片。</p>
+}

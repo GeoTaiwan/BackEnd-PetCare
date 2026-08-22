@@ -17,7 +17,7 @@ public class LogPhotoController : Controller
     // GET: LOGPHOTOS
     public async Task<IActionResult> Index()    
     {
-        return View(await _context.LogPhotos.ToListAsync());
+        return View(await _context.LogPhotos.Include(lp => lp.CareGroomingLog).ToListAsync());
     }
 
     // GET: LOGPHOTOS/Details/5
@@ -196,7 +196,7 @@ public class LogPhotoController : Controller
             }
         }
         await _context.SaveChangesAsync();
-        return RedirectToAction("Details", "CareGroomingLog", new { id = logid });
+        return RedirectToAction("Details", "CareGroomingLog", new { logid = logid });
     }
     //自訂刪除照片功能，刪除資料庫紀錄與實體檔案
     //返迴到CareGroomingLog的Details頁面
@@ -217,7 +217,7 @@ public class LogPhotoController : Controller
         // Remove the LogPhoto entry from the database
         _context.LogPhotos.Remove(logPhoto);
         await _context.SaveChangesAsync();
-        return RedirectToAction("Details", "CareGroomingLog", new { id = logPhoto.LogID });
+        return Ok();
     }
 
 }

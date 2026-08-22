@@ -70,33 +70,9 @@
 <div class="mt-4">
     <h5>實況照片</h5>
     <hr />
-    @if (Model.LogPhotos != null && Model.LogPhotos.Any())
-    {
-        <div class="row" id="logPhotos">
-            @foreach (var photo in Model.LogPhotos)
-            {
-                <div class="col-md-3 mb-3">
-                    <div class="card">
-                        <!-- 假設 ImageURL 儲存的是相對路徑或絕對網址 -->
-                        <img src="@photo.ImageURL" class="card-img-top img-thumbnail" alt="實況照片" style="object-fit: cover; height: 200px;" />
-                        <div class="card-body">
-                            <p class="card-text text-center">@photo.CreatedDate</p>
-                        </div>
-                        <div class="footer">
-                            @*刪除鈕使用自訂submit，呼叫在Scripts區塊中的刪除
-                                使用者在刪除照片時不會跳轉頁面，並且可以即時更新照片列表
-                            *@
-                            <a class="btn btn-danger btn-sm" onclick="deletePhoto(event, @photo.PhotoID, @Model.LogID)">刪除</a>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    }
-    else
-    {
-        <p class="text-muted">目前沒有上傳任何實況照片。</p>
-    }
+    <div id="logPhotos">
+    
+    </div>
 </div>
 
 <div id="uploadPhotos">
@@ -112,6 +88,7 @@
     <script>
         // 這裡可以加入一些 JavaScript 來處理照片的動態載入或其他互動功能
         $('#uploadPhotos').load("@Url.Action("UploadPhoto", "LogPhoto", new { logid = Model.LogID })");
+        $('#logPhotos').load("@Url.Action("Index", "LogPhoto", new { logid = Model.LogID })");  
         // 刪除照片的 JavaScript 函數
         function deletePhoto(event, photoId, logId) {
             event.preventDefault(); // 防止表單提交
@@ -122,7 +99,7 @@
                     data: { photoId: photoId, logId: logId },
                     success: function(result) {
                         // 刪除成功後重新載入照片列表
-                        $('#logPhotos').load("@Url.Action("UploadPhoto", "LogPhoto", new { logid = Model.LogID })");
+                        $('#logPhotos').load("@Url.Action("Index", "LogPhoto", new { logid = Model.LogID })");
                     },
                     error: function(xhr, status, error) {
                         alert("刪除照片時發生錯誤：" + error);
