@@ -12,7 +12,7 @@
         @foreach (var photo in Model)
         {
             <div class="col-md-3 mb-3">
-                <div class="card">
+                <div class="card shadow">
                     <!-- 假設 ImageURL 儲存的是相對路徑或絕對網址 -->
                     <img src="@photo.ImageURL" class="card-img-top img-thumbnail" alt="實況照片" style="object-fit: cover; height: 200px;" />
                     <div class="card-body">
@@ -24,6 +24,7 @@
                             *@
                         <a class="btn btn-danger btn-sm" onclick="deletePhoto(event, @photo.PhotoID, @photo.LogID)">刪除</a>
                     </div>
+                    
                 </div>
             </div>
         }
@@ -33,3 +34,27 @@ else
 {
     <p class="text-muted">目前沒有上傳任何實況照片。</p>
 }
+@*新增modal顯示放大圖片，點擊照片時彈出放大視窗，以原圖大小顯示*@ 
+<div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="photoModalLabel">放大照片</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" class="img-fluid" alt="放大照片" />
+            </div>
+        </div>
+    </div>
+</div>
+@*加入點擊照片放大功能*@
+<script>
+    $(document).ready(function() {
+        $('.card-img-top').on('click', function() {
+            var src = $(this).attr('src');
+            $('#modalImage').attr('src', src);
+            $('#photoModal').modal('show');
+        });
+    });
+</script>

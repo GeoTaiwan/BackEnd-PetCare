@@ -5,84 +5,86 @@
 }
 
 <h1>@(Model.Pet.Name)@(ViewData["Title"])</h1>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <dl class="row">
+            <!-- 顯示紀錄時間 -->
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.LogDate)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.LogDate)
+            </dd>
 
-<div>
-    
-    <hr />
-    <dl class="row">
-        <!-- 顯示紀錄時間 -->
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.LogDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.LogDate)
-        </dd>
+            <!-- 顯示關聯的寵物名稱 -->
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Pet.Name)
+            </dt>
+            <dd class="col-sm-10">
+                @if (Model.Pet != null)
+                {
+                    <text>@Model.Pet.Name (@Model.Pet.Species)</text>
+                }
+                else
+                {
+                    <span class="text-muted">無寵物資料</span>
+                }
+            </dd>
 
-        <!-- 顯示關聯的寵物名稱 -->
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Pet.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @if (Model.Pet != null)
-            {
-                <text>@Model.Pet.Name (@Model.Pet.Species)</text>
-            }
-            else
-            {
-                <span class="text-muted">無寵物資料</span>
-            }
-        </dd>
+            <!-- 顯示負責美容師/保姆名稱 -->
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.StaffID)
+            </dt>
+            <dd class="col-sm-10">
+                @if (Model.Staff != null)
+                {
+                    @Model.Staff.Name
+                }
+                else
+                {
+                    <span class="text-muted">無員工資料</span>
+                }
+            </dd>
 
-        <!-- 顯示負責美容師/保姆名稱 -->
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.StaffID)
-        </dt>
-        <dd class="col-sm-10">
-            @if (Model.Staff != null)
-            {
-                @Model.Staff.Name
-            }
-            else
-            {
-                <span class="text-muted">無員工資料</span>
-            }
-        </dd>
+            <!-- 顯示照護或美容過程描述 -->
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.ActivityDetails)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ActivityDetails)
+            </dd>
 
-        <!-- 顯示照護或美容過程描述 -->
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ActivityDetails)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ActivityDetails)
-        </dd>
-
-        <!-- 顯示飲食與排泄狀況紀錄 -->
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DietNotes)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DietNotes)
-        </dd>
-    </dl>
-</div>
-
-<!-- 實況照片區塊 -->
-<div class="mt-4">
-    <h5>實況照片</h5>
-    <hr />
-    <div id="logPhotos">
-    
+            <!-- 顯示飲食與排泄狀況紀錄 -->
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.DietNotes)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.DietNotes)
+            </dd>
+        </dl>
+    </div>
+    @*右半*@
+    <div class="col-md-6">
+        <!-- 實況照片區塊 -->
+        <div class="mt-4">
+            <h5>實況照片</h5>
+            <a class="btn btn-info" data-bs-toggle="collapse" href="#uploadPhotos" role="button" aria-expanded="false" aria-controls="uploadPhotos">上傳照片</a>
+            <div id="uploadPhotos" class="collapse">
+            </div>
+            
+        </div>
     </div>
 </div>
-
-<div id="uploadPhotos">
-
+<hr />
+<div id="logPhotos">
 </div>
-
 <div class="mt-4">
     <a asp-action="Edit" asp-route-logid="@Model?.LogID" asp-route-fromDetails="true" class="btn btn-warning">編輯</a>
     <a asp-action="Index" class="btn btn-info">返回列表</a>
 </div>
+
+
 
 @section Scripts {
     <script>
@@ -106,6 +108,29 @@
                     }
                 });
             }
+        }
+        //上傳照片也改為SPA方式，避免頁面重新整理
+        function uploadPhoto(event) {
+            event.preventDefault(); // 防止表單提交
+            var formData = new FormData($('#uploadPhotoForm')[0]);
+            $.ajax({
+                url: '@Url.Action("UploadPhoto", "LogPhoto", new { logid = Model.LogID })',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(result) {
+                    // 上傳成功後重新載入照片列表
+                    $('#logPhotos').load("@Url.Action("Index", "LogPhoto", new { logid = Model.LogID })");
+                    // 清空上傳表單
+                    $('#uploadPhotoForm')[0].reset();
+                    // 關閉上傳區塊
+                    $('#uploadPhotos').collapse('hide');
+                },
+                error: function(xhr, status, error) {
+                    alert("上傳照片時發生錯誤：" + error);
+                }
+            });
         }
     </script>
 }
