@@ -1,32 +1,54 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PetCare.Controllers;
 using System.Security.Claims;
 using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Models;
 
-public class CareGroomingLogController : Controller
+public class CareGroomingLogController : BaseController
 {
     private readonly PetCareDbContext _context;
     //private readonly IWebHostEnvironment _env;
-
+    
     public CareGroomingLogController(PetCareDbContext context)
     {
         _context = context;
+        
         //_env = env;
     }
+
+   
 
     // GET: CAREGROOMINGLOGS
     public async Task<IActionResult> Index()    
     {
-        var loginuserid = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var careLog = await _context.CareGroomingLogs
+        var careLogs = await _context.CareGroomingLogs
             .Include(cg => cg.Pet)
             .ThenInclude(p => p.Owner)
             .Include(cg=>cg.Staff)
-            .Where(cg => cg.Pet.OwnerID == loginuserid) 
+            .Where(cg => cg.Pet.OwnerID == LoginUserId) 
             .ToListAsync();
-        return View(careLog);
+        //若目前使用者為照護人員，則顯示所有經手照護紀錄
+        //var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(u => u.UserID == _loginUserId);
+        var userEmployments = await _context.Employments
+        .Where(e => e.UserID == LoginUserId)
+        .ToListAsync();
+        var employeeProfile = userEmployments.FirstOrDefault(e =>
+        !string.IsNullOrEmpty(e.OccupationID) &&
+        e.OccupationID.Length >= 3 &&
+        int.TryParse(e.OccupationID.Substring(1, 2), out int occId) &&
+        occId > 10);
+        if (employeeProfile != null) 
+        {
+            careLogs = await _context.CareGroomingLogs
+                .Where(cg => cg.StaffID == LoginUserId)
+                .Include(cg => cg.Pet)
+                .ThenInclude(p => p.Owner)
+                .Include(cg => cg.Staff)
+                .ToListAsync();
+        }
+        return View(careLogs);
     }
 
     // GET: CAREGROOMINGLOGS/Details/5
@@ -51,9 +73,30 @@ public class CareGroomingLogController : Controller
     }
 
     // GET: CAREGROOMINGLOGS/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create(int petid=0)
     {
-        return View();
+        //找出登入的使用者ID
+        var loginuserid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userPets = await _context.Pets.Where(p => p.OwnerID == loginuserid).ToListAsync();
+        if (petid == 0)
+        {
+            if (!userPets.Any())
+            {
+                //使用者沒有寵物，導向到寵物列表頁面
+                TempData["ErrorMessage"] = "您尚未新增寵物，請先新增寵物後再新增照護紀錄。";
+                return RedirectToAction("Index", "Pets");
+            }
+            else
+            {                 //使用者有寵物，預設選擇第一隻寵物
+                petid = userPets.First().PetID;
+            }
+
+        }
+        var log = new CareGroomingLog
+        {
+            PetID = petid
+        };
+        return View(log);
     }
 
     // POST: CAREGROOMINGLOGS/Create

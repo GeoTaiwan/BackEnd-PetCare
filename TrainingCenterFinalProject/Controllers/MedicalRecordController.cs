@@ -2,13 +2,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
+using PetCare.Controllers;
 using System.Security.Claims;
 using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Models;
 //飼主用controller
 //獸醫端另算
 
-public class MedicalRecordController : Controller
+public class MedicalRecordController : BaseController
 {
     private readonly PetCareDbContext _context;
     private readonly IWebHostEnvironment _env;
@@ -22,11 +23,10 @@ public class MedicalRecordController : Controller
     // GET: MEDICALRECORDS
     public async Task<IActionResult> Index(int petid = 0)
     {
-        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var myRecords = _context.MedicalRecords
             .Include(m => m.Pet)
             .Include(m => m.Vet)
-            .Where(m => m.Pet.OwnerID == currentUserId)
+            .Where(m => m.Pet.OwnerID == LoginUserId)
             .OrderByDescending(m=>m.VisitDate)
             .AsQueryable();
 
@@ -35,7 +35,7 @@ public class MedicalRecordController : Controller
             myRecords = myRecords.Where(r => r.PetID == petid);
         }
 
-        var pet = await _context.Pets.Where(p => p.OwnerID == currentUserId).ToListAsync();
+        var pet = await _context.Pets.Where(p => p.OwnerID == LoginUserId).ToListAsync();
         ViewBag.noPet = !pet.Any();
 
         // 建立 SelectList，參數依序為：資料來源、Value 欄位、Text 欄位、當前選中的值
