@@ -7,8 +7,15 @@
 <h1>@ViewData["Title"]</h1>
 
 <div class="container">
-    <h3 class="text-danger">請等待審核通過</h3>
-    <hr />
+    @if (Model.StatusId == "S00")
+    {
+        <h3 class="text-danger">請等待審核通過</h3>
+        <hr />
+    }else if (Model.StatusId == "S02")
+    {
+        <h3 class="text-danger">停權中，請連絡系統管理員</h3>
+        <hr />
+    }
     <div class="row fs-3">
         @*左半*@
         <div class="col-lg-6">
@@ -80,7 +87,7 @@
                 </div>
             </div>
         </div>
-
+        
     </div>
 </div>
 

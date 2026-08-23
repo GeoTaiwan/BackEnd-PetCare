@@ -1,6 +1,8 @@
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PetCare.ViewModels;
 using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Models;
 
@@ -21,25 +23,62 @@ public class EmploymentController : Controller
 
 
     // GET: EMPLOYMENTS/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create(string instid,bool fromInstManage=false)
     {
-        return View();
+        var employ = new NewEmployeeViewModel
+        {
+            InstitutionID=instid,
+            LicenseNumber="待填",
+            Institution = await _context.Institutions.FindAsync(instid)
+        };
+        ViewBag.fromInstManage = fromInstManage;
+        await getList();
+        return View(employ);
     }
+
+    //實作方法：職位代號、在職狀態傳入下拉式選單
+    private async Task getList()
+    {
+        var occ = await _context.Occupations.ToListAsync();
+        ViewBag.OccupationList = new SelectList(occ, "OccupationID", "OccupationName");
+        var statusList = new[]
+        {
+            new { Value = "Active", Text = "在職 (Active)" },
+            new { Value = "Inactive", Text = "離職 (Inactive)" },
+            new { Value = "Suspended", Text = "停職 (Suspended)" } // 可隨時擴充
+        };
+
+        ViewBag.StatusList = new SelectList(statusList,"Value","Text");
+    } 
 
     // POST: EMPLOYMENTS/Create
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Employment employment)
+    public async Task<IActionResult> Create(NewEmployeeViewModel emViewModel,bool fromInstManage=false)
     {
+        emViewModel.StartDate = DateTime.Now;
         if (ModelState.IsValid)
         {
+            var employment = new Employment
+            {
+                UserID = await _context.UserProfiles.Where(u=>u.Email==emViewModel.UserEmail).Select(u=>u.UserID).FirstOrDefaultAsync(),
+                InstitutionID = emViewModel.InstitutionID,
+                OccupationID=emViewModel.OccupationID,
+                Status=emViewModel.Status,
+                LicenseNumber=emViewModel.LicenseNumber,
+                StartDate=emViewModel.StartDate
+            };
             _context.Add(employment);
             await _context.SaveChangesAsync();
+            if (fromInstManage) {
+                return RedirectToAction("InstitutionManage", "Institution", new {id = emViewModel.InstitutionID });
+            }
             return RedirectToAction(nameof(Index));
         }
-        return View(employment);
+        await getList();
+        return View(emViewModel);
     }
 
     // GET: EMPLOYMENTS/Edit/5

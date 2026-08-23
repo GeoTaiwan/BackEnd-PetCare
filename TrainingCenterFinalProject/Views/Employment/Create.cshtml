@@ -1,78 +1,79 @@
-@model TrainingCenterFinalProject.Models.Employment
+@* @model TrainingCenterFinalProject.Models.Employment *@
+@model PetCare.ViewModels.NewEmployeeViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "新增員工";
 }
-
-<h1>Create</h1>
-
-<h4>Employment</h4>
-<hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" name="fromInstManage" value="@ViewBag.fromInstManage.ToString().ToLower()" />
+            <div class="mb-3">
+                <label asp-for="UserEmail" class="control-label"></label>
+                <input asp-for="UserEmail" class="form-control" />
+                <span asp-validation-for="UserEmail" class="text-danger"></span>
+            </div>
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="InstitutionID" class="control-label"></label>
-                <input asp-for="InstitutionID" class="form-control" />
+                <input asp-for="InstitutionID" class="form-control" type="hidden" />
+                <input readonly disabled asp-for="Institution.Name" class="form-control" />
                 <span asp-validation-for="InstitutionID" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="OccupationID" class="control-label"></label>
-                <input asp-for="OccupationID" class="form-control" />
+                <select asp-for="OccupationID" asp-items="ViewBag.OccupationList" class="form-control"></select>
                 <span asp-validation-for="OccupationID" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
+                @* <input asp-for="Status" class="form-control" /> *@
+                <select asp-for="Status" asp-items="ViewBag.StatusList" class="form-control"></select>
                 <span asp-validation-for="Status" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="LicenseNumber" class="control-label"></label>
                 <input asp-for="LicenseNumber" class="form-control" />
                 <span asp-validation-for="LicenseNumber" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+          @*   <div class="mb-3">
                 <label asp-for="StartDate" class="control-label"></label>
                 <input asp-for="StartDate" class="form-control" />
                 <span asp-validation-for="StartDate" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="EndDate" class="control-label"></label>
                 <input asp-for="EndDate" class="form-control" />
                 <span asp-validation-for="EndDate" class="text-danger"></span>
-            </div>
+            </div> *@
 
-            <div class="form-group">
-                <label asp-for="UserProfile" class="control-label"></label>
-                <input asp-for="UserProfile" class="form-control" />
-                <span asp-validation-for="UserProfile" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Institution" class="control-label"></label>
-                <input asp-for="Institution" class="form-control" />
-                <span asp-validation-for="Institution" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="OccupationDetails" class="control-label"></label>
-                <input asp-for="OccupationDetails" class="form-control" />
-                <span asp-validation-for="OccupationDetails" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            <div class="mb-3">
+                <input type="submit" value="確定新增" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
+@if (ViewBag.fromInstManage)
+{
+    <div>
+        <a asp-controller="Institution" asp-action="InstitutionManage" asp-route-id="@Model.InstitutionID">回機構管理</a>
+    </div>
+}
+else
+{
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+}
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Scripts{
+@{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

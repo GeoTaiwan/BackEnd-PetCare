@@ -29,6 +29,26 @@ public class InstitutionController : BaseController
         return View(institutions);
     }
 
+    public IActionResult InstitutionManage(string? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+        var institution = _context.Institutions
+            .Include(i => i.InstitutionStatus)
+            .Include(i => i.InstitutionType)
+            .Include(i => i.Owner)
+            .Include(i => i.Employments)
+            .ThenInclude(e => e.UserProfile)
+            .FirstOrDefault(m => m.InstitutionID == id);
+        if (institution == null)
+        {
+            return NotFound();
+        }
+        return View(institution);
+    }
+
     public IActionResult Details(string? id)
     {
         if (id == null)

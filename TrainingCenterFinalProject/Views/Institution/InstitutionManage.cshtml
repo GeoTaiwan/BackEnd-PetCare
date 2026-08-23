@@ -1,0 +1,123 @@
+﻿@model TrainingCenterFinalProject.Models.Institution
+
+@{
+    // 機構管理頁，可新增員工
+}
+
+<h1>機構管理 <a class="btn btn-info" data-bs-toggle="collapse" href="#institution-details" role="button" aria-expanded="false" aria-controls="institution-details">顯示機構資訊</a> </h1>
+
+<div class="container collapse" id="institution-details">
+    @if (Model.StatusId == "S00")
+    {
+        <h3 class="text-danger">請等待審核通過</h3>
+        <hr />
+    }
+    else if (Model.StatusId == "S02")
+    {
+        <h3 class="text-danger">停權中，請連絡系統管理員</h3>
+        <hr />
+    }
+    <div class="row fs-3" >
+        @*左半*@
+        <div class="col-lg-6">
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.InstitutionID)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.InstitutionID)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.Name)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.Name)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.LicenseNumber)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.LicenseNumber)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.Phone)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.Phone)</span>
+                </div>
+            </div>
+        </div>
+        @*右半*@
+        <div class="col-lg-6">
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.Address)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.Address)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.InstitutionStatus.StatusName)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.InstitutionStatus.StatusName)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.InstitutionType.Name)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.InstitutionType.Name)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">負責人@(@Html.DisplayNameFor(model => model.Owner.Name))</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.Owner.Name)</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model?.InstitutionID" asp-route-fromDetails="true" class="btn btn-warning">編輯</a>
+        @* <a asp-action="Index" class="btn btn-info">返回列表</a> *@
+    </div>
+</div>
+<div class="container">
+    <a asp-action="Create" asp-controller="Employment" asp-route-instid="@Model.InstitutionID" asp-route-frominstmanage="true" class="btn btn-info">新增員工</a>
+    @if (Model.Employments.Any())
+    {
+        <div class="row">
+
+        @foreach(var item in Model.Employments)
+        {
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">
+
+                    </div>
+                    <div class="card-body">
+                        @Html.DisplayFor(model=>item.UserProfile.Name)
+                    </div>
+                </div>
+            </div>
+        }
+        </div>
+    } else
+    {
+        <div>目前尚無員工</div>
+    }
+</div>
+

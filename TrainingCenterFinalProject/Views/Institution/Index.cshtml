@@ -39,7 +39,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr class="position-relative">
             <td>
                 @Html.DisplayFor(model => item.Name)
             </td>
@@ -62,10 +62,11 @@
                 @Html.DisplayFor(model => item.Owner.Name)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.InstitutionID" class="btn btn-outline-warning">編輯</a>
+                <a asp-action="Edit" asp-route-id="@item.InstitutionID" class="btn btn-outline-warning position-relative z-2">編輯</a>
                 <form asp-action="Delete" asp-route-id="@item.InstitutionID" method="post" class="d-inline-block">
-                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('確定要刪除嗎？(包含相關的預約、授權記錄、就業記錄和任務安排)')">刪除</button>
+                    <button type="submit" class="btn btn-outline-danger position-relative z-2" onclick="return confirm('確定要刪除嗎？(包含相關的預約、授權記錄、就業記錄和任務安排)')">刪除</button>
                 </form>
+                    <a asp-action="InstitutionManage" asp-route-id="@item.InstitutionID" class="stretched-link"></a>
             </td>
         </tr>
 }
