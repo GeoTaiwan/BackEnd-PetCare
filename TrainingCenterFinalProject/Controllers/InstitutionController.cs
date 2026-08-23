@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PetCare.Controllers;
 using System.Security.Claims;
 using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Models;
-public class InstitutionController : Controller
+public class InstitutionController : BaseController
 {
     private readonly PetCareDbContext _context;
 
@@ -16,13 +17,14 @@ public class InstitutionController : Controller
     }
 
     // GET: INSTITUTIONS
-    [Authorize(Roles ="Admin")]
+    
     public async Task<IActionResult> Index()    
     {
         var institutions = await _context.Institutions
             .Include(i=>i.InstitutionStatus)
             .Include(i => i.InstitutionType)
             .Include(i=>i.Owner)
+            .Where(i=> i.OwnerID == LoginUserId)
             .ToListAsync();
         return View(institutions);
     }

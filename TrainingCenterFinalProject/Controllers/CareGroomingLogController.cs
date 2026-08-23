@@ -30,7 +30,7 @@ public class CareGroomingLogController : BaseController
             .Where(cg => cg.Pet.OwnerID == LoginUserId) 
             .ToListAsync();
         //若目前使用者為照護人員，則顯示所有經手照護紀錄
-        //var userProfile = await _context.UserProfiles.FirstOrDefaultAsync(u => u.UserID == _loginUserId);
+        
         var userEmployments = await _context.Employments
         .Where(e => e.UserID == LoginUserId)
         .ToListAsync();
@@ -39,6 +39,7 @@ public class CareGroomingLogController : BaseController
         e.OccupationID.Length >= 3 &&
         int.TryParse(e.OccupationID.Substring(1, 2), out int occId) &&
         occId > 10);
+
         if (employeeProfile != null) 
         {
             careLogs = await _context.CareGroomingLogs

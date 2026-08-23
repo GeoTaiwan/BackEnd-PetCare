@@ -1,0 +1,73 @@
+@model IEnumerable<TrainingCenterFinalProject.Models.Institution>
+
+@{
+    // ViewData["Title"] = "Index";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-outline-primary">新增機構</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InstitutionType.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LicenseNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Phone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InstitutionStatus.StatusName)
+            </th>
+            <th>
+                負責人@(@Html.DisplayNameFor(model => model.Owner.Name))
+            </th>
+            
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.InstitutionType.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.LicenseNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Phone)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Address)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.InstitutionStatus.StatusName)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Owner.Name)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.InstitutionID" class="btn btn-outline-warning">編輯</a>
+                <form asp-action="Delete" asp-route-id="@item.InstitutionID" method="post" class="d-inline-block">
+                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('確定要刪除嗎？(包含相關的預約、授權記錄、就業記錄和任務安排)')">刪除</button>
+                </form>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

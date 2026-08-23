@@ -1,0 +1,90 @@
+@model TrainingCenterFinalProject.Models.Institution
+
+@{
+    // ViewData["Title"] = "Details";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="container">
+    <h3 class="text-danger">請等待審核通過</h3>
+    <hr />
+    <div class="row fs-3">
+        @*左半*@
+        <div class="col-lg-6">
+            <div class="row mb-3">
+				<div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.InstitutionID)</span>
+                </div>
+				<div class="col-8">
+                    <span>@Html.DisplayFor(model => model.InstitutionID)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.Name)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.Name)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.LicenseNumber)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.LicenseNumber)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.Phone)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.Phone)</span>
+                </div>
+            </div>
+        </div>
+        @*右半*@
+        <div class="col-lg-6">
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.Address)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.Address)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.InstitutionStatus.StatusName)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.InstitutionStatus.StatusName)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">@Html.DisplayNameFor(model => model.InstitutionType.Name)</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.InstitutionType.Name)</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-4">
+                    <span class="fw-bold">負責人@(@Html.DisplayNameFor(model => model.Owner.Name))</span>
+                </div>
+                <div class="col-8">
+                    <span>@Html.DisplayFor(model => model.Owner.Name)</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.InstitutionID" asp-route-fromDetails="true" class="btn btn-warning">編輯</a>
+    @* <a asp-action="Index" class="btn btn-info">返回列表</a> *@
+</div>
