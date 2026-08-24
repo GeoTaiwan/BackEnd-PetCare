@@ -1,0 +1,44 @@
+﻿@model IEnumerable<TrainingCenterFinalProject.Models.Institution>
+
+<h2>合作機構一覽</h2>
+
+<!-- 篩選按鈕區塊 -->
+<div class="mb-4">
+    <a asp-action="IndexForReservation" asp-route-typeId=""
+       class="btn @(string.IsNullOrEmpty(ViewBag.CurrentType) ? "btn-primary" : "btn-outline-primary")">
+        全部機構
+    </a>
+    <a asp-action="IndexForReservation" asp-route-typeId="IT01"
+       class="btn @(ViewBag.CurrentType == "IT01" ? "btn-primary" : "btn-outline-primary")">
+        🏥 動物醫院
+    </a>
+    <a asp-action="IndexForReservation" asp-route-typeId="IT02"
+       class="btn @(ViewBag.CurrentType == "IT02" ? "btn-primary" : "btn-outline-primary")">
+        ✂️ 美容與照護
+    </a>
+</div>
+
+<!-- 機構列表 (建議用網格卡片呈現) -->
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">@item.Name</h5>
+                    <p class="card-text">
+                        地址：@item.Address <br />
+                        電話：@item.Phone
+                    </p>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                    <!-- 最重要的部分：透過 asp-route-instId 將機構 ID 傳遞給預約頁面 -->
+                    <a asp-controller="Appointment" asp-action="Create" asp-route-instid="@item.InstitutionID"
+                       class="btn btn-success w-100">
+                        立即預約
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -28,6 +28,26 @@ public class InstitutionController : BaseController
             .ToListAsync();
         return View(institutions);
     }
+    //使用者查詢可預約機構用
+    public async Task<IActionResult> IndexForReservation(string? typeId)
+    {
+        // 1. 建立一個 IQueryable 查詢基底，先不要直接 ToList()，這樣效能最好
+        var query = _context.Institutions.AsQueryable();
+
+        // 2. 如果使用者有傳入篩選條件，就加上 Where 過濾
+        if (!string.IsNullOrEmpty(typeId))
+        {
+            query = query.Where(i => i.TypeId == typeId);
+        }
+
+        // 3. 執行查詢並把資料拉回記憶體
+        var institutions = await query.ToListAsync();
+
+        // 4. 將目前的篩選條件存入 ViewBag，為了讓前端畫面能維持「目前選取」的狀態
+        ViewBag.CurrentType = typeId;
+
+        return View(institutions);
+    }
 
     public IActionResult InstitutionManage(string? id)
     {

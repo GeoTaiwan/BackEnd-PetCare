@@ -27,12 +27,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Status)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Pet)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Institution)
-            </th>
+           
             <th></th>
         </tr>
     </thead>
@@ -54,12 +49,7 @@
             <td>
                 @Html.DisplayFor(model => item.Status)
             </td>
-            <td>
-                @Html.DisplayFor(model => item.Pet)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Institution)
-            </td>
+           
             <td>
                 <a asp-action="Edit" asp-route-id="@item.AppointmentID">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.AppointmentID">Details</a> |
