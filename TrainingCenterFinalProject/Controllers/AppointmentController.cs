@@ -1,9 +1,10 @@
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using TrainingCenterFinalProject.Models;
-using TrainingCenterFinalProject.Data;
 using PetCare.Controllers;
+using TrainingCenterFinalProject.Data;
+using TrainingCenterFinalProject.Models;
 
 public class AppointmentController : BaseController
 {
@@ -12,6 +13,19 @@ public class AppointmentController : BaseController
     public AppointmentController(PetCareDbContext context)
     {
         _context = context;
+    }
+
+    private async Task getList()
+    {
+        //取得使用者寵物清單
+        var pets = await _context.Pets
+            .Where(p => p.OwnerID == LoginUserId)
+            .ToListAsync();
+        ViewBag.PetList = new SelectList(pets, "PetID", "Name");
+        var institutions = await _context.Institutions
+            .Where(i => i.StatusId == "S01")
+            .ToListAsync();
+        ViewBag.InstitutionList = new SelectList(institutions, "InstitutionID", "Name");
     }
 
     // GET: APPOINTMENTS
@@ -54,31 +68,26 @@ public class AppointmentController : BaseController
         return View(appointment);
     }
 
-    // GET: APPOINTMENTS/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
+    // 合併後的 GET: APPOINTMENTS/Create
     [HttpGet]
     public async Task<IActionResult> Create(string? instId)
     {
         // 一般使用者預約用
-        // 如果沒有傳入機構ID (例如使用者是自己手打網址進來的)，可以導回列表頁
         if (string.IsNullOrEmpty(instId))
         {
             TempData["ErrorMessage"] = "請先選擇要預約的機構！";
             return RedirectToAction("IndexForReservation", "Institution");
         }
 
-        // (選擇性 UX 提升) 查詢這家機構的名字，用 ViewBag 傳給畫面顯示，讓使用者安心
+        // 🌟 必須呼叫這個，畫面才會有 PetList 和 InstitutionList！
+        await getList();
+
         var selectedInst = await _context.Institutions.FindAsync(instId);
         if (selectedInst != null)
         {
             ViewBag.InstitutionName = selectedInst.Name;
         }
 
-        // 建立一個新的 Appointment 模型，並預先塞入使用者選好的機構 ID
         var model = new Appointment
         {
             InstitutionID = instId
