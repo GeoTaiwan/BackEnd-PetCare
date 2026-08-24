@@ -31,7 +31,8 @@ namespace TrainingCenterFinalProject.Models
         [Display(Name = "執照號碼")]
         public string LicenseNumber { get; set; } = null!;
 
-        [Display(Name = "開始時間")]
+        [Display(Name = "任職日期")]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}")]
         public DateTime? StartDate { get; set; }
 
         [Display(Name = "結束時間")]

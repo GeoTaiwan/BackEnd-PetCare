@@ -95,6 +95,7 @@
         @* <a asp-action="Index" class="btn btn-info">返回列表</a> *@
     </div>
 </div>
+@*員工區*@
 <div class="container">
     <a asp-action="Create" asp-controller="Employment" asp-route-instid="@Model.InstitutionID" asp-route-frominstmanage="true" class="btn btn-info">新增員工</a>
     @if (Model.Employments.Any())
@@ -103,13 +104,24 @@
 
         @foreach(var item in Model.Employments)
         {
-            <div class="col">
+            <div class="col-md-6 col-lg-3">
                 <div class="card">
                     <div class="card-header">
-
+                        
                     </div>
                     <div class="card-body">
-                        @Html.DisplayFor(model=>item.UserProfile.Name)
+                        <div class="row">
+                            <div class="col">@Html.DisplayNameFor(model => item.UserProfile.Name)</div>
+                            <div class="col">@Html.DisplayFor(model => item.UserProfile.Name)</div>
+                        </div>
+                        <div class="row">
+                            <div class="col">@Html.DisplayNameFor(model => item.UserProfile.Phone)</div>
+                            <div class="col">@Html.DisplayFor(model => item.UserProfile.Phone)</div>
+                        </div>
+                        <div class="row">
+                            <div class="col">@Html.DisplayNameFor(model => item.StartDate)</div>
+                            <div class="col">@Html.DisplayFor(model => item.StartDate)</div>
+                        </div>
                     </div>
                 </div>
             </div>
