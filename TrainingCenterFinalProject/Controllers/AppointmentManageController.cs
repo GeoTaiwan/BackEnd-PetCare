@@ -18,7 +18,14 @@ public class AppointmentManageController : BaseController
     // GET: APPOINTMENTS
     public async Task<IActionResult> Index()    
     {
-        return View(await _context.Appointments.ToListAsync());
+        // 1. 取得目前登入者的 InstitutionID
+        string? instID = await _context.Employments
+            .Where(e => e.UserID == LoginUserId)
+            .Select(e => e.InstitutionID)
+            .FirstOrDefaultAsync();
+        return View(await _context.Appointments
+            .Where(a => a.InstitutionID == instID)
+            .ToListAsync());
     }
 
     // GET: APPOINTMENTS/Details/5

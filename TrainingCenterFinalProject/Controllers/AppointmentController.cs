@@ -31,31 +31,21 @@ public class AppointmentController : BaseController
     // GET: APPOINTMENTS
     public async Task<IActionResult> Index(int petid=0)    
     {
-        // 修正為若petid為0表示為機構員工登入，則抓出該機構員工的所有預約清單；若petid不為0，則抓出該寵物的所有預約清單
-        
-      
-            var appointments = await _context.Appointments
-                .Where(a => a.PetID == petid)
-                .OrderByDescending(a=> a.ApptDateTime)
-                .ToListAsync();
-            
-            //抓出目前使用者的InstitutionID
-            string? instID = await _context.Employments
-            .Where(e => e.UserID == LoginUserId)
-            .Select(e => e.InstitutionID)
-            .FirstOrDefaultAsync();
+        //機構用的Appointment已經在AppointmentManageController裡面做了，所以這裡只要抓出使用者的寵物預約即可
 
-            // 2. 防呆檢查：如果該登入者不是員工（找不到 InstitutionID）
-            if (string.IsNullOrEmpty(instID) && petid != 0)
-            {
-                // 視你的需求決定，可以回傳錯誤訊息，或回傳空的預約清單
-                return View(appointments);
-            }
-            var app = await _context.Appointments
-            .Where(a => a.InstitutionID == instID)
-            .ToListAsync();
-            return View(app);
-        
+        var appointments = await _context.Appointments
+                .OrderByDescending(a => a.ApptDateTime).ToListAsync();
+        if (petid != 0)
+        {
+            appointments = appointments.Where(a=>a.PetID == petid).ToList();
+            return View(appointments);
+        }
+        petid = await _context.Pets
+            .Where(p => p.OwnerID == LoginUserId)
+            .Select(p => p.PetID)
+            .FirstOrDefaultAsync();
+        appointments = appointments.Where(a => a.PetID == petid).ToList();
+        return View(appointments);
         
     }
 
