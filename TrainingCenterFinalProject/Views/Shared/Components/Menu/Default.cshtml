@@ -18,4 +18,29 @@
             </a>
         </li>
     }
+    @*若使用者具多重身份，則Layout頁面會提供一個切換身份的功能，讓使用者可以在一般使用者(Member)與機構員工之間切換
+        因為切換成Member後會無法再存取切換身份的功能，故須先暫存在一個Session中，等切換回機構員工後再取出Session中的值，並刪除該Session
+        判斷式加入原Session中是否有值，若有值則顯示切換身份的功能，若無則不顯示
+    *@
+@*
+        改用 Claims 判斷：
+        從使用者的 Claims 中尋找是否有 "OriginalRole" 的宣告。
+        若有值，代表他目前是 Member，但是從機構員工切換過來的。
+    *@
+@{
+    var originalRole = User.Claims.FirstOrDefault(c => c.Type == "OriginalRole")?.Value ?? "";
+}
+
+@* 判斷條件：只要他具備員工身分，或是他擁有 originalRole (切換狀態中)，就顯示按鈕 *@
+@if (User.IsInRole("Vet") || User.IsInRole("Beauty") || User.IsInRole("Nanny") ||
+     User.IsInRole("VetManage") || User.IsInRole("BeautyManage") || User.IsInRole("NannyManage") ||
+     !string.IsNullOrEmpty(originalRole))
+{
+    <li class="nav-item">
+        <a asp-controller="Account" asp-action="SwitchRole" asp-route-returnUrl="@ViewContext.HttpContext.Request.Path" class="nav-link">
+            <!-- 也可以在這裡做個小優化，根據狀態顯示不同的文字 -->
+            @(string.IsNullOrEmpty(originalRole) ? "切換為一般會員" : "切換回員工身分")
+        </a>
+    </li>
+}
 @* </div> *@

@@ -519,5 +519,68 @@ namespace TrainingCenterFinalProject.Controllers
             return datePrefix + nextSequence.ToString("D4");
         }
 
+
+        // 加入 [Authorize] 確保只有已登入的使用者可以觸發此功能
+        [Authorize]
+        public async Task<IActionResult> SwitchRole(string returnUrl = "/")
+        {
+            // 1. 取得目前登入使用者的 ClaimsIdentity
+            var identity = User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                var currentRole = identity.FindFirst(ClaimTypes.Role)?.Value;
+
+                // 尋找是否有名為 "OriginalRole" 的自訂 Claim
+                var originalRoleClaim = identity.FindFirst("OriginalRole");
+
+                // 情境 A：目前是員工 (非 Member)，準備切換成 Member
+                if (currentRole != null && currentRole != "Member")
+                {
+                    // 寫入一個新的 Claim 記錄原本的身分
+                    identity.AddClaim(new Claim("OriginalRole", currentRole));
+
+                    // 將主要角色切換為 Member
+                    await UpdateUserRole(identity, "Member");
+                }
+                // 情境 B：目前是 Member，且帶有 OriginalRole (代表他是切換過來的員工)，準備切換回去
+                else if (currentRole == "Member" && originalRoleClaim != null)
+                {
+                    var oldRole = originalRoleClaim.Value;
+
+                    // 移除 OriginalRole Claim
+                    identity.RemoveClaim(originalRoleClaim);
+
+                    // 將主要角色切換回原本的員工身分
+                    await UpdateUserRole(identity, oldRole);
+                }
+            }
+
+            // 使用 LocalRedirect 避免未知的外部網址導向風險 (Open Redirect 攻擊)
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return LocalRedirect(returnUrl);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        // 更新使用者的 Role Claim (改為非同步 Task)
+        private async Task UpdateUserRole(ClaimsIdentity identity, string newRole)
+        {
+            // 1. 移除舊的 Role Claim
+            var oldRoleClaim = identity.FindFirst(ClaimTypes.Role);
+            if (oldRoleClaim != null)
+            {
+                identity.RemoveClaim(oldRoleClaim);
+            }
+
+            // 2. 新增新的 Role Claim
+            identity.AddClaim(new Claim(ClaimTypes.Role, newRole));
+
+            // 3. 重新簽發 Cookie，覆蓋舊的憑證讓新的 Role 與 Claim 生效
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(identity));
+        }
+
     }
 }

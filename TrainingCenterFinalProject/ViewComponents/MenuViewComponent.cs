@@ -36,16 +36,50 @@ namespace TrainingCenterFinalProject.ViewComponents
                     userAuthLevel = userProfile.Authorization;
                 }
             }
-
+            // 因為使用者可能同時為一般使用者或機構員工
+            // 若使用者同時擁有多個身份，則以一個全域變數判斷使用者目前選擇身份
+            // 再依據該身份的權限等級來決定顯示哪些選單
+            // AuthLevel: 0 = 一般使用者, 1 = 機構員工, 9 = 管理員
+            // 使用者登入後，會在 Session 中存放一個變數 "CurrentAuthLevel"，用來表示使用者目前選擇的身份
+            // 若使用者具多重身份，則Layout頁面會提供一個切換身份的功能，讓使用者可以在一般使用者與機構員工之間切換
             // 3. 從資料庫撈出：(a) 設定為顯示 且 (b) 權限等級小於等於該使用者的選單
-            var menus = await _db.SysMenus
-                .Where(m => m.IsVisible == true && m.RequiredAuthLevel <= userAuthLevel)
+            //    4. 若使用者是管理員，則僅顯示管理員選單
+            // 若使用者同時擁有多個身份，且切換成一般使用者身份，則僅顯示一般使用者選單
+            // 3. 判斷使用者目前是否處於「切換為 Member」的狀態
+            // 使用 HttpContext.User.HasClaim 可以快速判斷是否存在某個 Claim
+            bool isSwitchedToMember = HttpContext.User.HasClaim(c => c.Type == "OriginalRole");
+
+            // 4. 準備選單查詢 (先過濾出 IsVisible == true)
+            var menuQuery = _db.SysMenus.Where(m => m.IsVisible == true).AsQueryable();
+
+            // 5. 根據身分狀態動態附加 Where 條件
+            if (isSwitchedToMember)
+            {
+                // 如果有 OriginalRole (代表他現在切換成一般會員了)
+                // 則強制只顯示一般使用者的選單
+                menuQuery = menuQuery.Where(m => m.RequiredAuthLevel == 0);
+            }
+            else
+            {
+                // 如果沒有 OriginalRole (代表他是原本的正常狀態)
+                if (userAuthLevel == 9)
+                {
+                    // 若使用者是管理員，僅顯示管理員選單
+                    menuQuery = menuQuery.Where(m => m.RequiredAuthLevel == 9);
+                }
+                else
+                {
+                    // 顯示權限等級小於等於該使用者的選單 (例如員工1可看到0與1)
+                    menuQuery = menuQuery.Where(m => m.RequiredAuthLevel <= userAuthLevel && m.RequiredAuthLevel > 0);
+                }
+            }
+
+            // 6. 執行查詢並排序
+            var menus = await menuQuery
                 .OrderBy(m => m.SortOrder)
                 .ToListAsync();
-            if (userAuthLevel == 9) { 
-                menus = menus.Where(m => m.RequiredAuthLevel == 9).ToList(); // 如果是管理員，僅顯示管理員選單
-            }
-            // 4. 將選單資料傳遞給專屬的 Partial View
+
+            // 7. 將選單資料傳遞給專屬的 Partial View
             return View(menus);
         }
     }

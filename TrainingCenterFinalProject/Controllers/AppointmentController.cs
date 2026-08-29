@@ -31,11 +31,9 @@ public class AppointmentController : BaseController
     // GET: APPOINTMENTS
     public async Task<IActionResult> Index(int petid=0)    
     {
-        if (petid == 0) { 
-        return NotFound();
-        }
-        if (petid != 0)
-        {
+        // 修正為若petid為0表示為機構員工登入，則抓出該機構員工的所有預約清單；若petid不為0，則抓出該寵物的所有預約清單
+        
+      
             var appointments = await _context.Appointments
                 .Where(a => a.PetID == petid)
                 .OrderByDescending(a=> a.ApptDateTime)
@@ -48,7 +46,7 @@ public class AppointmentController : BaseController
             .FirstOrDefaultAsync();
 
             // 2. 防呆檢查：如果該登入者不是員工（找不到 InstitutionID）
-            if (string.IsNullOrEmpty(instID))
+            if (string.IsNullOrEmpty(instID) && petid != 0)
             {
                 // 視你的需求決定，可以回傳錯誤訊息，或回傳空的預約清單
                 return View(appointments);
@@ -57,9 +55,7 @@ public class AppointmentController : BaseController
             .Where(a => a.InstitutionID == instID)
             .ToListAsync();
             return View(app);
-        }
         
-        return BadRequest();
         
     }
 
@@ -134,6 +130,7 @@ public class AppointmentController : BaseController
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Details),"Pet", new { petid = appointment.PetID });
         }
+        await getList(); // 如果驗證失敗，重新取得下拉選單資料
         return View(appointment);
     }
 

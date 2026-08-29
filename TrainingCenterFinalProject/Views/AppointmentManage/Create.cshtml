@@ -1,0 +1,68 @@
+@model TrainingCenterFinalProject.Models.Appointment
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Appointment</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="PetID" class="control-label"></label>
+                @* <input asp-for="PetID" class="form-control" /> *@
+				<select asp-for="PetID" class="form-control" asp-items="ViewBag.PetList"></select>
+                <span asp-validation-for="PetID" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="InstitutionID" class="control-label"></label>
+                @* <input asp-for="InstitutionID" class="form-control" /> *@
+                <select asp-for="InstitutionID" class="form-control" asp-items="ViewBag.InstitutionList"></select>
+                <span asp-validation-for="InstitutionID" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ServiceType" class="control-label"></label>
+                <input asp-for="ServiceType" class="form-control" />
+                <span asp-validation-for="ServiceType" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ApptDateTime" class="control-label"></label>
+                <input asp-for="ApptDateTime" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                <span asp-validation-for="ApptDateTime" class="text-danger"></span>
+            </div>
+
+          @*   <div class="mb-3">
+                <label asp-for="Status" class="control-label"></label>
+                <input asp-for="Status" class="form-control" />
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Pet" class="control-label"></label>
+                <input asp-for="Pet" class="form-control" />
+                <span asp-validation-for="Pet" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Institution" class="control-label"></label>
+                <input asp-for="Institution" class="form-control" />
+                <span asp-validation-for="Institution" class="text-danger"></span>
+            </div> *@
+            <div class="mb-3">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="IndexForReservation" asp-controller="Institution" class="btn btn-info">回預約列表</a>
+</div>
