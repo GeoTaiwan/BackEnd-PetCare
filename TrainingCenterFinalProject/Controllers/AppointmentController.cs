@@ -29,25 +29,37 @@ public class AppointmentController : BaseController
     }
 
     // GET: APPOINTMENTS
-    public async Task<IActionResult> Index()    
+    public async Task<IActionResult> Index(int petid=0)    
     {
-        //抓出目前使用者的InstitutionID
-        string? instID = await _context.Employments
-        .Where(e => e.UserID == LoginUserId)
-        .Select(e => e.InstitutionID)
-        .FirstOrDefaultAsync();
-
-        // 2. 防呆檢查：如果該登入者不是員工（找不到 InstitutionID）
-        if (string.IsNullOrEmpty(instID))
-        {
-            // 視你的需求決定，可以回傳錯誤訊息，或回傳空的預約清單
-            return View(new List<Appointment>());
+        if (petid == 0) { 
+        return NotFound();
         }
+        if (petid != 0)
+        {
+            var appointments = await _context.Appointments
+                .Where(a => a.PetID == petid)
+                .ToListAsync();
+            
+            //抓出目前使用者的InstitutionID
+            string? instID = await _context.Employments
+            .Where(e => e.UserID == LoginUserId)
+            .Select(e => e.InstitutionID)
+            .FirstOrDefaultAsync();
 
-        var app = await _context.Appointments
-            .Where(a=>a.InstitutionID==instID)
+            // 2. 防呆檢查：如果該登入者不是員工（找不到 InstitutionID）
+            if (string.IsNullOrEmpty(instID))
+            {
+                // 視你的需求決定，可以回傳錯誤訊息，或回傳空的預約清單
+                return View(appointments);
+            }
+            var app = await _context.Appointments
+            .Where(a => a.InstitutionID == instID)
             .ToListAsync();
-        return View(app);
+            return View(app);
+        }
+        
+        return BadRequest();
+        
     }
 
     // GET: APPOINTMENTS/Details/5
@@ -101,7 +113,7 @@ public class AppointmentController : BaseController
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("AppointmentID,PetID,InstitutionID,ServiceType,ApptDateTime,Status,Pet,Institution")] Appointment appointment)
+    public async Task<IActionResult> Create(Appointment appointment)
     {
         if (ModelState.IsValid)
         {

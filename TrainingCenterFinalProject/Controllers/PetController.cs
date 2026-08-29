@@ -44,6 +44,7 @@ public class PetController : Controller
             .Include(p => p.PetWeights.OrderByDescending(w=>w.RecordDate))
             .Include(p=>p.MedicalRecords.OrderByDescending(m=>m.VisitDate))
             .Include(p=>p.CareGroomingLogs.OrderByDescending(l=>l.LogDate)).ThenInclude(l=>l.Staff) //關聯CareGroomingLog的Staff
+            .Include(p=>p.Appointments.OrderByDescending(a=>a.ApptDateTime)).ThenInclude(a=>a.Institution) //關聯Appointments
             .FirstOrDefaultAsync(m => m.PetID == petid);
         if (pet == null)
         {
