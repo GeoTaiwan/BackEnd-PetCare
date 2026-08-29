@@ -38,6 +38,7 @@ public class AppointmentController : BaseController
         {
             var appointments = await _context.Appointments
                 .Where(a => a.PetID == petid)
+                .OrderByDescending(a=> a.ApptDateTime)
                 .ToListAsync();
             
             //抓出目前使用者的InstitutionID
@@ -108,6 +109,14 @@ public class AppointmentController : BaseController
         return View(model);
     }
 
+    // 產生AppointmentID的方法，長度為19個字元，ex：A20260803-I00001-001，A開頭，後面接日期、機構ID、流水號
+    private string GenerateAppointmentID(string institutionID)
+    {
+        var datePart = DateTime.Now.ToString("yyyyMMdd");
+        var serialNumber = _context.Appointments.Count(a => a.InstitutionID == institutionID && a.ApptDateTime.Date == DateTime.Today) + 1;
+        return $"A{datePart}-{institutionID}-{serialNumber:D3}";
+    }
+
     // POST: APPOINTMENTS/Create
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -115,11 +124,15 @@ public class AppointmentController : BaseController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Appointment appointment)
     {
+        ModelState.Remove("AppointmentID"); // 移除 AppointmentID 的驗證，因為我們會自動生成它
+        ModelState.Remove("Status"); // 移除 Status 的驗證，因為我們會自動生成它
+        appointment.AppointmentID = GenerateAppointmentID(appointment.InstitutionID);
+        appointment.Status = "已申請待確認"; // 預設狀態為 Pending
         if (ModelState.IsValid)
         {
             _context.Add(appointment);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details),"Pet", new { petid = appointment.PetID });
         }
         return View(appointment);
     }
