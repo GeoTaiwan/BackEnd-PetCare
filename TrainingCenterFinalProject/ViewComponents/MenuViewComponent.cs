@@ -67,10 +67,13 @@ namespace TrainingCenterFinalProject.ViewComponents
                     // 若使用者是管理員，僅顯示管理員選單
                     menuQuery = menuQuery.Where(m => m.RequiredAuthLevel == 9);
                 }
-                else
+                else if (userAuthLevel > 0)
                 {
                     // 顯示權限等級小於等於該使用者的選單 (例如員工1可看到0與1)
                     menuQuery = menuQuery.Where(m => m.RequiredAuthLevel <= userAuthLevel && m.RequiredAuthLevel > 0);
+                }
+                else { 
+                    menuQuery = menuQuery.Where(m => m.RequiredAuthLevel == 0);
                 }
             }
 
