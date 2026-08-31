@@ -35,7 +35,7 @@ public class AppointmentManageController : BaseController
             .Include(a=>a.Institution)
             .Include(a => a.Employee)
             .Where(a => a.InstitutionID == instID)
-            .OrderByDescending(a => a.ApptDateTime)
+            .OrderByDescending(a => a.ApplyTime)
             .ToListAsync();
         return View(app);
     }
