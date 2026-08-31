@@ -113,9 +113,7 @@
                             }
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-12 card-text"><small class="text-body-secondary">@Html.Raw((Model.SpecialNotes ?? "").Replace("\r\n", "<br>"))</small></div>
-                    </div>
+                    
                     <div class="row">
                         <div class="col-4 card-text fw-bold">近期預約紀錄</div>
 
@@ -134,6 +132,9 @@
                                 <span class="text-muted">目前尚無預約紀錄</span>
                             }
                         </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 card-text"><small class="text-body-secondary">@Html.Raw((Model.SpecialNotes ?? "").Replace("\r\n", "<br>"))</small></div>
                     </div>
                 </div>
             </div>

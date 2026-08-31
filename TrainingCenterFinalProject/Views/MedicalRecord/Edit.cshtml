@@ -88,7 +88,7 @@
 	@*右半*@
 	<div class="col-md-6">
 		<div class="container">
-			@if (Model.TestResultsFile != null)
+			@* @if (Model.TestResultsFile != null)
 			{
 				<div class="mb-3">
 					<label class="control-label">檔案預覽</label>
@@ -103,8 +103,11 @@
 					<br />
 					<p>尚無檔案可預覽</p>
 				</div>
+			} *@
+			@{
+				var profilePhotoUrl = String.IsNullOrEmpty(Model.Pet.ProfilePhotoUrl) ? "/images/cat.jpg" : Model.Pet.ProfilePhotoUrl;
 			}
-			<img src="@(Model.Pet.ProfilePhotoUrl)" class="img-fluid" alt="Pet Profile Photo" />
+			<img src="@(profilePhotoUrl)" class="img-fluid" alt="Pet Profile Photo" />
 		</div>
 	</div>
 </div>
