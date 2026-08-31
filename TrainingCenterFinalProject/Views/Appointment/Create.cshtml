@@ -1,12 +1,12 @@
 @model TrainingCenterFinalProject.Models.Appointment
 
 @{
-    ViewData["Title"] = "Create";
+    // ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1>@ViewData["Title"]</h1>
 
-<h4>Appointment</h4>
+@* <h4>Appointment</h4> *@
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -59,7 +59,7 @@
                 <span asp-validation-for="Institution" class="text-danger"></span>
             </div> *@
             <div class="mb-3">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="確定新增" class="btn btn-primary" />
             </div>
         </form>
     </div>
