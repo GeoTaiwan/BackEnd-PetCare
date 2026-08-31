@@ -27,7 +27,18 @@ namespace TrainingCenterFinalProject.Migrations
                     b.Property<string>("AppointmentID")
                         .HasColumnType("nchar(20)");
 
+                    b.Property<DateTime>("ApplyTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
                     b.Property<DateTime>("ApptDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmployeeID")
+                        .HasColumnType("nchar(13)");
+
+                    b.Property<DateTime?>("HandleTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("InstitutionID")
@@ -48,6 +59,8 @@ namespace TrainingCenterFinalProject.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.HasKey("AppointmentID");
+
+                    b.HasIndex("EmployeeID");
 
                     b.HasIndex("InstitutionID");
 
@@ -731,6 +744,11 @@ namespace TrainingCenterFinalProject.Migrations
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.Appointment", b =>
                 {
+                    b.HasOne("TrainingCenterFinalProject.Models.UserProfile", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("TrainingCenterFinalProject.Models.Institution", "Institution")
                         .WithMany("Appointments")
                         .HasForeignKey("InstitutionID")
@@ -742,6 +760,8 @@ namespace TrainingCenterFinalProject.Migrations
                         .HasForeignKey("PetID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Employee");
 
                     b.Navigation("Institution");
 

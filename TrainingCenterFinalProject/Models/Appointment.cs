@@ -26,8 +26,19 @@ namespace TrainingCenterFinalProject.Models
         public string ServiceType { get; set; } = null!;
 
         [Required]
-        [Display(Name = "預約的日期與時間")]
+        [Display(Name = "預約時間")]
+        [DisplayFormat(DataFormatString = "{0:yy/MM/dd HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime ApptDateTime { get; set; }
+        [Required]
+        [Display(Name = "申請時間")]
+        [DisplayFormat(DataFormatString = "{0:yy/MM/dd HH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime ApplyTime { get; set; }
+        
+        [Display(Name = "處理時間")]
+        [DisplayFormat(DataFormatString = "{0:yy/MM/dd HH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime? HandleTime { get; set; }
+        [Display(Name = "處理員工ID")]
+        public string? EmployeeID { get; set; }
 
         [Required]
         [StringLength(20)]
@@ -40,5 +51,7 @@ namespace TrainingCenterFinalProject.Models
 
         [ForeignKey(nameof(InstitutionID))]
         public virtual Institution? Institution { get; set; }
+        [ForeignKey(nameof(EmployeeID))]
+        public virtual UserProfile? Employee { get; set; }
     }
 }

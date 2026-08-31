@@ -96,6 +96,11 @@ namespace TrainingCenterFinalProject.Data
             modelBuilder.Entity<UserCredentialDetail>()
                 .Property(uc => uc.CreatedDate)
                 .HasDefaultValueSql("GETDATE()");
+
+            modelBuilder.Entity<Appointment>()
+                .Property(a => a.ApplyTime)
+                .HasDefaultValueSql("GETDATE()");
+
             // --- Seed Data 初始資料 ---
             modelBuilder.Entity<SysMenu>().HasData(
                 new SysMenu { MenuId = 1, MenuName = "首頁", ControllerName = "Home", ActionName = "Index", SortOrder = 1, RequiredAuthLevel = 0, IsVisible = true },

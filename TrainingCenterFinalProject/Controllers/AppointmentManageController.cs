@@ -18,15 +18,22 @@ public class AppointmentManageController : BaseController
     // GET: APPOINTMENTS
     public async Task<IActionResult> Index()    
     {
+        
         // 1. 取得目前登入者的 InstitutionID
         string? instID = await _context.Employments
             .Where(e => e.UserID == LoginUserId)
             .Select(e => e.InstitutionID)
             .FirstOrDefaultAsync();
 
+        ViewBag.InstName = await _context.Institutions
+            .Where(i => i.InstitutionID == instID)
+            .Select(i => i.Name)
+            .FirstOrDefaultAsync();
+
         var app = await _context.Appointments
             .Include(a=>a.Pet)
             .Include(a=>a.Institution)
+            .Include(a => a.Employee)
             .Where(a => a.InstitutionID == instID)
             .OrderByDescending(a => a.ApptDateTime)
             .ToListAsync();
@@ -48,7 +55,8 @@ public class AppointmentManageController : BaseController
         {
             return NotFound();
         }
-
+        appointment.HandleTime = DateTime.Now;
+        appointment.EmployeeID = LoginUserId;
         appointment.Status = "預約成功";
         _context.Update(appointment);
         await _context.SaveChangesAsync();
@@ -71,7 +79,8 @@ public class AppointmentManageController : BaseController
         {
             return NotFound();
         }
-
+        appointment.HandleTime = DateTime.Now;
+        appointment.EmployeeID = LoginUserId;
         appointment.Status = "預約失敗";
         _context.Update(appointment);
         await _context.SaveChangesAsync();
