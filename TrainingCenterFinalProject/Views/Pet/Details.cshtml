@@ -9,9 +9,9 @@
 </div>
 <div class="container align-content-center">
 
-    <div class="card mb-3">
+    <div class="card">
         <div class="row g-0">
-            <div class="col col-md-5">
+            <div class="col col-12 col-md-5">
                 @if (hasPhoto)
                 {
                     <img src="@Model.ProfilePhotoUrl?v=@DateTime.Now.Ticks" class="img-fluid rounded-start" alt="...">
@@ -21,31 +21,32 @@
                     <img src="~/images/cat.jpg" class="img-fluid rounded-start" alt="...">
                 }
             </div>
+
             <div class="col col-md-7">
                 <div class="card-body">
                     <h5 class="card-title text-center">@Html.DisplayName(Model.Name)</h5>
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.Species)</div>
                         <div class="col-8 card-text">@Html.DisplayName(Model.Species)</div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.Breed)</div>
                         <div class="col-8 card-text">@Html.DisplayName(Model.Breed)</div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.Gender)</div>
                         <div class="col-8 card-text">@Html.DisplayName(Model.Gender)</div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.DateOfBirth)</div>
                         <div class="col-8 card-text">@Html.DisplayFor(m => m.DateOfBirth)</div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.MicrochipNo)</div>
                         <div class="col-8 card-text">@Html.DisplayFor(m => m.MicrochipNo)</div>
                     </div>
 
-                    <div class="row">
+                    <div class="row mb-3">
                         @* 使用 FirstOrDefault() 讓 DisplayNameFor 可以安全地抓到屬性名稱 (不會發生 Null 例外) *@
                         <div class="col-4 card-text fw-bold">@Html.DisplayNameFor(m => m.PetWeights.FirstOrDefault().Weight)</div>
 
@@ -72,7 +73,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col-4 card-text fw-bold">最新病歷紀錄</div>
 
                         <div class="col-8 card-text">
@@ -94,7 +95,7 @@
                             }
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col-4 card-text fw-bold">最新照護紀錄</div>
 
                         <div class="col-8 card-text">
@@ -114,7 +115,7 @@
                         </div>
                     </div>
                     
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col-4 card-text fw-bold">近期預約紀錄</div>
 
                         <div class="col-8 card-text">

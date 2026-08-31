@@ -18,33 +18,42 @@ public class AppointmentController : BaseController
     private async Task getList()
     {
         //取得使用者寵物清單
-        var pets = await _context.Pets
-            .Where(p => p.OwnerID == LoginUserId)
-            .ToListAsync();
-        ViewBag.PetList = new SelectList(pets, "PetID", "Name");
+        await getPetList();
         var institutions = await _context.Institutions
             .Where(i => i.StatusId == "S01")
             .ToListAsync();
         ViewBag.InstitutionList = new SelectList(institutions, "InstitutionID", "Name");
     }
 
+    private async Task getPetList(int petid = 0)
+    {
+        var pets = await _context.Pets
+            .Where(p => p.OwnerID == LoginUserId)
+            .ToListAsync();
+        ViewBag.PetList = new SelectList(pets, "PetID", "Name",petid>0?petid:0);
+    }
+
     // GET: APPOINTMENTS
     public async Task<IActionResult> Index(int petid=0)    
     {
         //機構用的Appointment已經在AppointmentManageController裡面做了，所以這裡只要抓出使用者的寵物預約即可
-
+        await getPetList(petid);
         var appointments = await _context.Appointments
+                .Include(a => a.Pet)
+                .Include(a => a.Institution)
+                .Where(a => a.Pet.OwnerID == LoginUserId)
                 .OrderByDescending(a => a.ApptDateTime).ToListAsync();
         if (petid != 0)
         {
             appointments = appointments.Where(a=>a.PetID == petid).ToList();
             return View(appointments);
         }
-        petid = await _context.Pets
-            .Where(p => p.OwnerID == LoginUserId)
-            .Select(p => p.PetID)
-            .FirstOrDefaultAsync();
-        appointments = appointments.Where(a => a.PetID == petid).ToList();
+        //petid = await _context.Pets
+        //    .Where(p => p.OwnerID == LoginUserId)
+        //    .Select(p => p.PetID)
+        //    .FirstOrDefaultAsync();
+        //appointments = appointments.Where(a => a.PetID == petid).ToList();
+        
         return View(appointments);
         
     }
@@ -196,16 +205,17 @@ public class AppointmentController : BaseController
     // POST: APPOINTMENTS/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(string? appointmentid)
+    public async Task<IActionResult> DeleteConfirmed(string? id)
     {
-        var appointment = await _context.Appointments.FindAsync(appointmentid);
+        var appointment = await _context.Appointments.FindAsync(id);
+        var petid = appointment.PetID.ToString();
         if (appointment != null)
         {
             _context.Appointments.Remove(appointment);
         }
 
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Index),new {petid=petid});
     }
 
     private bool AppointmentExists(string? id)

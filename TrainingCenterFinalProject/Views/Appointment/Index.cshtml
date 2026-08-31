@@ -5,21 +5,24 @@
 }
 
 <h1>@ViewData["Title"]</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@*實作下拉式選單，篩選寵物顯示預約，預設為飼主有的所有寵物*@ 
+<select id="petSelect" class="form-select mb-3" onchange="filterAppointments()" asp-items="ViewBag.PetList">
+    <option value="">所有寵物</option>
+</select>
+@* <p>
+    <a asp-action="Create">新增預約</a>
+</p> *@
 
 @if (Model.Any())
 {
-    <table class="table">
+    <table class="table table-hover">
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.PetID)
+                    @Html.DisplayNameFor(model => model.Pet.Name)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.InstitutionID)
+                    @Html.DisplayNameFor(model => model.Institution.Name)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.ServiceType)
@@ -39,10 +42,10 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(model => item.PetID)
+                        @Html.DisplayFor(model => item.Pet.Name)
                     </td>
                     <td>
-                        @Html.DisplayFor(model => item.InstitutionID)
+                        @Html.DisplayFor(model => item.Institution.Name)
                     </td>
                     <td>
                         @Html.DisplayFor(model => item.ServiceType)
@@ -55,9 +58,15 @@
                     </td>
 
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.AppointmentID">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.AppointmentID">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.AppointmentID">Delete</a>
+
+                        @*把delete改為表單*@
+                        @if (item.Status == "已申請待確認")
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.AppointmentID" class="btn btn-warning">編輯</a>
+                        <form asp-action="Delete" asp-route-id="@item.AppointmentID" method="post" class="d-inline-block" onsubmit="return confirm('確定要刪除這筆預約嗎？');">
+                            <button type="submit" class="btn btn-danger">刪除</button>
+                        </form>
+                        }
                     </td>
                 </tr>
             }
@@ -67,4 +76,17 @@
 else
 {
     <p>目前沒有預約紀錄。</p>
+}
+
+@section Scripts {
+	<script>
+		function filterAppointments() {
+			var selectedPetId = document.getElementById("petSelect").value;
+			var url = '@Url.Action("Index", "Appointment")';
+			if (selectedPetId) {
+				url += '?petid=' + selectedPetId;
+			}
+			window.location.href = url;
+		}
+	</script>
 }

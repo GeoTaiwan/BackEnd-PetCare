@@ -208,8 +208,8 @@ namespace TrainingCenterFinalProject.Data
                     var realClinic = context.Institutions.FirstOrDefault(i => i.Name == "快樂動物醫院");
                     var realSalon = context.Institutions.FirstOrDefault(i => i.Name == "毛小孩美容坊");
                     context.Appointments.AddRange(
-                        new Appointment { AppointmentID = "A20260803-I00001-01", PetID = realDog.PetID, InstitutionID = realClinic.InstitutionID, ServiceType = "健康檢查", ApptDateTime = now.AddDays(2), Status = "Confirmed" },
-                        new Appointment { AppointmentID = "A20260803-I00002-01", PetID = realCat.PetID, InstitutionID = realSalon.InstitutionID, ServiceType = "洗澡修剪", ApptDateTime = now.AddDays(5), Status = "Pending" }
+                        new Appointment { AppointmentID = "A20260803-I00001-01", PetID = realDog.PetID, InstitutionID = realClinic.InstitutionID, ServiceType = "健康檢查", ApptDateTime = now.AddDays(2), Status = "預約成功" },
+                        new Appointment { AppointmentID = "A20260803-I00002-01", PetID = realCat.PetID, InstitutionID = realSalon.InstitutionID, ServiceType = "洗澡修剪", ApptDateTime = now.AddDays(5), Status = "已申請待確認" }
                     );
                     context.SaveChanges();
                 }

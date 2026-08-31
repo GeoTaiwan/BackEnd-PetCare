@@ -20,7 +20,7 @@ namespace TrainingCenterFinalProject.Models
         [Display(Name = "提供服務的機構")]
         public string InstitutionID { get; set; } = null!;
 
-        [Required]
+        [Required(ErrorMessage = "服務項目為必填欄位")]
         [StringLength(50)]
         [Display(Name = "服務項目")]
         public string ServiceType { get; set; } = null!;
