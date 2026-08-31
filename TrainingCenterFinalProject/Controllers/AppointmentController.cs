@@ -33,6 +33,28 @@ public class AppointmentController : BaseController
         ViewBag.PetList = new SelectList(pets, "PetID", "Name",petid>0?petid:0);
     }
 
+    //一個產生可預約的時間清單的方法，回傳List<SelectListItem>，用於下拉選單
+    //機構可設定營業時間、間隔時間，這裡假設營業時間從早上9點到下午6點，每30分鐘一個時段
+    //使用者可選日期後，會產生該日期的可預約時間清單
+    private List<SelectListItem> GenerateAvailableTimeSlots(DateTime startTime, DateTime endTime, TimeSpan interval, DateTime selectedDate = default)
+    {
+        var timeSlots = new List<SelectListItem>();
+        if (selectedDate != default) {
+            startTime = selectedDate.Date.Add(startTime.TimeOfDay);
+            endTime = selectedDate.Date.Add(endTime.TimeOfDay);
+        }
+        for (var time = startTime; time < endTime; time += interval)
+        {
+            timeSlots.Add(new SelectListItem
+            {
+                Value = time.ToString("HH:mm"),
+                Text = time.ToString("HH:mm")
+            });
+        }
+
+        return timeSlots;
+    }
+
     // GET: APPOINTMENTS
     public async Task<IActionResult> Index(int petid=0)    
     {
@@ -89,7 +111,7 @@ public class AppointmentController : BaseController
 
         // 🌟 必須呼叫這個，畫面才會有 PetList 和 InstitutionList！
         await getList();
-
+        ViewBag.TimeSlots = GenerateAvailableTimeSlots(DateTime.Today.AddHours(9), DateTime.Today.AddHours(18), TimeSpan.FromMinutes(30));
         var selectedInst = await _context.Institutions.FindAsync(instId);
         if (selectedInst != null)
         {
@@ -105,10 +127,10 @@ public class AppointmentController : BaseController
     }
 
     // 產生AppointmentID的方法，長度為19個字元，ex：A20260803-I00001-001，A開頭，後面接日期、機構ID、流水號
-    private string GenerateAppointmentID(string institutionID)
+    private async Task<string> GenerateAppointmentID(string institutionID)
     {
         var datePart = DateTime.Now.ToString("yyyyMMdd");
-        var serialNumber = _context.Appointments.Count(a => a.InstitutionID == institutionID && a.ApptDateTime.Date == DateTime.Today) + 1;
+        var serialNumber = await _context.Appointments.CountAsync(a => a.InstitutionID == institutionID && a.ApplyTime.Date == DateTime.Today) + 1;
         return $"A{datePart}-{institutionID}-{serialNumber:D3}";
     }
 
@@ -117,12 +139,14 @@ public class AppointmentController : BaseController
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Appointment appointment)
+    public async Task<IActionResult> Create(Appointment appointment, string selectedDate, string selectedTime)
     {
         ModelState.Remove("AppointmentID"); // 移除 AppointmentID 的驗證，因為我們會自動生成它
         ModelState.Remove("Status"); // 移除 Status 的驗證，因為我們會自動生成它
-        appointment.AppointmentID = GenerateAppointmentID(appointment.InstitutionID);
+        ModelState.Remove("ApptDateTime"); // 移除 ApptDateTime 的驗證，因為我們會自動生成它
+        appointment.AppointmentID = await GenerateAppointmentID(appointment.InstitutionID);
         appointment.Status = "已申請待確認"; // 預設狀態為 Pending
+        appointment.ApptDateTime = DateTime.Parse($"{selectedDate} {selectedTime}");
         if (ModelState.IsValid)
         {
             _context.Add(appointment);

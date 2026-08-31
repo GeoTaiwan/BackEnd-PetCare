@@ -35,7 +35,9 @@
 
             <div class="mb-3">
                 <label asp-for="ApptDateTime" class="control-label"></label>
-                <input asp-for="ApptDateTime" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                @* <input asp-for="ApptDateTime" class="form-control" value="" /> *@
+                <input name="selectedDate" class="form-control" type="date" required/>
+                <select name="selectedTime" class="form-control" asp-items="ViewBag.TimeSlots" required></select>
                 <span asp-validation-for="ApptDateTime" class="text-danger"></span>
             </div>
 
