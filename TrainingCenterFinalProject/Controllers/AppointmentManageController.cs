@@ -23,9 +23,60 @@ public class AppointmentManageController : BaseController
             .Where(e => e.UserID == LoginUserId)
             .Select(e => e.InstitutionID)
             .FirstOrDefaultAsync();
-        return View(await _context.Appointments
+
+        var app = await _context.Appointments
+            .Include(a=>a.Pet)
+            .Include(a=>a.Institution)
             .Where(a => a.InstitutionID == instID)
-            .ToListAsync());
+            .OrderByDescending(a => a.ApptDateTime)
+            .ToListAsync();
+        return View(app);
+    }
+
+    // POST: APPOINTMENTS/Accept/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Accept(string? appointmentid)
+    {
+        if (appointmentid == null)
+        {
+            return NotFound();
+        }
+
+        var appointment = await _context.Appointments.FindAsync(appointmentid);
+        if (appointment == null)
+        {
+            return NotFound();
+        }
+
+        appointment.Status = "預約成功";
+        _context.Update(appointment);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    // POST: APPOINTMENTS/Reject/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reject(string? appointmentid)
+    {
+        if (appointmentid == null)
+        {
+            return NotFound();
+        }
+
+        var appointment = await _context.Appointments.FindAsync(appointmentid);
+        if (appointment == null)
+        {
+            return NotFound();
+        }
+
+        appointment.Status = "預約失敗";
+        _context.Update(appointment);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
     }
 
     // GET: APPOINTMENTS/Details/5

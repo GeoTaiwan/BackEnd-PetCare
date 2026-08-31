@@ -1,23 +1,21 @@
 @model IEnumerable<TrainingCenterFinalProject.Models.Appointment>
 
 @{
-    ViewData["Title"] = "Index";
+    // ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>@(Model.FirstOrDefault()?.Institution.Name)-@ViewData["Title"]</h1>
 
-<p>
+@* <p>
     <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+</p> *@
+<table class="table table-hover">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.PetID)
+                @Html.DisplayNameFor(model => model.Pet.Name)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InstitutionID)
-            </th>
+            
             <th>
                 @Html.DisplayNameFor(model => model.ServiceType)
             </th>
@@ -33,13 +31,11 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr class="position-relative">
             <td>
-                @Html.DisplayFor(model => item.PetID)
+                @Html.DisplayFor(model => item.Pet.Name)
             </td>
-            <td>
-                @Html.DisplayFor(model => item.InstitutionID)
-            </td>
+           
             <td>
                 @Html.DisplayFor(model => item.ServiceType)
             </td>
@@ -47,13 +43,36 @@
                 @Html.DisplayFor(model => item.ApptDateTime)
             </td>
             <td>
-                @Html.DisplayFor(model => item.Status)
+                @if (item.Status=="預約成功")
+                {
+                    <span class="text-success">已接受</span>
+                }
+                else if (item.Status=="預約失敗")
+                {
+                    <span class="text-danger">已拒絕</span>
+                }
+                else
+                {
+                    @Html.DisplayFor(model => item.Status)
+                }
             </td>
            
             <td>
-                <a asp-action="Edit" asp-route-id="@item.AppointmentID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.AppointmentID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.AppointmentID">Delete</a>
+                <a class="stretched-link" asp-action="Details" asp-route-appointmentid="@item.AppointmentID"></a>
+                @*接受預約與拒絕預約*@
+                    @if (item.Status != "預約成功" && item.Status != "預約失敗")
+                    {
+                    
+                        <form asp-action="Accept" method="post" style="display:inline">
+                            <input type="hidden" name="appointmentid" value="@item.AppointmentID" />
+                            <button type="submit" class="btn btn-success position-relative z-2" onclick="return confirm('確定要接受這個預約嗎？');">接受</button>
+                        </form>
+                        <form asp-action="Reject" method="post" style="display:inline">
+                            <input type="hidden" name="appointmentid" value="@item.AppointmentID" />
+                            <button type="submit" class="btn btn-danger position-relative z-2" onclick="return confirm('確定要拒絕這個預約嗎？');">拒絕</button>
+                        </form>
+                    }
+                    
             </td>
         </tr>
 }
