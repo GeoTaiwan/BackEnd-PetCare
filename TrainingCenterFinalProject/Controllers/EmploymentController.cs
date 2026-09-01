@@ -17,18 +17,25 @@ public class EmploymentController : BaseController
         _context = context;
     }
 
+    private async Task<string?> GetInstitutionIdByUserId(string userId)
+    {
+        return await _context.Employments.Where(e => e.UserID == userId).Select(e => e.InstitutionID).FirstOrDefaultAsync();
+    }
+
     // GET: EMPLOYMENTS
     public async Task<IActionResult> Index()
     {
-        var employments = _context.Employments
-            .Include(e => e.UserProfile)
-            .Include(e => e.OccupationDetails)
-            .Include(e=>e.Institution)
-            .Where(e => e.UserID == LoginUserId)
-            .AsQueryable();
-        string? instID = employments.Select(e => e.InstitutionID).FirstOrDefault();
+        string? instID = await GetInstitutionIdByUserId(LoginUserId);
+        var employments = Enumerable.Empty<Employment>().AsQueryable();
+
         if (!string.IsNullOrEmpty(instID))
         {
+            employments = _context.Employments
+            .Include(e => e.UserProfile)
+            .Include(e => e.OccupationDetails)
+            .Include(e => e.Institution)
+            .Where(e => e.InstitutionID == instID)
+            .AsQueryable();
             employments = employments.Where(e => e.InstitutionID == instID).OrderBy(e => e.StartDate);
         } else
         {
@@ -106,8 +113,10 @@ public class EmploymentController : BaseController
         {
             return NotFound();
         }
-
-        var employment = await _context.Employments.FindAsync(id);
+        string? instID = await GetInstitutionIdByUserId(LoginUserId);
+        var employment = await _context.Employments
+            .Where(e => e.UserID == id && e.InstitutionID == instID)
+            .FirstOrDefaultAsync();
         if (employment == null)
         {
             return NotFound();
