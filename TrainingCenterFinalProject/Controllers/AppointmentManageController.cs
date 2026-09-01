@@ -33,6 +33,7 @@ public class AppointmentManageController : BaseController
         var app = await _context.Appointments
             .Include(a=>a.Pet)
             .Include(a=>a.Institution)
+            .ThenInclude(i => i.AuthorizationRecords)
             .Include(a => a.Employee)
             .Where(a => a.InstitutionID == instID)
             .OrderByDescending(a => a.ApplyTime)

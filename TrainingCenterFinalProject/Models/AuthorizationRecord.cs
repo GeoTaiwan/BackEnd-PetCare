@@ -20,11 +20,13 @@ namespace TrainingCenterFinalProject.Models
         [Display(Name = "被授權的機構")]
         public string InstitutionID { get; set; } = null!;
 
-        [Required]
-        [Display(Name = "授權發生的時間")]
+        [Required(ErrorMessage = "授權開始時間為必填欄位")]
+        [Display(Name = "授權開始")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime GrantedDate { get; set; }
-
-        [Display(Name = "撤銷授權的時間")]
+        [Required(ErrorMessage = "授權結束時間為必填欄位")]
+        [Display(Name = "授權結束")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime? RevokedDate { get; set; }
 
         [Required]

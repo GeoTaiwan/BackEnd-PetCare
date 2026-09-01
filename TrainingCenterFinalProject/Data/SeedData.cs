@@ -180,18 +180,20 @@ namespace TrainingCenterFinalProject.Data
                         context.AuthorizationRecords.AddRange(
                             new AuthorizationRecord
                             {
-                                DataAuthorizationNumber = "R20260803-I00001-01",
+                                DataAuthorizationNumber = "R20260803-I00001-001",
                                 PetID = realDog.PetID,                     // 使用真實的 ID
                                 InstitutionID = realClinic.InstitutionID,  // 使用真實的 ID
                                 GrantedDate = now.AddMonths(-6),
+                                RevokedDate = now.AddMonths(-6).AddDays(1),
                                 Status = "Active"
                             },
                             new AuthorizationRecord
                             {
-                                DataAuthorizationNumber = "R20260803-I00002-01",
+                                DataAuthorizationNumber = "R20260803-I00002-001",
                                 PetID = realCat.PetID,                     // 使用真實的 ID
                                 InstitutionID = realSalon.InstitutionID,   // 使用真實的 ID
                                 GrantedDate = now.AddMonths(-2),
+                                RevokedDate = now.AddMonths(-6).AddDays(1),
                                 Status = "Active"
                             }
                         );
