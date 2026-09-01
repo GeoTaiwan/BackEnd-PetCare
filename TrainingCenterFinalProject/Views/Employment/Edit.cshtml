@@ -1,72 +1,64 @@
 @model TrainingCenterFinalProject.Models.Employment
 
 @{
-    ViewData["Title"] = "Edit";
+    // ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>@(Model.Institution.Name)【@(Model.UserProfile.Name)】</h1>
 
-<h4>Employment</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="UserID" />
-            <div class="form-group">
+            <input type="hidden" asp-for="InstitutionID" class="form-control" />
+            @* <div class="mb-3">
                 <label asp-for="InstitutionID" class="control-label"></label>
                 <input asp-for="InstitutionID" class="form-control" />
                 <span asp-validation-for="InstitutionID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
+            </div> *@
+            <div class="mb-3">
                 <label asp-for="OccupationID" class="control-label"></label>
-                <input asp-for="OccupationID" class="form-control" />
+                @* <input asp-for="OccupationID" class="form-control" /> *@
+                <select asp-for="OccupationID" class="form-control" asp-items="ViewBag.OccupationList">
+                    <option value="">職位選擇</option>
+                </select>
                 <span asp-validation-for="OccupationID" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
+                @* <input asp-for="Status" class="form-control" /> *@
+                <select asp-for="Status" class="form-control" asp-items="ViewBag.StatusList">
+                    <option value="">狀態選擇</option>
+                </select>
                 <span asp-validation-for="Status" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="LicenseNumber" class="control-label"></label>
                 <input asp-for="LicenseNumber" class="form-control" />
                 <span asp-validation-for="LicenseNumber" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="StartDate" class="control-label"></label>
-                <input asp-for="StartDate" class="form-control" />
+                <input asp-for="StartDate" type="date" class="form-control" />
                 <span asp-validation-for="StartDate" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="EndDate" class="control-label"></label>
-                <input asp-for="EndDate" class="form-control" />
+                <input asp-for="EndDate" type="date" class="form-control" />
                 <span asp-validation-for="EndDate" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="UserProfile" class="control-label"></label>
-                <input asp-for="UserProfile" class="form-control" />
-                <span asp-validation-for="UserProfile" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Institution" class="control-label"></label>
-                <input asp-for="Institution" class="form-control" />
-                <span asp-validation-for="Institution" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OccupationDetails" class="control-label"></label>
-                <input asp-for="OccupationDetails" class="form-control" />
-                <span asp-validation-for="OccupationDetails" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            
+            <div class="mb-3">
+                <input type="submit" value="確定" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-secondary">返回</a>
 </div>
 
 @section Scripts {

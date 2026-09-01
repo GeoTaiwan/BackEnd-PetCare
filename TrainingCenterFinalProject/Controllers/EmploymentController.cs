@@ -54,6 +54,7 @@ public class EmploymentController : BaseController
         {
             InstitutionID=instid,
             LicenseNumber="待填",
+            InstitutionName = await _context.Institutions.Where(i => i.InstitutionID == instid).Select(i => i.Name).FirstOrDefaultAsync(),
             Institution = await _context.Institutions.FindAsync(instid)
         };
         ViewBag.fromInstManage = fromInstManage;
@@ -95,6 +96,15 @@ public class EmploymentController : BaseController
                 LicenseNumber=emViewModel.LicenseNumber,
                 StartDate=emViewModel.StartDate
             };
+            var user = await _context.UserProfiles.FindAsync(employment.UserID);
+            if (employment.OccupationID == "O00")
+            {
+                user.Authorization = 4; // 設定使用者權限為管理者
+            }
+            else
+            {
+                user.Authorization = 1; // 設定使用者權限為一般員工
+            }
             _context.Add(employment);
             await _context.SaveChangesAsync();
             if (fromInstManage) {
@@ -115,12 +125,16 @@ public class EmploymentController : BaseController
         }
         string? instID = await GetInstitutionIdByUserId(LoginUserId);
         var employment = await _context.Employments
+            .Include(u => u.Institution)
+            .Include(u => u.UserProfile)
             .Where(e => e.UserID == id && e.InstitutionID == instID)
             .FirstOrDefaultAsync();
         if (employment == null)
         {
             return NotFound();
         }
+        await getList();
+        
         return View(employment);
     }
 
@@ -140,6 +154,28 @@ public class EmploymentController : BaseController
         {
             try
             {
+                var user = await _context.UserProfiles.FindAsync(employment.UserID);
+                if (employment.Status == "Inactive")
+                {
+                    employment.EndDate = DateTime.Now;
+                    user.Authorization = 0; // 設定使用者權限為一般使用者
+                }
+                else if (employment.Status == "Active")
+                {
+                    employment.EndDate = null;
+                    if (employment.OccupationID == "O00")
+                    {
+                        user.Authorization = 4; // 設定使用者權限為管理者
+                    }
+                    else
+                    {
+                        user.Authorization = 1; // 設定使用者權限為一般員工
+                    }
+                }
+                else {
+                    user.Authorization = 0; // 設定使用者權限為一般使用者
+                }
+
                 _context.Update(employment);
                 await _context.SaveChangesAsync();
             }

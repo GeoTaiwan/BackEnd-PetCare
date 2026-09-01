@@ -21,12 +21,12 @@ namespace TrainingCenterFinalProject.Models
         [Display(Name = "職位代號")]
         public string OccupationID { get; set; } = null!;
 
-        [Required]
+        [Required(ErrorMessage = "在職狀態為必填欄位")]
         [StringLength(20)]
         [Display(Name = "在職狀態")]
         public string Status { get; set; } = null!;
 
-        [Required]
+        [Required(ErrorMessage = "執照號碼為必填欄位")]
         [StringLength(50)]
         [Display(Name = "執照號碼")]
         public string LicenseNumber { get; set; } = null!;
@@ -35,7 +35,8 @@ namespace TrainingCenterFinalProject.Models
         [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}")]
         public DateTime? StartDate { get; set; }
 
-        [Display(Name = "結束時間")]
+        [Display(Name = "離職日期")]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}")]
         public DateTime? EndDate { get; set; }
 
         // === Foreign Keys (加上 ? 繞過驗證) ===

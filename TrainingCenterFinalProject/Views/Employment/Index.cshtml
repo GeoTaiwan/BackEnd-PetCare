@@ -2,20 +2,31 @@
 
 @{
     // ViewData["Title"] = "Index";
-    bool isManager = User.IsInRole("VetManage");
-    
+    bool isManager = User.IsInRole("VetManage") || User.IsInRole("NannyManage")||User.IsInRole("BeautyManage");
+    // var statusList = new[]
+    //     {
+    //         new { Value = "Active", Text = "在職 (Active)" },
+    //         new { Value = "Inactive", Text = "離職 (Inactive)" },
+    //         new { Value = "Suspended", Text = "停職 (Suspended)" } 可隨時擴充
+    //     };
+    Dictionary<string, string> statusDictionary = new Dictionary<string, string>
+    {
+        { "Active", "在職 (Active)" },
+        { "Inactive", "離職 (Inactive)" },
+        { "Suspended", "停職 (Suspended)" }
+    };
 }
 
 <h1>@ViewBag.InstitutionName-@ViewData["Title"]</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">新增員工</a>
+    <a asp-action="Create" asp-route-instid="@(Model.FirstOrDefault()?.InstitutionID)" class="btn btn-primary">新增員工</a>
 </p>
 <table class="table table-hover">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Institution.Name)
+                @Html.DisplayNameFor(model => model.UserProfile.Name)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.OccupationDetails.OccupationName)
@@ -40,13 +51,13 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(model => item.Institution.Name)
+                @Html.DisplayFor(model => item.UserProfile.Name)
             </td>
             <td>
                 @Html.DisplayFor(model => item.OccupationDetails.OccupationName)
             </td>
             <td>
-                @Html.DisplayFor(model => item.Status)
+                @statusDictionary[item.Status]
             </td>
             <td>
                 @Html.DisplayFor(model => item.LicenseNumber)
@@ -62,7 +73,7 @@
                 @if (isManager)
                 {
                 <a asp-action="Edit" asp-route-id="@item.UserID" class="btn btn-warning">編輯</a>
-                <a asp-action="Delete" asp-route-id="@item.UserID" class="btn btn-danger">刪除</a>
+                
                 }
             </td>
         </tr>

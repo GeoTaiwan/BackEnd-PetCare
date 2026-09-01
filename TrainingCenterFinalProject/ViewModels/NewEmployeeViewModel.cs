@@ -6,7 +6,8 @@ namespace PetCare.ViewModels
 {
     public class NewEmployeeViewModel
     {
-        
+        [Display(Name = "機構名稱")]
+        public string? InstitutionName { get; set; }
         [Display(Name = "員工信箱(須與員工申請帳號時的信箱相同)")]
         [Required(ErrorMessage ="必填")]
         [EmailAddress(ErrorMessage ="請輸入信箱格式")]
