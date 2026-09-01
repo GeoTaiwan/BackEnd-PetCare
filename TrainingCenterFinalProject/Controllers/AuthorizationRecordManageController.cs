@@ -14,6 +14,7 @@ public class AuthorizationRecordManageController : BaseController
     {
         _context = context;
     }
+    //Active 已授權, Pending 待授權, Revoked 已撤銷
 
     // GET: AUTHORIZATIONRECORDS
     public async Task<IActionResult> Index()
