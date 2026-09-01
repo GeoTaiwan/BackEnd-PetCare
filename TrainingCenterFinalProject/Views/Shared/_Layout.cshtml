@@ -18,11 +18,15 @@
             <div class="container-fluid">
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
-                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PetCare</a>
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                        <img src="~/images/PetCare.jpeg" alt="PetCare" />
+                    </a>
                 }
                 else
                 {
-                    <a class="navbar-brand" asp-area="" asp-controller="Account" asp-action="Login">PetCare</a>
+                    <a class="navbar-brand" asp-area="" asp-controller="Account" asp-action="Login">
+                        <img src="~/images/PetCare.jpeg" alt="PetCare" />
+                    </a>
                 }
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
