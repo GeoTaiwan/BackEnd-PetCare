@@ -1,12 +1,14 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PetCare.Controllers;
 using PetCare.ViewModels;
 using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Models;
-
-public class EmploymentController : Controller
+[Authorize(Roles = "Vet,Beauty,Nanny,VetManage,BeautyManage,NannyManage")]
+public class EmploymentController : BaseController
 {
     private readonly PetCareDbContext _context;
 
@@ -16,9 +18,25 @@ public class EmploymentController : Controller
     }
 
     // GET: EMPLOYMENTS
-    public async Task<IActionResult> Index()    
+    public async Task<IActionResult> Index()
     {
-        return View(await _context.Employments.ToListAsync());
+        var employments = _context.Employments
+            .Include(e => e.UserProfile)
+            .Include(e => e.OccupationDetails)
+            .Include(e=>e.Institution)
+            .Where(e => e.UserID == LoginUserId)
+            .AsQueryable();
+        string? instID = employments.Select(e => e.InstitutionID).FirstOrDefault();
+        if (!string.IsNullOrEmpty(instID))
+        {
+            employments = employments.Where(e => e.InstitutionID == instID).OrderBy(e => e.StartDate);
+        } else
+        {
+            return BadRequest();
+        }
+        ViewBag.InstitutionName = employments.Select(e => e.Institution.Name).FirstOrDefault();
+
+        return View(await employments.ToListAsync());
     }
 
 

@@ -4,19 +4,19 @@
     // ViewData["Title"] = "Index";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1>@ViewBag.InstitutionName-@ViewData["Title"]</h1>
 
 <p>
     <a asp-action="Create" class="btn btn-primary">新增員工</a>
 </p>
-<table class="table">
+<table class="table table-hover">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.InstitutionID)
+                @Html.DisplayNameFor(model => model.Institution.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.OccupationID)
+                @Html.DisplayNameFor(model => model.OccupationDetails.OccupationName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Status)
@@ -38,10 +38,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(model => item.InstitutionID)
+                @Html.DisplayFor(model => item.Institution.Name)
             </td>
             <td>
-                @Html.DisplayFor(model => item.OccupationID)
+                @Html.DisplayFor(model => item.OccupationDetails.OccupationName)
             </td>
             <td>
                 @Html.DisplayFor(model => item.Status)
