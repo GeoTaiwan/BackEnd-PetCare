@@ -23,26 +23,25 @@ public class MedicalRecordManageController : BaseController
     }
 
     // GET: MEDICALRECORDS
-    public async Task<IActionResult> Index(int petid = 0, bool fromIndex = false)
+    public async Task<IActionResult> Index()
     {
         string institutionID = await _context.Employments.Where(v => v.UserID == LoginUserId).Select(v => v.InstitutionID).FirstOrDefaultAsync();
-        if (petid == 0 || string.IsNullOrEmpty(institutionID))
-        {
-            return NotFound();
-        }
+
         var vetID = await _context.Employments.Where(v => v.InstitutionID == institutionID).Select(v => v.UserID).FirstOrDefaultAsync();
         var medicalrecord = await _context.MedicalRecords
-            .Include(m => m.Pet)
-            .Include(m => m.Vet)
+            .Include(m => m.Pet.AuthorizationRecords.Where(ar => ar.InstitutionID == institutionID))
+            .Include(m => m.Vet).ThenInclude(v => v.Employments.Where(e => e.InstitutionID == institutionID))
             .Include(m => m.RecordDiagnoses)
             .ThenInclude(rd => rd.MedicalVocabularyDictionary)
             .Include(m => m.Prescriptions)
-            .Where(m => m.PetID == petid && m.VetID == vetID)
+            .Where(m=>m.Pet.AuthorizationRecords.Any(
+                ar => ar.Status == "Authorized" && 
+                ar.GrantedDate<DateTime.Now &&
+                ar.RevokedDate >= DateTime.Now))
             .ToListAsync();
-        ViewBag.FromIndex = fromIndex;
-        ViewBag.PetID = petid;
+        
         ViewBag.InstitutionID = institutionID;
-        ViewBag.PetName = await _context.Pets.Where(p => p.PetID == petid).Select(p => p.Name).FirstOrDefaultAsync();
+        ViewBag.InstitutionName = await _context.Institutions.Where(i => i.InstitutionID == institutionID).Select(i => i.Name).FirstOrDefaultAsync();
         return View(medicalrecord);
     }
 
@@ -73,14 +72,14 @@ public class MedicalRecordManageController : BaseController
     // GET: MEDICALRECORDS/Create
     public async Task<IActionResult> Create(int petid = 0, bool fromDetails = false)
     {
-        
-        if (petid == 0 ) { return BadRequest(); }
+
+        if (petid == 0) { return BadRequest(); }
         ViewBag.FromDetails = fromDetails;
         ViewBag.PetID = petid;
         ViewBag.PetName = await _context.Pets.Where(p => p.PetID == petid).Select(p => p.Name).FirstOrDefaultAsync();
         ViewBag.institutionID = await _context.Employments.Where(v => v.UserID == LoginUserId).Select(v => v.InstitutionID).FirstOrDefaultAsync();
         return View();
-        
+
     }
 
     // POST: MEDICALRECORDS/Create
