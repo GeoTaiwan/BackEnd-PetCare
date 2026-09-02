@@ -113,7 +113,7 @@ public class PetController : Controller
             }
             if (fromMR)
             {
-                return RedirectToAction(nameof(Index),nameof(MedicalRecordController).Replace("Controller",""));
+                return RedirectToAction(nameof(Index),nameof(MedicalRecordManageController).Replace("Controller",""));
             }
             return RedirectToAction(nameof(Index));
         }

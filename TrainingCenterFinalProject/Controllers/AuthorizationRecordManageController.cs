@@ -112,6 +112,9 @@ public class AuthorizationRecordManageController : BaseController
         ModelState.Remove("Status"); // Remove
         authorizationrecord.DataAuthorizationNumber = await GenerateAuthRecordID(authorizationrecord.InstitutionID);
         authorizationrecord.Status = "Pending"; // Default status
+        //將註銷日期設為指定日期+23:59:59
+        DateTime dateTime = (DateTime)authorizationrecord.RevokedDate;
+        authorizationrecord.RevokedDate = dateTime.AddHours(23).AddMinutes(59).AddSeconds(59);
         if (ModelState.IsValid)
         {
             _context.Add(authorizationrecord);

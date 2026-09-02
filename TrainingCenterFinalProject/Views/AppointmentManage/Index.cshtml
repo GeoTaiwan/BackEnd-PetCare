@@ -1,123 +1,129 @@
 @model IEnumerable<TrainingCenterFinalProject.Models.Appointment>
 
 @{
-    // ViewData["Title"] = "Index";
+	// ViewData["Title"] = "Index";
 }
 
 <h1>@ViewBag.InstName-@ViewData["Title"]</h1>
 
 @if (Model.Any())
 {
-    <!-- 1. 新增 Bootstrap Toggle (Switch) 開關 -->
-    <div class="form-check form-switch mb-3">
-        <input class="form-check-input" type="checkbox" role="switch" id="toggleHandled" checked>
-        <label class="form-check-label" for="toggleHandled">顯示已處理的預約</label>
-    </div>
+	<!-- 1. 新增 Bootstrap Toggle (Switch) 開關 -->
+	<div class="form-check form-switch mb-3">
+		<input class="form-check-input" type="checkbox" role="switch" id="toggleHandled" checked>
+		<label class="form-check-label" for="toggleHandled">顯示已處理的預約</label>
+	</div>
 
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>@Html.DisplayNameFor(model => model.Pet.Name)</th>
-                <th>@Html.DisplayNameFor(model => model.ServiceType)</th>
-                <th>@Html.DisplayNameFor(model => model.ApptDateTime)</th>
-                <th>@Html.DisplayNameFor(model => model.ApplyTime)</th>
-                <th>@Html.DisplayNameFor(model => model.HandleTime)</th>
-                <th>@Html.DisplayNameFor(model => model.Employee.Name)</th>
-                <th>預約@(Html.DisplayNameFor(model => model.Status))</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                // 2. 判斷該筆預約是否已處理，並賦予對應的 class
-                bool isHandled = (item.Status == "預約成功" || item.Status == "預約失敗");
-                string rowClass = isHandled ? "handled-row" : "pending-row";
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th>@Html.DisplayNameFor(model => model.Pet.Name)</th>
+				<th>@Html.DisplayNameFor(model => model.ServiceType)</th>
+				<th>@Html.DisplayNameFor(model => model.ApptDateTime)</th>
+				<th>@Html.DisplayNameFor(model => model.ApplyTime)</th>
+				<th>@Html.DisplayNameFor(model => model.HandleTime)</th>
+				<th>@Html.DisplayNameFor(model => model.Employee.Name)</th>
+				<th>預約@(Html.DisplayNameFor(model => model.Status))</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model)
+			{
+				// 2. 判斷該筆預約是否已處理，並賦予對應的 class
+				bool isHandled = (item.Status == "預約成功" || item.Status == "預約失敗");
+				string rowClass = isHandled ? "handled-row" : "pending-row";
 
-                <tr class="position-relative @rowClass">
-                    <td>@Html.DisplayFor(model => item.Pet.Name)</td>
-                    <td>@Html.DisplayFor(model => item.ServiceType)</td>
-                    <td>@Html.DisplayFor(model => item.ApptDateTime)</td>
-                    <th>@Html.DisplayFor(model => item.ApplyTime)</th>
-                    <th>@Html.DisplayFor(model => item.HandleTime)</th>
-                    <th>@Html.DisplayFor(model => item.Employee.Name)</th>
-                    <td>
-                        @if (item.Status == "預約成功")
-                        {
-                            <span class="text-success">已接受</span>
-                        }
-                        else if (item.Status == "預約失敗")
-                        {
-                            <span class="text-danger">已拒絕</span>
-                        }
-                        else
-                        {
-                            <span class="text-warning">
-                            @Html.DisplayFor(model => item.Status)                                
-                            </span>
-                        }
-                    </td>
+				<tr class="position-relative @rowClass">
+					<td>@Html.DisplayFor(model => item.Pet.Name)</td>
+					<td>@Html.DisplayFor(model => item.ServiceType)</td>
+					<td>@Html.DisplayFor(model => item.ApptDateTime)</td>
+					<th>@Html.DisplayFor(model => item.ApplyTime)</th>
+					<th>@Html.DisplayFor(model => item.HandleTime)</th>
+					<th>@Html.DisplayFor(model => item.Employee.Name)</th>
+					<td>
+						@if (item.Status == "預約成功")
+						{
+							<span class="text-success">已接受</span>
+						}
+						else if (item.Status == "預約失敗")
+						{
+							<span class="text-danger">已拒絕</span>
+						}
+						else
+						{
+							<span class="text-warning">
+								@Html.DisplayFor(model => item.Status)
+							</span>
+						}
+					</td>
 
-                    <td>
-                        <a class="stretched-link" asp-action="Details" asp-route-appointmentid="@item.AppointmentID"></a>
+					<td>
+						<a class="stretched-link" asp-action="Details" asp-route-appointmentid="@item.AppointmentID"></a>
 
-                        @if (!isHandled)
-                        {
-                            <form asp-action="Accept" method="post" style="display:inline">
-                                <input type="hidden" name="appointmentid" value="@item.AppointmentID" />
-                                <button type="submit" class="btn btn-success position-relative z-2" onclick="return confirm('確定要接受這個預約嗎？');">接受</button>
-                            </form>
-                            <form asp-action="Reject" method="post" style="display:inline">
-                                <input type="hidden" name="appointmentid" value="@item.AppointmentID" />
-                                <button type="submit" class="btn btn-danger position-relative z-2" onclick="return confirm('確定要拒絕這個預約嗎？');">拒絕</button>
-                            </form>
-                        } else if (item.Status == "預約成功")
-                        {
-                            if (item.Institution.AuthorizationRecords.Any() &&
-                            item.Institution.AuthorizationRecords
-                            .Where(ar => ar.PetID == item.PetID && ar.Status == "Pending").Any())
-                            {
-                                <span class="text-warning">已申請授權</span>
-                            }
-                            else
-                            {
-                            <a asp-controller="AuthorizationRecordManage" asp-action="Create" asp-route-petid="@item.PetID" asp-route-institutionid="@item.InstitutionID" class="btn btn-info position-relative z-2">
-                                要求授權
-                            </a>
-                            }
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+						@if (!isHandled)
+						{
+							<form asp-action="Accept" method="post" style="display:inline">
+								<input type="hidden" name="appointmentid" value="@item.AppointmentID" />
+								<button type="submit" class="btn btn-success position-relative z-2" onclick="return confirm('確定要接受這個預約嗎？');">接受</button>
+							</form>
+							<form asp-action="Reject" method="post" style="display:inline">
+								<input type="hidden" name="appointmentid" value="@item.AppointmentID" />
+								<button type="submit" class="btn btn-danger position-relative z-2" onclick="return confirm('確定要拒絕這個預約嗎？');">拒絕</button>
+							</form>
+						}
+						else if (item.Status == "預約成功")
+						{
+							if (item.Institution.AuthorizationRecords
+							.Where(ar => ar.PetID == item.PetID && ar.Status == "Pending").Any())
+							{
+								<span class="text-warning">已申請授權</span>
+							}
+							else if (item.Institution.AuthorizationRecords
+							.Where(ar => ar.PetID == item.PetID && ar.Status == "Authorized" && ar.RevokedDate >= DateTime.Now).Any())
+							{
+								<span class="text-success">已授權</span>
+							}
+							else
+							{
+								<a asp-controller="AuthorizationRecordManage" asp-action="Create" asp-route-petid="@item.PetID" asp-route-institutionid="@item.InstitutionID" class="btn btn-info position-relative z-2">
+									要求授權
+								</a>
+							}
+							
+						}
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
 }
 else
 {
-    <p>目前沒有任何預約。</p>
+	<p>目前沒有任何預約。</p>
 }
 
 <!-- 3. 加入 JavaScript 控制邏輯 -->
 @section Scripts {
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const toggleSwitch = document.getElementById('toggleHandled');
-            const handledRows = document.querySelectorAll('.handled-row');
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			const toggleSwitch = document.getElementById('toggleHandled');
+			const handledRows = document.querySelectorAll('.handled-row');
 
-            // 定義切換顯示狀態的函數
-            function updateVisibility() {
-                const showHandled = toggleSwitch.checked;
-                handledRows.forEach(row => {
-                    // 如果勾選，顯示列 (清除 inline style)；如果取消勾選，隱藏列 (display: none)
-                    row.style.display = showHandled ? '' : 'none';
-                });
-            }
+			// 定義切換顯示狀態的函數
+			function updateVisibility() {
+				const showHandled = toggleSwitch.checked;
+				handledRows.forEach(row => {
+					// 如果勾選，顯示列 (清除 inline style)；如果取消勾選，隱藏列 (display: none)
+					row.style.display = showHandled ? '' : 'none';
+				});
+			}
 
-            // 網頁載入時先執行一次 (依照預設的 checked 狀態)
-            updateVisibility();
+			// 網頁載入時先執行一次 (依照預設的 checked 狀態)
+			updateVisibility();
 
-            // 當開關被點擊時，觸發切換
-            toggleSwitch.addEventListener('change', updateVisibility);
-        });
-    </script>
+			// 當開關被點擊時，觸發切換
+			toggleSwitch.addEventListener('change', updateVisibility);
+		});
+	</script>
 }
