@@ -1,69 +1,85 @@
 @model IEnumerable<TrainingCenterFinalProject.Models.AuthorizationRecord>
 
 @{
-    // ViewData["Title"] = "Index";
+	// ViewData["Title"] = "Index";
 }
 
 <h1>@ViewData["Title"]</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@* <p>
+	<a asp-action="Create">Create New</a>
+</p> *@
 @if (Model.Any())
 {
-    
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Pet.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Institution.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GrantedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RevokedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.Pet.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Institution.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.GrantedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.RevokedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Status)
-            </td>
-           
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.DataAuthorizationNumber">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.DataAuthorizationNumber">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.DataAuthorizationNumber">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>
+					@Html.DisplayNameFor(model => model.Pet.Name)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.Institution.Name)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.GrantedDate)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.RevokedDate)
+				</th>
+				<th>
+					@Html.DisplayNameFor(model => model.Status)
+				</th>
+
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model)
+			{
+				<tr>
+					<td>
+						@Html.DisplayFor(model => item.Pet.Name)
+					</td>
+					<td>
+						@Html.DisplayFor(model => item.Institution.Name)
+					</td>
+					<td>
+						@Html.DisplayFor(model => item.GrantedDate)
+					</td>
+					<td>
+						@Html.DisplayFor(model => item.RevokedDate)
+					</td>
+					<td>
+						@Html.DisplayFor(model => item.Status)
+					</td>
+
+					<td>
+						@{
+							bool isAuthorized = item.Status == "Authorized";
+							bool isRevoked = item.Status == "Revoked";
+							bool isPending = item.Status == "Pending";
+							bool isExpired = item.RevokedDate.HasValue && item.RevokedDate.Value < DateTime.Now;
+						}
+						<form asp-action="ChangeStatus" method="post" class="d-inline-block">
+							<input type="hidden" name="dataauthorizationnumber" value="@item.DataAuthorizationNumber" />
+							<input type="hidden" name="isAuthorized" value="@(isAuthorized ? "false" : "true")" />
+							<button type="submit" class="btn @(isAuthorized ? "btn-danger" : "btn-warning")">
+								@(isAuthorized ? "撤銷" : isPending?"授權":"再授權")
+							</button>
+						</form>
+						@if (isRevoked || isExpired)
+						{
+							<a asp-action="Create" asp-route-petid="@item.PetID" asp-route-institutionid="@item.InstitutionID" class="btn btn-primary">新授權</a>
+						}
+
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
 }
 else
 {
-    <p>目前沒有授權紀錄。</p>
+	<p>目前沒有授權紀錄。</p>
 }

@@ -23,8 +23,31 @@ public class AuthorizationRecordController : BaseController
             .Include(ar => ar.Pet)
             .Include(ar => ar.Institution)
             .Where(ar => ar.Pet.OwnerID == LoginUserId)
+            .OrderByDescending(ar=>ar.GrantedDate)
             .ToListAsync();
         return View(ars);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangeStatus(string? dataauthorizationnumber, bool isAuthorized=false)
+    {
+        if (dataauthorizationnumber == null)
+        {
+            return NotFound();
+        }
+
+        var authorizationrecord = await _context.AuthorizationRecords
+            .FirstOrDefaultAsync(m => m.DataAuthorizationNumber == dataauthorizationnumber);
+        if (authorizationrecord == null)
+        {
+            return NotFound();
+        }
+
+        authorizationrecord.Status = isAuthorized ?  "Authorized" : "Revoked";
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
     }
 
     // GET: AUTHORIZATIONRECORDS/Details/5
@@ -46,9 +69,19 @@ public class AuthorizationRecordController : BaseController
     }
 
     // GET: AUTHORIZATIONRECORDS/Create
-    public IActionResult Create()
+    public IActionResult Create(int petid, string institutionid)
     {
-        return View();
+        //重新授權
+        if (petid <= 0 || string.IsNullOrEmpty(institutionid))
+        {
+            return BadRequest();
+        }
+        var ar = new AuthorizationRecord();
+        ar.PetID = petid;
+        ar.InstitutionID = institutionid; // Default InstitutionID
+        ViewBag.PetName = _context.Pets.Where(p => p.PetID == petid).Select(p => p.Name).FirstOrDefault();
+        ViewBag.InstName = _context.Institutions.Where(i => i.InstitutionID == institutionid).Select(i => i.Name).FirstOrDefault();
+        return View(ar);
     }
 
     // POST: AUTHORIZATIONRECORDS/Create
@@ -58,6 +91,12 @@ public class AuthorizationRecordController : BaseController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(AuthorizationRecord authorizationrecord)
     {
+        ModelState.Remove("DataAuthorizationNumber"); // Remove
+        ModelState.Remove("Pet"); // Remove
+        ModelState.Remove("Institution"); // Remove
+        ModelState.Remove("Status"); // Remove
+        authorizationrecord.DataAuthorizationNumber = await GenerateAuthRecordID(authorizationrecord.InstitutionID);
+        authorizationrecord.Status = "Authorized"; // Default status
         if (ModelState.IsValid)
         {
             _context.Add(authorizationrecord);
@@ -65,6 +104,42 @@ public class AuthorizationRecordController : BaseController
             return RedirectToAction(nameof(Index));
         }
         return View(authorizationrecord);
+    }
+    private async Task<string> GenerateAuthRecordID(string instID)
+    {
+        string newID;
+        string datePart = DateTime.Now.ToString("yyyyMMdd");
+
+        // 取出最後一筆相符的紀錄
+        var lastRecord = await _context.AuthorizationRecords
+            .Where(ar => ar.DataAuthorizationNumber.StartsWith($"R{datePart}-{instID}-"))
+            .OrderByDescending(ar => ar.DataAuthorizationNumber)
+            .FirstOrDefaultAsync();
+
+        if (lastRecord == null || string.IsNullOrWhiteSpace(lastRecord.DataAuthorizationNumber))
+        {
+            newID = $"R{datePart}-{instID}-001"; // 沒有紀錄，從 001 開始
+        }
+        else
+        {
+            string[] parts = lastRecord.DataAuthorizationNumber.Split('-');
+
+            // 確保字串切割後至少有 3 個部分，並且最後一部分 (parts.Last()) 可以成功轉為整數
+            if (parts.Length >= 3 && int.TryParse(parts.Last(), out int lastNumber))
+            {
+                newID = $"R{datePart}-{instID}-{(lastNumber + 1).ToString("D3")}";
+            }
+            else
+            {
+                // 【例外處理】如果資料庫的格式爛掉了 (例如 "R20260803-I00002-ABC")
+                // 你可以決定要拋出明確的錯誤，或是直接當作 001 重新開始
+                // throw new FormatException($"授權碼格式錯誤: {lastRecord.DataAuthorizationNumber}");
+
+                newID = $"R{datePart}-{instID}-001";
+            }
+        }
+
+        return newID;
     }
 
     // GET: AUTHORIZATIONRECORDS/Edit/5

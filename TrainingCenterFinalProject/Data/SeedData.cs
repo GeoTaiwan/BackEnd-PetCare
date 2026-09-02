@@ -185,7 +185,7 @@ namespace TrainingCenterFinalProject.Data
                                 InstitutionID = realClinic.InstitutionID,  // 使用真實的 ID
                                 GrantedDate = now.AddMonths(-6),
                                 RevokedDate = now.AddMonths(-6).AddDays(1),
-                                Status = "Active"
+                                Status = "Authorized"
                             },
                             new AuthorizationRecord
                             {
@@ -194,7 +194,7 @@ namespace TrainingCenterFinalProject.Data
                                 InstitutionID = realSalon.InstitutionID,   // 使用真實的 ID
                                 GrantedDate = now.AddMonths(-2),
                                 RevokedDate = now.AddMonths(-6).AddDays(1),
-                                Status = "Active"
+                                Status = "Authorized"
                             }
                         );
                         context.SaveChanges();
