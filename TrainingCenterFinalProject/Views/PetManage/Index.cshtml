@@ -50,8 +50,39 @@
                             }
                         }else
                         {
-                            //要求授權按鈕
-                            <a asp-action="Create" asp-controller="AuthorizationRecordManage" asp-route-petid="@item.PetID" class="btn btn-warning">要求授權</a>
+                            //檢查是否接受預約
+                            var hasPendingAppointment = item.Appointments.Any(a => a.Status == "預約成功");
+                            if (hasPendingAppointment)
+                            {
+                                //檢查是否有授權紀錄
+                                var hasAuthorizationRecord = item.AuthorizationRecords.Any(ar => ar.Status == "Pending");
+                                if (!hasAuthorizationRecord)
+                                {
+                                    //要求授權按鈕
+                                    <a asp-action="Create" asp-controller="AuthorizationRecordManage" asp-route-petid="@item.PetID" class="btn btn-warning">要求授權</a>
+                                }
+                                else
+                                {
+                                    <span class="text-warning">已申請授權</span>
+                                }
+                            }
+                            else if (item.Appointments.Any(a => a.Status == "預約失敗"))
+                            {
+                                //目前沒有接受預約
+                            } else
+                            {
+                                //顯示是否接受預約
+                                <span>是否接受預約</span>
+                                <form asp-controller="AppointmentManage" asp-action="Accept" method="post" style="display:inline">
+                                    <input type="hidden" name="appointmentid" value="@item.Appointments.FirstOrDefault()?.AppointmentID" />
+                                    <button type="submit" class="btn btn-success position-relative z-2" onclick="return confirm('確定要接受這個預約嗎？');">接受</button>
+                                </form>
+                                <form asp-controller="AppointmentManage" asp-action="Reject" method="post" style="display:inline">
+                                    <input type="hidden" name="appointmentid" value="@item.Appointments.FirstOrDefault()?.AppointmentID" />
+                                    <button type="submit" class="btn btn-danger position-relative z-2" onclick="return confirm('確定要拒絕這個預約嗎？');">拒絕</button>
+                                </form>
+                            }
+
                         }
                     </div>
 
