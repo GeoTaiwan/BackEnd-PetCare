@@ -10,7 +10,8 @@ public class AppointmentManageController : BaseController
 {
     private readonly PetCareDbContext _context;
 
-    public AppointmentManageController(PetCareDbContext context)
+    public AppointmentManageController(PetCareDbContext context, IWebHostEnvironment env)
+
     {
         _context = context;
     }

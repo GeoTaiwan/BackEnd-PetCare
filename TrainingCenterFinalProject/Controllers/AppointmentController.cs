@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PetCare.Controllers;
+using System.Transactions;
 using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Models;
 
@@ -10,7 +11,7 @@ public class AppointmentController : BaseController
 {
     private readonly PetCareDbContext _context;
 
-    public AppointmentController(PetCareDbContext context)
+    public AppointmentController(PetCareDbContext context, IWebHostEnvironment env)
     {
         _context = context;
     }

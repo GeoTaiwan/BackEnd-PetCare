@@ -1,0 +1,330 @@
+@model TrainingCenterFinalProject.Models.Pet
+
+@{
+    // ViewData["Title"] = "Create";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+
+        <form asp-action="Create" asp-route-frommr="@ViewBag.FromMR" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Species" class="form-label"></label>
+                        <select asp-for="Species" class="form-select" id="speciesSelect">
+                            <option value="" disabled selected>請選擇物種</option>
+                            <option value="狗">狗 (Dog)</option>
+                            <option value="貓">貓 (Cat)</option>
+                            <option value="兔子">兔子 (Rabbit)</option>
+                            <option value="鼠/貂 (小型哺乳類)">鼠/貂 (小型哺乳類)</option>
+                            <option value="鳥類">鳥類 (Bird)</option>
+                            <option value="爬蟲/兩棲類">爬蟲/兩棲類 (Reptile/Amphibian)</option>
+                            <option value="其他">其他 (Other)</option>
+                        </select>
+                        <span asp-validation-for="Species" class="text-danger"></span>
+                    </div>
+                    @* <div class="form-group">
+                        <label asp-for="Species" class="control-label"></label>
+                        <input asp-for="Species" class="form-control" />
+                        <span asp-validation-for="Species" class="text-danger"></span>
+                    </div> *@
+                    <div class="mb-3">
+                        <label asp-for="Breed" class="form-label"></label>
+
+                        <!-- 負責 UI 互動的選單，不加上 name 屬性以免干擾表單送出 -->
+                        <select class="form-select" id="breedSelect">
+                            <option value="">請先選擇物種</option>
+                        </select>
+
+                        <!-- 真正負責傳值給 Controller 的 Input (asp-for="Breed" 會自動產生 name="Breed") -->
+                        <!-- 預設隱藏 (d-none)，當需要自行輸入時才顯示，確保 UI 元素不重疊且邏輯清晰 -->
+                        <input asp-for="Breed" class="form-control mt-2 d-none" id="breedInput" placeholder="請輸入品種名稱..." />
+
+                        <span asp-validation-for="Breed" class="text-danger"></span>
+                    </div>
+                    @* <div class="form-group">
+                        <label asp-for="Breed" class="control-label"></label>
+                        <input asp-for="Breed" class="form-control" />
+                        <span asp-validation-for="Breed" class="text-danger"></span>
+                    </div> *@
+
+                    <div class="mb-3">
+                        <label asp-for="Gender" class="control-label"></label>
+                        @* <input asp-for="Gender" class="form-control" /> *@
+                        <select asp-for="Gender" class="form-select form-control" id="genderSelect">
+                            <option value="" disabled selected>請選擇性別</option>
+                            <option value="公">公</option>
+                            <option value="母">母</option>
+                            <option value="公(絕育)">公(絕育)</option>
+                            <option value="母(絕育)">母(絕育)</option>
+                            <option value="其它">其它</option>
+                    
+                        </select>
+                        <span asp-validation-for="Gender" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="DateOfBirth" class="control-label"></label>
+                        <input asp-for="DateOfBirth" class="form-control" />
+                        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MicrochipNo" class="control-label"></label>
+                        <input asp-for="MicrochipNo" class="form-control" />
+                        <span asp-validation-for="MicrochipNo" class="text-danger"></span>
+                    </div>
+                    </div>
+                    <div class="col">
+                    <div class="mb-3">
+                        <label asp-for="SpecialNotes" class="control-label"></label>
+                        <input asp-for="SpecialNotes" class="form-control" />
+                        <span asp-validation-for="SpecialNotes" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="UploadPhoto" class="form-label"></label>
+                        <!-- accept="image/*" 可以限制使用者只能選取圖片檔 -->
+                        <input asp-for="UploadPhoto" type="file" class="form-control" accept="image/*" id="UploadPhoto"/>
+                        <span asp-validation-for="UploadPhoto" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3" id="photoPreview" class="">
+
+                    </div>
+           
+                    <div class="form-group">
+                        <input type="submit" value="確定新増" class="btn btn-primary" />
+                    </div>
+                </div>
+            </div>
+        </form>
+    
+
+<div>
+    <a asp-action="Index" class="btn btn-info">回寵物列表</a>
+</div>
+<!-- 裁切圖片的 Bootstrap Modal -->
+<div class="modal fade" id="cropModal" tabindex="-1" data-bs-backdrop="static" aria-labelledby="cropModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cropModalLabel">裁切寵物照片</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- 這裡用來放置準備被裁切的圖片 -->
+                <div class="img-container">
+                    <img id="imageToCrop" src="" alt="Picture">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="cropConfirmBtn">確認裁切</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <!-- 引入 Cropper.js 的 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const petDictionary = {
+                "狗": ["米克斯 (Mix)", "柴犬", "貴賓犬", "馬爾濟斯", "柯基", "黃金獵犬", "法國鬥牛犬", "博美犬", "其他 (自行輸入)"],
+                "貓": ["米克斯 (Mix)", "英國短毛貓", "布偶貓", "美國短毛貓", "波斯貓", "曼赤肯", "俄羅斯藍貓", "其他 (自行輸入)"],
+                "兔子": ["獅子兔", "侏儒兔", "垂耳兔", "道奇兔", "安哥拉兔", "其他 (自行輸入)"],
+                "鼠/貂 (小型哺乳類)": ["倉鼠 (三線/一線/老公公)", "黃金鼠", "天竺鼠 (豚鼠)", "龍貓 (絨鼠)", "雪貂", "蜜袋鼯", "刺蝟", "其他 (自行輸入)"],
+                "鳥類": ["虎皮鸚鵡", "玄鳳鸚鵡", "和尚鸚鵡", "金剛鸚鵡", "灰鸚鵡", "文鳥", "金絲雀", "其他 (自行輸入)"],
+                "爬蟲/兩棲類": ["豹紋守宮", "肥尾守宮", "睫角守宮", "鬆獅蜥", "陸龜 (如赫曼/蘇卡達)", "澤龜 (如斑龜/巴西龜)", "球蟒", "豬鼻蛇", "角蛙", "其他 (自行輸入)"],
+                "其他": ["其他 (自行輸入)"]
+            };
+
+            const speciesSelect = document.getElementById('speciesSelect');
+            const breedSelect = document.getElementById('breedSelect');
+            const breedInput = document.getElementById('breedInput');
+            const OTHER_OPTION = "其他 (自行輸入)";
+
+            // 負責更新品種選單的共用函數
+            function populateBreeds(speciesValue) {
+                const breeds = petDictionary[speciesValue] || [];
+                breedSelect.innerHTML = '<option value="" disabled>請選擇品種</option>';
+
+                breeds.forEach(breed => {
+                    const option = document.createElement('option');
+                    option.value = breed;
+                    option.textContent = breed;
+                    breedSelect.appendChild(option);
+                });
+            }
+
+            // === 💡 新增：網頁載入時的初始化邏輯 ===
+            const initialSpecies = speciesSelect.value;
+            const initialBreed = breedInput.value; // 從 ASP.NET Core 綁定的 input 抓取原本的值
+
+            if (initialSpecies) {
+                populateBreeds(initialSpecies);
+
+                // 檢查原本儲存的品種，有沒有在字典清單裡面？
+                const availableBreeds = petDictionary[initialSpecies] || [];
+
+                if (availableBreeds.includes(initialBreed)) {
+                    // 狀況 1：是標準選項 (例如：柴犬)
+                    breedSelect.value = initialBreed;
+                    breedSelect.classList.remove('d-none');
+                    breedInput.classList.add('d-none');
+                } else if (initialBreed) {
+                    // 狀況 2：是自訂輸入 (例如：米格魯)
+                    breedSelect.value = OTHER_OPTION;
+                    breedSelect.classList.add('d-none');
+                    breedInput.classList.remove('d-none');
+                    // 輸入框的值會保持原樣
+                }
+            } else {
+                // 萬一沒有預設值，隱藏 input
+                breedInput.classList.add('d-none');
+            }
+
+            // === 監聽物種改變事件 ===
+            speciesSelect.addEventListener('change', function () {
+                populateBreeds(this.value);
+
+                // 切換物種時，重置為預設狀態
+                breedSelect.classList.remove('d-none');
+                breedInput.classList.add('d-none');
+                breedInput.value = '';
+                breedSelect.value = '';
+            });
+
+            // === 監聽品種改變事件 ===
+            breedSelect.addEventListener('change', function () {
+                if (this.value === OTHER_OPTION) {
+                    breedSelect.classList.add('d-none');
+                    breedInput.classList.remove('d-none');
+                    breedInput.value = '';
+                    breedInput.focus();
+                } else {
+                    breedInput.value = this.value;
+                }
+            });
+
+            // ==========================================
+            // 2. 💡 新增：圖片裁切 (Cropper.js) 邏輯
+            // ==========================================
+            const uploadPhoto = document.getElementById('UploadPhoto');
+            const imageToCrop = document.getElementById('imageToCrop');
+            const photoPreview = document.getElementById('photoPreview');
+            const cropModalElement = document.getElementById('cropModal');
+            const cropModal = new bootstrap.Modal(cropModalElement);
+            let cropper = null;
+
+            // 當使用者選擇檔案時
+            uploadPhoto.addEventListener('change', function (e) {
+                const files = e.target.files;
+                if (files && files.length > 0) {
+                    const file = files[0];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function (event) {
+                        // 將圖片載入到 Modal 裡的 img 標籤
+                        imageToCrop.src = event.target.result;
+                        // 顯示 Modal
+                        cropModal.show();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // 當 Modal 完全顯示時，初始化 Cropper
+            cropModalElement.addEventListener('shown.bs.modal', function () {
+                cropper = new Cropper(imageToCrop, {
+                    aspectRatio: 1, // 鎖定比例 (1 = 正方形, 16/9 = 寬螢幕，可依需求調整)
+                    viewMode: 2,    // 限制裁切框不能超出圖片邊界
+                    autoCropArea: 1
+                });
+            });
+
+            // 當 Modal 隱藏時，銷毀 Cropper 釋放記憶體
+            cropModalElement.addEventListener('hidden.bs.modal', function () {
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+                // 清空原本的 input，這樣如果使用者取消裁切，還可以重新選擇同一張照片
+                if (photoPreview.innerHTML === "") {
+                     uploadPhoto.value = "";
+                }
+            });
+
+            // 點擊「確認裁切」按鈕
+            document.getElementById('cropConfirmBtn').addEventListener('click', function () {
+                if (!cropper) return;
+
+                // 取得裁切後的圖片 Canvas，並壓縮成 JPG (可設定大小)
+                cropper.getCroppedCanvas({
+                    width: 800,  // 輸出圖片的最大寬度
+                    height: 800,  // 輸出圖片的最大高度
+                    fillColor:'#fff'    //png等檔案透明背景補白色
+                }).toBlob(function (blob) {
+                    
+                    // 1. 建立一個新的 File 物件
+                    const newFileName = "cropped_photo.jpg";
+                    const newFile = new File([blob], newFileName, { type: "image/jpeg" });
+
+                    // 2. 魔法在這裡：利用 DataTransfer 替換掉原本 input 裡的檔案
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(newFile);
+                    uploadPhoto.files = dataTransfer.files;
+
+                    // 3. 顯示裁切後的預覽圖
+                    const url = URL.createObjectURL(blob);
+                    photoPreview.innerHTML = `<img src="${url}" class="object-fit-cover w-100 rounded shadow-sm" style="max-height: 250px;" />`;
+
+                    // 4. 關閉 Modal
+                    cropModal.hide();
+
+                }, 'image/jpeg', 0.8); // 壓縮品質 0.8
+            });
+        });
+        // 照片預覽
+        // const uploadPhoto = document.getElementById('UploadPhoto');
+        // uploadPhoto.addEventListener('change',function (e){
+        //     const file = e.target.files[0];
+        //     if (file){
+        //         const photoPreview = document.getElementById('photoPreview');
+        //         const reader = new FileReader();
+        //         reader.onload = function(event){
+        //             photoPreview.innerHTML = 
+        //             '<img src="' + event.target.result + '" class="object-fit-cover w-250" style="height:250px;" />';
+        //         };
+        //         reader.readAsDataURL(file);
+        //     }
+        // });
+        
+
+    </script>
+    
+}
+@section Styles {
+    <!-- 引入 Cropper.js 的 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+    <style>
+        /* 限制裁切視窗的圖片最大寬度，避免破版 */
+        .img-container img {
+            max-width: 100%;
+            display: block;
+        }
+        .img-container {
+            max-height: 500px;
+        }
+    </style>
+}

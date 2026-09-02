@@ -1,0 +1,52 @@
+@model IEnumerable<TrainingCenterFinalProject.Models.Pet>
+
+@{
+    // ViewData["Title"] = "Index";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@* <p class="text-end">
+    <a asp-action="Create" class="btn btn-primary">加入寵物</a>
+</p> *@
+@if (Model.Any())
+{
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                <div class="card h-100">
+
+                    @if (!string.IsNullOrEmpty(item.ProfilePhotoUrl))
+                    {
+                        <img src="@item.ProfilePhotoUrl?v=@DateTime.Now.Ticks" alt="寵物照片" class="card-img-top" style="height: 200px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <img src="/images/cat.jpg" alt="無照片" class="card-img-top" style="height: 200px; object-fit: cover;" />
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Name</h5>
+                        <p class="card-text">@Html.Raw((item.SpecialNotes??"").Replace("\r\n","<br>"))</p>
+                    </div>
+                    <div class="card-footer">
+                        <a asp-action="Details" asp-route-petid="@item.PetID" class="stretched-link"></a>
+                        @* <a asp-action="Edit" asp-route-petid="@item.PetID" class="btn btn-warning position-relative" style="z-index:2;">編輯</a>
+                        <form asp-action="Delete" class="d-inline-block float-end">
+                            <input type="hidden" name="petid" value="@item.PetID" />
+                            <input type="submit" value="刪除" class="btn btn-danger position-relative" style="z-index:2;" onclick="return confirm('確定要刪除【@(item.Name)(@item.PetID)】嗎？')" />
+                        </form> *@
+
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+} else
+{
+    <h1 class="text-center">目前尚無寵物預約</h1>
+}
+
+
+

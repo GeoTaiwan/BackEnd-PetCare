@@ -9,7 +9,7 @@ public class AuthorizationRecordController : BaseController
 {
     private readonly PetCareDbContext _context;
 
-    public AuthorizationRecordController(PetCareDbContext context)
+    public AuthorizationRecordController(PetCareDbContext context, IWebHostEnvironment env)
     {
         _context = context;
     }
