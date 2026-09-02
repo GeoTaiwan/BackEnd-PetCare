@@ -60,7 +60,7 @@
                                 var hasAuthorized = item.AuthorizationRecords.Any(ar => ar.Status == "Authorized");
                                 if (!hasPending && !hasAuthorized)
                                 {
-                                    //要求授權按鈕
+                                    //要求授權按鈕get
                                     <a asp-action="Create" asp-controller="AuthorizationRecordManage" asp-route-petid="@item.PetID" class="btn btn-warning position-relative z-2">要求授權</a>
                                 }
                                 else

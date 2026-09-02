@@ -5,7 +5,8 @@ using TrainingCenterFinalProject.Data;
 using PetCare.Controllers;
 using Microsoft.AspNetCore.Authorization;
 
-[Authorize(Roles = "VetManage,BeautyManage,NannyManage")]
+[Authorize(Roles = "VetManage,BeautyManage,NannyManage" +
+    ",Vet,Beauty,Nanny")]
 public class AuthorizationRecordManageController : BaseController
 {
     private readonly PetCareDbContext _context;

@@ -9,7 +9,8 @@ using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Models;
 
 //機構端
-[Authorize(Roles = "VetManage,BeautyManage,NannyManage")]
+[Authorize(Roles = "VetManage,BeautyManage,NannyManage" +
+    ",Vet,Beauty,Nanny")]
 public class MedicalRecordManageController : BaseController
 {
     private readonly PetCareDbContext _context;
