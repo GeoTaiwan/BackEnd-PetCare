@@ -4,7 +4,7 @@
     // ViewData["Title"] = "Index";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1>@(ViewBag.institutionName)-@ViewData["Title"]</h1>
 
 @* <p class="text-end">
     <a asp-action="Create" class="btn btn-primary">加入寵物</a>
@@ -46,20 +46,22 @@
                             else
                             {
                                 //新增照護紀錄按鈕
-                                
+
                             }
-                        }else
+                        }
+                        else
                         {
                             //檢查是否接受預約
                             var hasPendingAppointment = item.Appointments.Any(a => a.Status == "預約成功");
                             if (hasPendingAppointment)
                             {
-                                //檢查是否有授權紀錄
-                                var hasAuthorizationRecord = item.AuthorizationRecords.Any(ar => ar.Status == "Pending");
-                                if (!hasAuthorizationRecord)
+                                //檢查是否已申請授權
+                                var hasPending = item.AuthorizationRecords.Any(ar => ar.Status == "Pending");
+                                var hasAuthorized = item.AuthorizationRecords.Any(ar => ar.Status == "Authorized");
+                                if (!hasPending && !hasAuthorized)
                                 {
                                     //要求授權按鈕
-                                    <a asp-action="Create" asp-controller="AuthorizationRecordManage" asp-route-petid="@item.PetID" class="btn btn-warning">要求授權</a>
+                                    <a asp-action="Create" asp-controller="AuthorizationRecordManage" asp-route-petid="@item.PetID" class="btn btn-warning position-relative z-2">要求授權</a>
                                 }
                                 else
                                 {
@@ -69,7 +71,8 @@
                             else if (item.Appointments.Any(a => a.Status == "預約失敗"))
                             {
                                 //目前沒有接受預約
-                            } else
+                            }
+                            else
                             {
                                 //顯示是否接受預約
                                 <span>是否接受預約</span>

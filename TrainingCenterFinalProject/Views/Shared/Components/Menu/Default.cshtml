@@ -7,6 +7,7 @@
         var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
         var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
         var isActive = (menu.ControllerName == currentController && menu.ActionName == currentAction) ? "active" : "";
+        
         <li class="nav-item">
             <a href="/@menu.ControllerName/@menu.ActionName" class="nav-link @isActive">
                 <!-- 如果有設定 Icon 的話可以在這裡顯示 -->

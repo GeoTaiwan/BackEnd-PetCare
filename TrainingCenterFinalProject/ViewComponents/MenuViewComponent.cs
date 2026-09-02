@@ -30,7 +30,7 @@ namespace TrainingCenterFinalProject.ViewComponents
                 var userProfile = await _db.UserProfiles
                     .AsNoTracking()
                     .FirstOrDefaultAsync(u => u.UserID == userId);
-
+                
                 if (userProfile != null)
                 {
                     userAuthLevel = userProfile.Authorization;
@@ -69,8 +69,61 @@ namespace TrainingCenterFinalProject.ViewComponents
                 }
                 else if (userAuthLevel > 0)
                 {
-                    // 顯示權限等級小於等於該使用者的選單 (例如員工1可看到0與1)
-                    menuQuery = menuQuery.Where(m => m.RequiredAuthLevel <= userAuthLevel && m.RequiredAuthLevel > 0);
+                    //取得目前的Role
+                    //1、4為獸醫院一般員工、獸醫院管理者
+                    //2、5為寵物美容院一般員工、寵物美容院管理者
+                    //3、6為寵物旅館一般員工、寵物旅館管理者
+                    //7為員工通用權限、8為管理者通用權限
+                    var currentRole = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+                    if (currentRole.Contains("Vet"))
+                    {
+                        if (currentRole.Contains("Manage"))
+                        {
+                            //若是獸醫院管理者，則顯示獸醫院管理者選單
+                            menuQuery = menuQuery
+                                .Where(m =>m.RequiredAuthLevel==1|| m.RequiredAuthLevel == 4 ||
+                                m.RequiredAuthLevel == 7 || m.RequiredAuthLevel == 8);
+
+                        }
+                        else
+                        {
+                            //若是獸醫院一般員工，則顯示獸醫院一般員工選單
+                            menuQuery = menuQuery.Where(m => m.RequiredAuthLevel == 1 || m.RequiredAuthLevel == 7);
+                        }
+                    }
+                    if (currentRole.Contains("Beauty"))
+                    {
+                        if (currentRole.Contains("Manage"))
+                        {
+                            //若是寵物美容院管理者，則顯示寵物美容院管理者選單
+                            menuQuery = menuQuery
+                                .Where(m => m.RequiredAuthLevel == 2 || m.RequiredAuthLevel == 5 || 
+                                m.RequiredAuthLevel == 7 || m.RequiredAuthLevel == 8);
+
+                        }
+                        else
+                        {
+                            //若是寵物美容院一般員工，則顯示寵物美容院一般員工選單
+                            menuQuery = menuQuery.Where(m => m.RequiredAuthLevel == 2 || m.RequiredAuthLevel == 7);
+                        }
+                    }
+                    if (currentRole.Contains("Nanny"))
+                    {
+                        if (currentRole.Contains("Manage"))
+                        {
+                            //若是寵物保母管理者，則顯示寵物保母管理者選單
+                            menuQuery = menuQuery
+                                .Where(m => m.RequiredAuthLevel == 3 || m.RequiredAuthLevel == 6 ||
+                                m.RequiredAuthLevel == 7 || m.RequiredAuthLevel == 8);
+
+                        }
+                        else
+                        {
+                            //若是寵物保母一般員工，則顯示寵物保母一般員工選單
+                            menuQuery = menuQuery.Where(m => m.RequiredAuthLevel == 3 || m.RequiredAuthLevel == 7);
+                        }
+                    }
+                    
                 }
                 else { 
                     menuQuery = menuQuery.Where(m => m.RequiredAuthLevel == 0);

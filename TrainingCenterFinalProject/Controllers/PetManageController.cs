@@ -7,7 +7,8 @@ using PetCare.Controllers;
 using System.Security.Claims;
 using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Models;
-[Authorize(Roles = "VetManage,BeautyManage,NannyManage")]
+[Authorize(Roles = "VetManage,BeautyManage,NannyManage" +
+    ",Vet,Beauty,Nanny")]
 public class PetManageController : BaseController
 {
     private readonly PetCareDbContext _context;
@@ -21,7 +22,7 @@ public class PetManageController : BaseController
     }
 
     // GET: PETS
-    public async Task<IActionResult> Index()    
+    public async Task<IActionResult> Index()
     {
         // 取得登入使用者的機構代碼
         var instiID = await _context.Employments
@@ -29,10 +30,10 @@ public class PetManageController : BaseController
             .Select(e => e.InstitutionID)
             .FirstOrDefaultAsync();
         var inst = await _context.Institutions
-            .Include(i=>i.InstitutionType)
+            .Include(i => i.InstitutionType)
             .Where(i => i.InstitutionID == instiID)
             .FirstOrDefaultAsync();
-       
+
         var instType = inst.InstitutionType;
         var instPets = _context.Pets.AsQueryable();
         bool isVet = instType.Name == "動物醫院";
@@ -41,7 +42,8 @@ public class PetManageController : BaseController
             instPets = instPets
                 .Include(p => p.MedicalRecords)
                 .AsQueryable();
-        } else
+        }
+        else
         {
             instPets = instPets
                 .Include(p => p.CareGroomingLogs)
@@ -49,14 +51,22 @@ public class PetManageController : BaseController
         }
         ViewBag.isVet = isVet;
         ViewBag.institutionID = instiID;
+        ViewBag.institutionName = inst.Name;
         // 用 InstitutionID 去過濾寵物，僅顯示在該機構有預約的寵物
+        // AuthorizationRecords 也要過濾，只顯示目前有效的授權紀錄 (GrantedDate < Now && RevokedDate >= Now)
+        // 且institutionID要與Appointment的InstitutionID相同
         instPets = instPets
-            .Include(i=>i.Appointments).ThenInclude(a => a.Institution)
-            .Include(i=>i.AuthorizationRecords)
+            .Include(i => i.Appointments).ThenInclude(a => a.Institution)
+            .Include(i => i.AuthorizationRecords
+            .Where(ar => ar.GrantedDate < DateTime.Now &&
+            ar.RevokedDate >= DateTime.Now &&
+            ar.InstitutionID == instiID))
             .Where(p => p.Appointments.Any(a => a.InstitutionID == instiID))
-            .OrderByDescending(p => p.Appointments.Max(a=>a.ApptDateTime));
-        
-        
+
+
+            .OrderByDescending(p => p.Appointments.Max(a => a.ApptDateTime));
+
+
         return View(await instPets.ToListAsync());
     }
 
@@ -69,21 +79,21 @@ public class PetManageController : BaseController
         }
 
         var pet = await _context.Pets
-            .Include(p => p.PetWeights.OrderByDescending(w=>w.RecordDate))
-            .Include(p=>p.MedicalRecords.OrderByDescending(m=>m.VisitDate))
-            .Include(p=>p.CareGroomingLogs.OrderByDescending(l=>l.LogDate)).ThenInclude(l=>l.Staff) //關聯CareGroomingLog的Staff
-            .Include(p=>p.Appointments.OrderByDescending(a=>a.ApptDateTime)).ThenInclude(a=>a.Institution) //關聯Appointments
+            .Include(p => p.PetWeights.OrderByDescending(w => w.RecordDate))
+            .Include(p => p.MedicalRecords.OrderByDescending(m => m.VisitDate))
+            .Include(p => p.CareGroomingLogs.OrderByDescending(l => l.LogDate)).ThenInclude(l => l.Staff) //關聯CareGroomingLog的Staff
+            .Include(p => p.Appointments.OrderByDescending(a => a.ApptDateTime)).ThenInclude(a => a.Institution) //關聯Appointments
             .FirstOrDefaultAsync(m => m.PetID == petid);
         if (pet == null)
         {
             return NotFound();
         }
-        
+
         return View(pet);
     }
 
     // GET: PETS/Create
-    public IActionResult Create(bool fromMR=false)
+    public IActionResult Create(bool fromMR = false)
     {
         ViewBag.FromMR = fromMR;
         return View();
@@ -94,7 +104,7 @@ public class PetManageController : BaseController
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("PetID,Name,Species,Breed,Gender,DateOfBirth,MicrochipNo,SpecialNotes,UploadPhoto")] Pet pet,bool fromMR=false)
+    public async Task<IActionResult> Create([Bind("PetID,Name,Species,Breed,Gender,DateOfBirth,MicrochipNo,SpecialNotes,UploadPhoto")] Pet pet, bool fromMR = false)
     {
         // 💡 1. 從 User Claims 抓取當前登入者的 UserID
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -141,7 +151,7 @@ public class PetManageController : BaseController
             }
             if (fromMR)
             {
-                return RedirectToAction(nameof(Index),nameof(MedicalRecordManageController).Replace("Controller",""));
+                return RedirectToAction(nameof(Index), nameof(MedicalRecordManageController).Replace("Controller", ""));
             }
             return RedirectToAction(nameof(Index));
         }
@@ -150,7 +160,7 @@ public class PetManageController : BaseController
     }
 
     // GET: PETS/Edit/5
-    public async Task<IActionResult> Edit(int? petid, bool fromdetails=false)
+    public async Task<IActionResult> Edit(int? petid, bool fromdetails = false)
     {
         if (petid == null) return NotFound();
 
@@ -161,7 +171,7 @@ public class PetManageController : BaseController
             .FirstOrDefaultAsync(p => p.PetID == petid && p.OwnerID == currentUserId);
 
         if (pet == null) return NotFound(); // 如果找不到，或根本不是他的寵物，就回傳 404
-        ViewBag.FromDetails=fromdetails;
+        ViewBag.FromDetails = fromdetails;
         ViewBag.PetID = petid;
         return View(pet);
     }
@@ -171,7 +181,7 @@ public class PetManageController : BaseController
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? petid, [Bind("PetID,Name,Species,Breed,Gender,DateOfBirth,MicrochipNo,SpecialNotes,ProfilePhotoUrl,UploadPhoto")] Pet pet,bool fromdetails=false)
+    public async Task<IActionResult> Edit(int? petid, [Bind("PetID,Name,Species,Breed,Gender,DateOfBirth,MicrochipNo,SpecialNotes,ProfilePhotoUrl,UploadPhoto")] Pet pet, bool fromdetails = false)
     {
         if (petid != pet.PetID) return NotFound();
 
@@ -232,7 +242,7 @@ public class PetManageController : BaseController
             }
             if (fromdetails)
             {
-                return RedirectToAction(nameof(Details),nameof(PetController).Replace("Controller",""), new {petid = pet.PetID});
+                return RedirectToAction(nameof(Details), nameof(PetController).Replace("Controller", ""), new { petid = pet.PetID });
             }
             return RedirectToAction(nameof(Index));
         }
@@ -243,7 +253,7 @@ public class PetManageController : BaseController
         return _context.Pets.Any(e => e.PetID == id);
     }
 
-    
+
 
     // POST: PETS/Delete/5
     [HttpPost, ActionName("Delete")]
@@ -255,7 +265,7 @@ public class PetManageController : BaseController
             return NotFound();
         }
         var pet = await _context.Pets.FindAsync(petid);
-        
+
         if (pet != null)
         {
             // 💡 新增：刪除寵物前，先檢查並刪除實體照片
@@ -272,13 +282,14 @@ public class PetManageController : BaseController
                 }
             }
             var petWeights = await _context.PetWeight.Where(w => w.PetID == petid).ToListAsync();
-            var medRecord = await _context.MedicalRecords.Where(m=>m.PetID == petid).ToListAsync();
+            var medRecord = await _context.MedicalRecords.Where(m => m.PetID == petid).ToListAsync();
             //var careLog = await _context.CareGroomingLogs.Where(cg => cg.PetID == petid).ToListAsync();
             if (petWeights.Any())
             {
                 _context.PetWeight.RemoveRange(petWeights);
             }
-            if (medRecord.Any()) { 
+            if (medRecord.Any())
+            {
                 _context.MedicalRecords.RemoveRange(medRecord);
             }
             //if (careLog.Any())
