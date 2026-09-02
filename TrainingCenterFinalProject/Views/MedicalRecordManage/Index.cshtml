@@ -1,119 +1,61 @@
 @model IEnumerable<TrainingCenterFinalProject.Models.MedicalRecord>
 
 @{
-    // ViewData["Title"] = "Index";
+	// ViewData["Title"] = "Details";
+	bool isVet = User.IsInRole("Vet") || User.IsInRole("VetManage");
+	bool isBeauty = User.IsInRole("Beauty") || User.IsInRole("BeautyManage");
+	bool isNanny = User.IsInRole("Nanny") || User.IsInRole("NannyManage");
+	string occupationTitle = "";
+	if (isVet)
+	{
+		occupationTitle = "獸醫";
+	}
+	else if (isBeauty)
+	{
+		occupationTitle = "美容師";
+	}
+	else if (isNanny)
+	{
+		occupationTitle = "保母";
+	}
 }
 
 <h1>@ViewData["Title"]</h1>
 
-<p>
-    @* @if (Model.FirstOrDefault().Pet.) *@
-    @if (ViewBag.noPet)
-    {
-        <a asp-action="Create" asp-controller="Pet" asp-route-fromMR="true" class="btn btn-info">新増寵物</a>
-    } else
-    {
-        <a asp-action="Create" asp-route-petid='@ViewData["petid"]' class="btn btn-info">新増病歴</a>
-    }
+<a asp-action="Create" asp-route-petid="@ViewBag.PetID" asp-route-institutionID="@ViewBag.InstitutionID" class="btn btn-primary">新增病歷</a>
 
-    <form asp-action="Index" method="get" class="form-inline">
-        <div class="input-group">
-            <span class="input-group-text">篩選寵物</span>
-            <!--
-                name="petId" 會對應到 Controller 的參數
-                asp-items="ViewBag.PetList" 會綁定 Controller 傳過來的 SelectList
-                onchange 自動提交表單
-            -->
-            <select name="petId" class="form-select" asp-items="ViewBag.PetList" onchange="this.form.submit()">
-                <option value="">所有寵物</option>
-            </select>
-        </div>
-    </form>
-</p>
-
-@if (Model.Any())
+@if (Model != null && Model.Any())
 {
-    
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Pet.Name)
-            </th>
-            <th>
-                獸醫@(Html.DisplayNameFor(model => model.Vet.Name))
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VisitDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Symptoms)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TestResultsFile)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Diagnosis)
-            </th>
-            
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr class="position-relative">
-            <td>
-                @Html.DisplayFor(model => item.Pet.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Vet.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.VisitDate)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Symptoms)
-            </td>
-            <td>
-                        @* 判斷資料庫中是否有檔案名稱 *@
-                        @if (!string.IsNullOrEmpty(item.TestResultsFile))
-                        {
-                            
-                            <a asp-controller="MedicalRecord"
-                               asp-action="DownloadFile"
-                               asp-route-fileName="@item.TestResultsFile"
-                               class="btn btn-sm btn-outline-primary position-relative z-2">
-                                <i class="bi bi-download"></i> 下載檔案
-                            </a>
-
-                            @* 註：如果你想讓使用者點擊時「另開視窗預覽(如圖片或PDF)」，可以拿掉 download 屬性，加上 target="_blank" *@
-                            @* <a href="~/upload/mrFiles/@item.TestResultsFile" target="_blank">預覽檔案</a> *@
-                        }
-                        else
-                        {
-                            <span class="text-muted">無附件</span>
-                        }
-                @* @Html.DisplayFor(model => item.TestResultsFile) *@
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Diagnosis)
-            </td>
-           
-            <td>
-                <a asp-action="Details" asp-route-id="@item.RecordID" class="stretched-link"></a>
-                <a asp-action="Edit" asp-route-recordid="@item.RecordID" class="btn btn-warning position-relative z-2">編輯</a>
-                @*改為表單刪除鈕*@
-                <form asp-action="Delete" asp-route-id="@item.RecordID" method="post" class="d-inline-block">
-                    <button type="submit" class="btn btn-danger position-relative z-2" onclick="return confirm('確定要刪除這筆病歴嗎？');">刪除</button>
-                </form>
-            </td>
-        </tr>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th>@Html.DisplayNameFor(model => model.Pet.Name)</th>
+				<th>@(occupationTitle)@Html.DisplayNameFor(model => model.Vet.Name)</th>
+				<th>@Html.DisplayNameFor(model => model.VisitDate)</th>
+				<th>@Html.DisplayNameFor(model => model.Symptoms)</th>
+				<th>@Html.DisplayNameFor(model => model.TestResultsFile)</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model)
+			{
+				<tr>
+					<td>@Html.DisplayFor(model => item.Pet.Name)</td>
+					<td>@Html.DisplayFor(model => item.Vet.Name)</td>
+					<td>@Html.DisplayFor(model => item.VisitDate)</td>
+					<td>@Html.DisplayFor(model => item.Symptoms)</td>
+					<td>@Html.DisplayFor(model => item.TestResultsFile)</td>
+					<td>
+						<a asp-action="Edit" asp-route-recordid="@item.RecordID" asp-route-fromDetails="false" class="btn btn-warning">編輯</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
 }
-    </tbody>
-</table>
-} else
+else
 {
-    <div class="text-center">
-        <h1>目前尚無@(ViewBag.noPet ? "寵物" : "病歴")</h1>
-    </div>
+	<p>目前沒有病歷紀錄。</p>
 }
+<a asp-controller="AppointmentManage" asp-action="Index" class="btn btn-info">回到列表</a>

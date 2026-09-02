@@ -83,7 +83,7 @@
 							.Where(ar => ar.PetID == item.PetID && ar.Status == "Authorized" && ar.RevokedDate >= DateTime.Now).Any())
 							{
 								<span class="text-success">已授權</span>
-								<a asp-controller="MedicalRecordManage" asp-action="Details" asp-route-petid="@item.PetID" asp-route-institutionid="@item.InstitutionID" class="btn btn-info position-relative z-2">查看病歷</a>
+								<a asp-controller="MedicalRecordManage" asp-action="Index" asp-route-petid="@item.PetID" asp-route-institutionid="@item.InstitutionID" class="btn btn-info position-relative z-2">查看病歷</a>
 							}
 							else
 							{

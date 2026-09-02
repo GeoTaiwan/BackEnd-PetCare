@@ -22,28 +22,24 @@ public class MedicalRecordManageController : BaseController
     }
 
     // GET: MEDICALRECORDS
-    public async Task<IActionResult> Index(int petid = 0)
+    public async Task<IActionResult> Index(int petid = 0, string institutionID = "")
     {
-        var myRecords = _context.MedicalRecords
+        if (petid == null || string.IsNullOrEmpty(institutionID))
+        {
+            return NotFound();
+        }
+        var vetID = await _context.Employments.Where(v => v.InstitutionID == institutionID).Select(v => v.UserID).FirstOrDefaultAsync();
+        var medicalrecord = await _context.MedicalRecords
             .Include(m => m.Pet)
             .Include(m => m.Vet)
-            .Where(m => m.Pet.OwnerID == LoginUserId)
-            .OrderByDescending(m=>m.VisitDate)
-            .AsQueryable();
-
-        if (petid > 0)
-        {
-            myRecords = myRecords.Where(r => r.PetID == petid);
-        }
-
-        var pet = await _context.Pets.Where(p => p.OwnerID == LoginUserId).ToListAsync();
-        ViewBag.noPet = !pet.Any();
-
-        // 建立 SelectList，參數依序為：資料來源、Value 欄位、Text 欄位、當前選中的值
-        ViewBag.PetList = new SelectList(pet, "PetID", "Name", petid);
-        ViewData["petid"] = petid;
-
-        return View(await myRecords.ToListAsync());
+            .Include(m => m.RecordDiagnoses)
+            .ThenInclude(rd => rd.MedicalVocabularyDictionary)
+            .Include(m => m.Prescriptions)
+            .Where(m => m.PetID == petid && m.VetID == vetID)
+            .ToListAsync();
+        ViewBag.PetID = petid;
+        ViewBag.InstitutionID = institutionID;
+        return View(medicalrecord);
     }
 
     // GET: MEDICALRECORDS/Details/5
