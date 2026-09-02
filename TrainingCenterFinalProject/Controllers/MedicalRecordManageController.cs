@@ -22,9 +22,10 @@ public class MedicalRecordManageController : BaseController
     }
 
     // GET: MEDICALRECORDS
-    public async Task<IActionResult> Index(int petid = 0, string institutionID = "")
+    public async Task<IActionResult> Index(int petid = 0, bool fromIndex = false)
     {
-        if (petid == null || string.IsNullOrEmpty(institutionID))
+        string institutionID = await _context.Employments.Where(v => v.UserID == LoginUserId).Select(v => v.InstitutionID).FirstOrDefaultAsync();
+        if (petid == 0 || string.IsNullOrEmpty(institutionID))
         {
             return NotFound();
         }
@@ -37,6 +38,7 @@ public class MedicalRecordManageController : BaseController
             .Include(m => m.Prescriptions)
             .Where(m => m.PetID == petid && m.VetID == vetID)
             .ToListAsync();
+        ViewBag.FromIndex = fromIndex;
         ViewBag.PetID = petid;
         ViewBag.InstitutionID = institutionID;
         ViewBag.PetName = await _context.Pets.Where(p => p.PetID == petid).Select(p => p.Name).FirstOrDefaultAsync();

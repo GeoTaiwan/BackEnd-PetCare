@@ -29,30 +29,35 @@ public class PetManageController : BaseController
             .Select(e => e.InstitutionID)
             .FirstOrDefaultAsync();
         var inst = await _context.Institutions
+            .Include(i=>i.InstitutionType)
             .Where(i => i.InstitutionID == instiID)
             .FirstOrDefaultAsync();
+       
         var instType = inst.InstitutionType;
         var instPets = _context.Pets.AsQueryable();
-        if (instType.Name.ToString() == "動物醫院")
+        bool isVet = instType.Name == "動物醫院";
+        if (isVet)
         {
             instPets = instPets
                 .Include(p => p.MedicalRecords)
                 .AsQueryable();
-        } else if ( instType.Name.ToString() =="寵物美容坊"|| instType.Name.ToString() =="寵物保姆")
+        } else
         {
             instPets = instPets
                 .Include(p => p.CareGroomingLogs)
                 .AsQueryable();
         }
+        ViewBag.isVet = isVet;
+        ViewBag.institutionID = instiID;
         // 用 InstitutionID 去過濾寵物，僅顯示在該機構有預約的寵物
-        var instiPets = await _context.Pets
+        instPets = instPets
             .Include(i=>i.Appointments).ThenInclude(a => a.Institution)
+            .Include(i=>i.AuthorizationRecords)
             .Where(p => p.Appointments.Any(a => a.InstitutionID == instiID))
-            .OrderByDescending(p => p.Appointments.Max(a=>a.ApptDateTime))
-            .ToListAsync();
+            .OrderByDescending(p => p.Appointments.Max(a=>a.ApptDateTime));
         
         
-        return View(instiPets);
+        return View(await instPets.ToListAsync());
     }
 
     // GET: PETS/Details/5

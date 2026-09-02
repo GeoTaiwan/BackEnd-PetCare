@@ -85,8 +85,12 @@ public class AuthorizationRecordManageController : BaseController
     }
 
     // GET: AUTHORIZATIONRECORDS/Create
-    public IActionResult Create(int petid, string institutionid)
+    public async Task<IActionResult> Create(int petid)
     {
+        string institutionid = await _context.Institutions
+            .Where(i => i.OwnerID == LoginUserId)
+            .Select(i => i.InstitutionID)
+            .FirstOrDefaultAsync();
         if (petid <= 0 || string.IsNullOrEmpty(institutionid))
         {
             return BadRequest();
@@ -94,8 +98,8 @@ public class AuthorizationRecordManageController : BaseController
         var ar = new AuthorizationRecord();
         ar.PetID = petid;
         ar.InstitutionID= institutionid; // Default InstitutionID
-        ViewBag.PetName = _context.Pets.Where(p => p.PetID == petid).Select(p => p.Name).FirstOrDefault();
-        ViewBag.InstName = _context.Institutions.Where(i => i.InstitutionID == institutionid).Select(i => i.Name).FirstOrDefault();
+        ViewBag.PetName = await _context.Pets.Where(p => p.PetID == petid).Select(p => p.Name).FirstOrDefaultAsync();
+        ViewBag.InstName = await _context.Institutions.Where(i => i.InstitutionID == institutionid).Select(i => i.Name).FirstOrDefaultAsync();
         return View(ar);
     }
 

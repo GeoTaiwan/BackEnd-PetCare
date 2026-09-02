@@ -20,8 +20,8 @@
 	}
 }
 
-<h1>@ViewData["Title"]</h1>
-<h3>@(ViewBag.PetName)-病歷列表</h3>
+<h1>@(ViewBag.PetName)-@ViewData["Title"]</h1>
+@* <h3>病歷列表</h3> *@
 
 <a asp-action="Create" asp-route-petid="@ViewBag.PetID" class="btn btn-primary">新增病歷</a>
 
@@ -57,4 +57,11 @@ else
 {
 	<p>目前沒有病歷紀錄。</p>
 }
-<a asp-controller="AppointmentManage" asp-action="Index" class="btn btn-info">回預約管理</a>
+@if (ViewBag.FromIndex != null && (bool)ViewBag.FromIndex)
+{
+	<a asp-controller="PetManage" asp-action="Index" class="btn btn-info">回寵物管理</a>
+}
+else
+{
+	<a asp-controller="AppointmentManage" asp-action="Index" class="btn btn-info">回預約管理</a>			
+}
