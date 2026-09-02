@@ -1,4 +1,4 @@
-@model TrainingCenterFinalProject.Models.MedicalRecord
+@model IEnumerable<TrainingCenterFinalProject.Models.MedicalRecord>
 
 @{
 	// ViewData["Title"] = "Details";
@@ -6,185 +6,37 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<div class="my-3">
-	<a asp-action="Edit" asp-route-recordid="@Model?.RecordID" asp-route-fromDetails="true" class="btn btn-warning">編輯</a>
-	<a asp-action="Index" class="btn btn-info">回到列表</a>
-</div>
 
-<div class="container">
-	<div class="row">
-
-		<div class="col-md-6">
-			<div class="row mb-3">
-				<div class="col-md-4 text-nowrap fw-bold">
-					@(Html.DisplayNameFor(model => model.Pet.Name))
-				</div>
-				<div class="col-md-8">
-					@Html.DisplayFor(model => model.Pet.Name)
-				</div>
-			</div>
-			<div class="row mb-3">
-				<div class="col-md-4 text-nowrap fw-bold">
-					獸醫@(Html.DisplayNameFor(model => model.Vet.Name))
-				</div>
-				<div class="col-md-8">
-					@Html.DisplayFor(model => model.Vet.Name)
-				</div>
-			</div>
-			<div class="row mb-3">
-				<div class="col-md-4 text-nowrap fw-bold">
-					@(Html.DisplayNameFor(model => model.VisitDate))
-				</div>
-				<div class="col-md-8">
-					@Html.DisplayFor(model => model.VisitDate)
-				</div>
-			</div>
-			<div class="row mb-3">
-				<div class="col-md-4 text-nowrap fw-bold">
-					@(Html.DisplayNameFor(model => model.Symptoms))
-				</div>
-				<div class="col-md-8">
-					@Html.DisplayFor(model => model.Symptoms)
-				</div>
-			</div>
-			<div class="row mb-3">
-				<div class="col-md-4 text-nowrap fw-bold">
-					@(Html.DisplayNameFor(model => model.Diagnosis))
-				</div>
-				<div class="col-md-8">
-					@Html.DisplayFor(model => model.Diagnosis)
-				</div>
-			</div>
-			<div class="row mb-3">
-				<div class="col-md-4 text-nowrap fw-bold">
-					@*顯示上傳的檔案*@ 
-					@Html.DisplayNameFor(model => model.TestResultsFile)
-				</div>
-				<div class="col-md-8">
-					@if (!string.IsNullOrEmpty(Model.TestResultsFile))
+@if (Model != null && Model.Any())
+{
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th>Record ID</th>
+				<th>Pet Name</th>
+				<th>Vet Name</th>
+				<th>Date</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model)
 			{
-				<a asp-controller="MedicalRecord"
-				   asp-action="DownloadFile"
-				   asp-route-fileName="@Model.TestResultsFile"
-				   class="btn btn-outline-primary"><i class="bi bi-download"></i> @Model.TestResultsFile.Substring(37)</a>
-				@*建立刪除檔案的功能*@
-				<form asp-action="DeleteFile" asp-route-recordid="@Model.RecordID" asp-route-fromdetails="true" method="post" class="d-inline-block">
-					<button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('確定要永久刪除這個檔案嗎？');">
-						<i class="bi bi-trash"></i> 刪除檔案
-					</button>
-				</form>
+				<tr>
+					<td>@item.RecordID</td>
+					<td>@item.Pet.Name</td>
+					<td>@item.Vet.Name</td>
+					<td>@item.VisitDate</td>
+					<td>
+						<a asp-action="Edit" asp-route-recordid="@item.RecordID" asp-route-fromDetails="true" class="btn btn-warning">編輯</a>
+						<a asp-action="Index" class="btn btn-info">回到列表</a>
+					</td>
+				</tr>
 			}
-			else
-			{
-				<span>無檢驗報告</span>
-				//新增報告
-				<button class="btn btn-warning" data-bs-toggle="collapse" data-bs-target="#collapseFile" type="button">上傳檔案</button>
-				<form asp-action="UploadFile" asp-route-recordid="@Model.RecordID" asp-route-fromdetails="true" enctype="multipart/form-data" class="collapse" id="collapseFile">
-						<input type="file" name="uploadFile" class="form-control" accept=".pdf,.doc,.docx,.txt,.jpg" />
-						<input type="hidden" name="existingFileName" value="@(String.IsNullOrEmpty(Model.TestResultsFile) ? "" : Model.TestResultsFile)" />
-						<input type="submit" class="btn btn-primary" value="確定上傳" />
-				</form>
-				
-			}
-				</div>
-			</div>
-		</div>
-		<!-- 右側空白欄位 -->
-		<div class="col-md-6 border-start">
-			<div class="row mb-3">
-				<div class="text-center fw-bold">
-					最新診斷明細
-				</div>
-			</div>
-			@if (Model.RecordDiagnoses.Any()){
-
-			<div class="row mb-3">
-				<div class="col-md-4 text-nowrap fw-bold">
-					@(Html.DisplayNameFor(model => model.RecordDiagnoses.FirstOrDefault().CreatedDate))
-				</div>
-				<div class="col-md-8">
-					@Html.DisplayFor(model => model.RecordDiagnoses.FirstOrDefault().CreatedDate)
-				</div>
-			</div>
-			<div class="row mb-3">
-				<div class="col-md-4 text-nowrap fw-bold">
-					@(Html.DisplayNameFor(model => model.RecordDiagnoses.FirstOrDefault().MedicalVocabularyDictionary.TermName))
-				</div>
-				<div class="col-md-8">
-					@Html.DisplayFor(model => model.RecordDiagnoses.FirstOrDefault().MedicalVocabularyDictionary.TermName)
-				</div>
-			</div>
-			<div class="row mb-3">
-				<div class="col-md-4 text-nowrap fw-bold">
-					@(Html.DisplayNameFor(model => model.RecordDiagnoses.FirstOrDefault().Severity))
-				</div>
-				<div class="col-md-8">
-					@Html.DisplayFor(model => model.RecordDiagnoses.FirstOrDefault().Severity)
-				</div>
-			</div>
-			<div class="row mb-3">
-				<div class="col-md-4 text-nowrap fw-bold">
-					@(Html.DisplayNameFor(model => model.RecordDiagnoses.FirstOrDefault().Remark))
-				</div>
-				<div class="col-md-8">
-					@Html.DisplayFor(model => model.RecordDiagnoses.FirstOrDefault().Remark)
-				</div>
-			</div>
-			} else {
-				<div class="row mb-3">
-					<div class="text-center">
-						目前無診斷明細
-					</div>
-				</div>
-			}
-			<div class="row mb-3">
-				<div class="text-center fw-bold">
-					最新處方明細
-				</div>
-			</div>
-			@if (Model.Prescriptions.Any()){
-
-				<div class="row mb-3">
-					<div class="col-md-4 text-nowrap fw-bold">
-						@(Html.DisplayNameFor(model => model.Prescriptions.FirstOrDefault().MedicationName))
-					</div>
-					<div class="col-md-8">
-						@Html.DisplayFor(model => model.Prescriptions.FirstOrDefault().MedicationName)
-					</div>
-				</div>
-				<div class="row mb-3">
-					<div class="col-md-4 text-nowrap fw-bold">
-						@(Html.DisplayNameFor(model => model.Prescriptions.FirstOrDefault().Dosage))
-					</div>
-					<div class="col-md-8">
-						@Html.DisplayFor(model => model.Prescriptions.FirstOrDefault().Dosage)
-					</div>
-				</div>
-				<div class="row mb-3">
-					<div class="col-md-4 text-nowrap fw-bold">
-						@(Html.DisplayNameFor(model => model.Prescriptions.FirstOrDefault().Frequency))
-					</div>
-					<div class="col-md-8">
-						@Html.DisplayFor(model => model.Prescriptions.FirstOrDefault().Frequency)
-					</div>
-				</div>
-				<div class="row mb-3">
-					<div class="col-md-4 text-nowrap fw-bold">
-						@(Html.DisplayNameFor(model => model.Prescriptions.FirstOrDefault().Instructions))
-					</div>
-					<div class="col-md-8">
-						@Html.DisplayFor(model => model.Prescriptions.FirstOrDefault().Instructions)
-					</div>
-				</div>
-			} else {
-				<div class="row mb-3">
-					<div class="text-center">
-						目前無處方明細
-					</div>
-				</div>
-			}
-		</div>
-	</div>
-</div>
-
-
+		</tbody>
+	</table>
+}
+else
+{
+	<p>目前沒有病歷紀錄。</p>
+}

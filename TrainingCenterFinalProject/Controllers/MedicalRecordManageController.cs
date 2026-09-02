@@ -47,25 +47,25 @@ public class MedicalRecordManageController : BaseController
     }
 
     // GET: MEDICALRECORDS/Details/5
-    public async Task<IActionResult> Details(int? petid,string instID)
+    public async Task<IActionResult> Details(int? petid,string institutionID)
     {
-        if (petid == null || string.IsNullOrEmpty(instID))
+        if (petid == null || string.IsNullOrEmpty(institutionID))
         {
             return NotFound();
         }
-
+        var vetID = await _context.Employments.Where(v => v.InstitutionID == institutionID).Select(v => v.UserID).FirstOrDefaultAsync();
         var medicalrecord = await _context.MedicalRecords
             .Include(m=>m.Pet)
             .Include(m => m.Vet)
             .Include(m=>m.RecordDiagnoses)
             .ThenInclude(rd=> rd.MedicalVocabularyDictionary)
             .Include(m=>m.Prescriptions)
-            .Where(m => m.PetID == petid && m.VetID == instID)
-            .FirstOrDefaultAsync();
-        if (medicalrecord == null)
-        {
-            return NotFound();
-        }
+            .Where(m => m.PetID == petid && m.VetID == vetID)
+            .ToListAsync();
+        //if (medicalrecord == null)
+        //{
+        //    return NotFound();
+        //}
 
         return View(medicalrecord);
     }
