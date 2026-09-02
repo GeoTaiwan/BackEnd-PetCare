@@ -21,15 +21,15 @@
 }
 
 <h1>@ViewData["Title"]</h1>
+<h3>@(ViewBag.PetName)-病歷列表</h3>
 
-<a asp-action="Create" asp-route-petid="@ViewBag.PetID" asp-route-institutionID="@ViewBag.InstitutionID" class="btn btn-primary">新增病歷</a>
+<a asp-action="Create" asp-route-petid="@ViewBag.PetID" class="btn btn-primary">新增病歷</a>
 
 @if (Model != null && Model.Any())
 {
 	<table class="table table-hover">
 		<thead>
 			<tr>
-				<th>@Html.DisplayNameFor(model => model.Pet.Name)</th>
 				<th>@(occupationTitle)@Html.DisplayNameFor(model => model.Vet.Name)</th>
 				<th>@Html.DisplayNameFor(model => model.VisitDate)</th>
 				<th>@Html.DisplayNameFor(model => model.Symptoms)</th>
@@ -41,7 +41,6 @@
 			@foreach (var item in Model)
 			{
 				<tr>
-					<td>@Html.DisplayFor(model => item.Pet.Name)</td>
 					<td>@Html.DisplayFor(model => item.Vet.Name)</td>
 					<td>@Html.DisplayFor(model => item.VisitDate)</td>
 					<td>@Html.DisplayFor(model => item.Symptoms)</td>
@@ -58,4 +57,4 @@ else
 {
 	<p>目前沒有病歷紀錄。</p>
 }
-<a asp-controller="AppointmentManage" asp-action="Index" class="btn btn-info">回到列表</a>
+<a asp-controller="AppointmentManage" asp-action="Index" class="btn btn-info">回預約管理</a>

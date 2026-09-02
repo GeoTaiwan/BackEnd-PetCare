@@ -39,11 +39,12 @@ public class MedicalRecordManageController : BaseController
             .ToListAsync();
         ViewBag.PetID = petid;
         ViewBag.InstitutionID = institutionID;
+        ViewBag.PetName = await _context.Pets.Where(p => p.PetID == petid).Select(p => p.Name).FirstOrDefaultAsync();
         return View(medicalrecord);
     }
 
     // GET: MEDICALRECORDS/Details/5
-    public async Task<IActionResult> Details(int? petid,string institutionID)
+    public async Task<IActionResult> Details(int? petid, string institutionID)
     {
         if (petid == null || string.IsNullOrEmpty(institutionID))
         {
@@ -51,11 +52,11 @@ public class MedicalRecordManageController : BaseController
         }
         var vetID = await _context.Employments.Where(v => v.InstitutionID == institutionID).Select(v => v.UserID).FirstOrDefaultAsync();
         var medicalrecord = await _context.MedicalRecords
-            .Include(m=>m.Pet)
+            .Include(m => m.Pet)
             .Include(m => m.Vet)
-            .Include(m=>m.RecordDiagnoses)
-            .ThenInclude(rd=> rd.MedicalVocabularyDictionary)
-            .Include(m=>m.Prescriptions)
+            .Include(m => m.RecordDiagnoses)
+            .ThenInclude(rd => rd.MedicalVocabularyDictionary)
+            .Include(m => m.Prescriptions)
             .Where(m => m.PetID == petid && m.VetID == vetID)
             .ToListAsync();
         //if (medicalrecord == null)
@@ -69,21 +70,14 @@ public class MedicalRecordManageController : BaseController
     // GET: MEDICALRECORDS/Create
     public async Task<IActionResult> Create(int petid = 0, bool fromDetails = false)
     {
-        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var pet = await _context.Pets.Where(p => p.OwnerID == currentUserId).ToListAsync();
-        if (pet != null)
-        {
-            if (petid == 0)
-            {
-                petid = pet.FirstOrDefault().PetID;
-            }
-            //var pet = await _context.Pets.Where(p => p.OwnerID == currentUserId).ToListAsync();
-            ViewBag.PetList = new SelectList(pet, "PetID", "Name", petid);
-            ViewBag.FromDetails = fromDetails;
-            ViewBag.PetID = petid;
-            return View();
-        }
-        return NotFound();
+        
+        if (petid == 0 ) { return BadRequest(); }
+        ViewBag.FromDetails = fromDetails;
+        ViewBag.PetID = petid;
+        ViewBag.PetName = await _context.Pets.Where(p => p.PetID == petid).Select(p => p.Name).FirstOrDefaultAsync();
+        ViewBag.institutionID = await _context.Employments.Where(v => v.UserID == LoginUserId).Select(v => v.InstitutionID).FirstOrDefaultAsync();
+        return View();
+        
     }
 
     // POST: MEDICALRECORDS/Create
@@ -91,12 +85,11 @@ public class MedicalRecordManageController : BaseController
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(MedicalRecord medicalrecord, IFormFile? uploadFile,bool fromDetails=false)
+    public async Task<IActionResult> Create(MedicalRecord medicalrecord, IFormFile? uploadFile, bool fromDetails = false)
     {
-        string defaultVet = "U202607280002";
-        medicalrecord.VetID = defaultVet;
+        medicalrecord.VetID = LoginUserId;
         ModelState.Remove(nameof(medicalrecord.VetID));
-        var pet = await _context.Pets.ToListAsync();
+
         if (ModelState.IsValid)
         {
             // 判斷使用者是否有上傳檔案
@@ -131,11 +124,11 @@ public class MedicalRecordManageController : BaseController
             await _context.SaveChangesAsync();
             if (fromDetails)
             {
-                return RedirectToAction(nameof(Details),nameof(PetController).Replace("Controller",""),new {petid=medicalrecord.PetID });
+                return RedirectToAction(nameof(Details), nameof(PetController).Replace("Controller", ""), new { petid = medicalrecord.PetID });
             }
             return RedirectToAction(nameof(Index));
         }
-        ViewBag.PetList = new SelectList(pet, "PetID", "Name", medicalrecord.PetID);
+
         return View(medicalrecord);
     }
 
@@ -193,7 +186,8 @@ public class MedicalRecordManageController : BaseController
             medicalRecord.TestResultsFile = null;
             await _context.SaveChangesAsync();
         }
-        if (fromdetails) {
+        if (fromdetails)
+        {
             return RedirectToAction(nameof(Details), new { id = recordid });
         }
         // 5. 刪除成功後，重新導向回原本的 Edit 頁面
@@ -203,7 +197,7 @@ public class MedicalRecordManageController : BaseController
 
     // post 建立上傳檔案的 action
     [HttpPost]
-    public async Task<IActionResult> UploadFile(IFormFile uploadFile, int recordid , bool fromdetails = false)
+    public async Task<IActionResult> UploadFile(IFormFile uploadFile, int recordid, bool fromdetails = false)
     {
         if (uploadFile != null && uploadFile.Length > 0)
         {
@@ -234,9 +228,9 @@ public class MedicalRecordManageController : BaseController
         }
 
         var medicalrecord = await _context.MedicalRecords
-            .Include(mr=>mr.Pet)
+            .Include(mr => mr.Pet)
             .Include(mr => mr.Vet)
-            .FirstOrDefaultAsync(mr=>mr.RecordID==recordid);
+            .FirstOrDefaultAsync(mr => mr.RecordID == recordid);
         if (medicalrecord == null)
         {
             return NotFound();
@@ -338,7 +332,7 @@ public class MedicalRecordManageController : BaseController
             {
                 System.IO.File.Delete(filePath);
             }
-            
+
 
             _context.MedicalRecords.Remove(medicalrecord);
         }

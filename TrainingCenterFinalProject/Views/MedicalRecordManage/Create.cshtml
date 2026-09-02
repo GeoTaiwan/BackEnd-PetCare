@@ -12,11 +12,11 @@
     <div class="col-md-4">
         <form asp-action="Create" asp-route-fromdetails="@ViewBag.FromDetails" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
+			
             <div class="mb-3">
                 <label asp-for="PetID" class="control-label"></label>
-                @* <input asp-for="PetID" class="form-control" /> *@
-                <select asp-for="PetID" asp-items="ViewBag.PetList" class="form-control"></select>
+                <input asp-for="PetID" class="form-control" type="hidden" />
+				<input value="@ViewBag.PetName" class="form-control" disabled />
                 <span asp-validation-for="PetID" class="text-danger"></span>
             </div>
 
@@ -69,7 +69,7 @@
 }else
 {
     
-        <a asp-action="Index" class="btn btn-info">回病歷管理</a>
+        <a asp-action="Index" asp-route-petid="@ViewBag.PetID" asp-route-institutionID="@ViewBag.InstitutionID" class="btn btn-info">回病歷管理</a>
     
 }
 </div>
