@@ -52,7 +52,9 @@
                         }
                         else
                         {
-                            @Html.DisplayFor(model => item.Status)
+                            <span class="text-warning">
+                            @Html.DisplayFor(model => item.Status)                                
+                            </span>
                         }
                     </td>
 
@@ -75,7 +77,7 @@
                             item.Institution.AuthorizationRecords
                             .Where(ar => ar.PetID == item.PetID && ar.Status == "Pending").Any())
                             {
-                                <span class="text-success">已申請授權</span>
+                                <span class="text-warning">已申請授權</span>
                             }
                             else
                             {
