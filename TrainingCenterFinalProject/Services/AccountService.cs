@@ -54,7 +54,7 @@ public class AccountService : IAccountService
             return result;
         }
 
-        // 4. 驗證密碼
+        // 4. 驗證本地密碼
         var credential = user.CredentialDetails.FirstOrDefault(cd => cd.CredentialID == "C01");
         bool isPasswordCorrect = false;
 
