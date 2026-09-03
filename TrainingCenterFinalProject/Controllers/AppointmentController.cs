@@ -1,250 +1,155 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using PetCare.Controllers;
-using System.Transactions;
-using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Models;
+using TrainingCenterFinalProject.Services;
 
 public class AppointmentController : BaseController
 {
-    private readonly PetCareDbContext _context;
+    private readonly IAppointmentService _appointmentService;
 
-    public AppointmentController(PetCareDbContext context, IWebHostEnvironment env)
+    public AppointmentController(IAppointmentService appointmentService)
     {
-        _context = context;
+        _appointmentService = appointmentService;
     }
 
-    private async Task getList()
+    public async Task<IActionResult> Index(int petid = 0)
     {
-        //取得使用者寵物清單
-        await getPetList();
-        var institutions = await _context.Institutions
-            .Where(i => i.StatusId == "S01")
-            .ToListAsync();
-        ViewBag.InstitutionList = new SelectList(institutions, "InstitutionID", "Name");
-    }
+        if (string.IsNullOrEmpty(LoginUserId)) return Unauthorized();
 
-    private async Task getPetList(int petid = 0)
-    {
-        var pets = await _context.Pets
-            .Where(p => p.OwnerID == LoginUserId)
-            .ToListAsync();
-        ViewBag.PetList = new SelectList(pets, "PetID", "Name",petid>0?petid:0);
-    }
-
-    //一個產生可預約的時間清單的方法，回傳List<SelectListItem>，用於下拉選單
-    //機構可設定營業時間、間隔時間，這裡假設營業時間從早上9點到下午6點，每30分鐘一個時段
-    //使用者可選日期後，會產生該日期的可預約時間清單
-    private List<SelectListItem> GenerateAvailableTimeSlots(DateTime startTime, DateTime endTime, TimeSpan interval, DateTime selectedDate = default)
-    {
-        var timeSlots = new List<SelectListItem>();
-        if (selectedDate != default) {
-            startTime = selectedDate.Date.Add(startTime.TimeOfDay);
-            endTime = selectedDate.Date.Add(endTime.TimeOfDay);
-        }
-        for (var time = startTime; time < endTime; time += interval)
-        {
-            timeSlots.Add(new SelectListItem
-            {
-                Value = time.ToString("HH:mm"),
-                Text = time.ToString("HH:mm")
-            });
-        }
-
-        return timeSlots;
-    }
-
-    // GET: APPOINTMENTS
-    public async Task<IActionResult> Index(int petid=0)    
-    {
-        //機構用的Appointment已經在AppointmentManageController裡面做了，所以這裡只要抓出使用者的寵物預約即可
-        await getPetList(petid);
-        var appointments = await _context.Appointments
-                .Include(a => a.Pet)
-                .Include(a => a.Institution)
-                .Where(a => a.Pet.OwnerID == LoginUserId)
-                .OrderByDescending(a => a.ApptDateTime).ToListAsync();
-        if (petid != 0)
-        {
-            appointments = appointments.Where(a=>a.PetID == petid).ToList();
-            return View(appointments);
-        }
-        //petid = await _context.Pets
-        //    .Where(p => p.OwnerID == LoginUserId)
-        //    .Select(p => p.PetID)
-        //    .FirstOrDefaultAsync();
-        //appointments = appointments.Where(a => a.PetID == petid).ToList();
-        
+        await PopulatePetListAsync(petid);
+        var appointments = await _appointmentService.GetUserAppointmentsAsync(LoginUserId, petid);
         return View(appointments);
-        
     }
 
-    // GET: APPOINTMENTS/Details/5
     public async Task<IActionResult> Details(string? id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
+        if (string.IsNullOrEmpty(id)) return NotFound();
 
-        var appointment = await _context.Appointments
-            .FirstOrDefaultAsync(m => m.AppointmentID == id);
-        if (appointment == null)
-        {
-            return NotFound();
-        }
+        var appointment = await _appointmentService.GetByIdAsync(id);
+        if (appointment == null) return NotFound();
 
         return View(appointment);
     }
 
-    // 合併後的 GET: APPOINTMENTS/Create
     [HttpGet]
     public async Task<IActionResult> Create(string? instId)
     {
-        // 一般使用者預約用
+        if (string.IsNullOrEmpty(LoginUserId)) return Unauthorized();
+
         if (string.IsNullOrEmpty(instId))
         {
             TempData["ErrorMessage"] = "請先選擇要預約的機構！";
             return RedirectToAction("IndexForReservation", "Institution");
         }
 
-        // 🌟 必須呼叫這個，畫面才會有 PetList 和 InstitutionList！
-        await getList();
-        ViewBag.TimeSlots = GenerateAvailableTimeSlots(DateTime.Today.AddHours(9), DateTime.Today.AddHours(18), TimeSpan.FromMinutes(30));
-        var selectedInst = await _context.Institutions.FindAsync(instId);
-        if (selectedInst != null)
+        await PopulateCreateViewDataAsync(0, instId);
+
+        var selectedInstName = await _appointmentService.GetInstitutionNameAsync(instId);
+        if (!string.IsNullOrEmpty(selectedInstName))
         {
-            ViewBag.InstitutionName = selectedInst.Name;
+            ViewBag.InstitutionName = selectedInstName;
         }
 
-        var model = new Appointment
-        {
-            InstitutionID = instId
-        };
-
-        return View(model);
+        return View(new Appointment { InstitutionID = instId });
     }
 
-    // 產生AppointmentID的方法，長度為19個字元，ex：A20260803-I00001-001，A開頭，後面接日期、機構ID、流水號
-    private async Task<string> GenerateAppointmentID(string institutionID)
-    {
-        var datePart = DateTime.Now.ToString("yyyyMMdd");
-        var serialNumber = await _context.Appointments.CountAsync(a => a.InstitutionID == institutionID && a.ApplyTime.Date == DateTime.Today) + 1;
-        return $"A{datePart}-{institutionID}-{serialNumber:D3}";
-    }
-
-    // POST: APPOINTMENTS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Appointment appointment, string selectedDate, string selectedTime)
     {
-        ModelState.Remove("AppointmentID"); // 移除 AppointmentID 的驗證，因為我們會自動生成它
-        ModelState.Remove("Status"); // 移除 Status 的驗證，因為我們會自動生成它
-        ModelState.Remove("ApptDateTime"); // 移除 ApptDateTime 的驗證，因為我們會自動生成它
-        appointment.AppointmentID = await GenerateAppointmentID(appointment.InstitutionID);
-        appointment.Status = "已申請待確認"; // 預設狀態為 Pending
-        appointment.ApptDateTime = DateTime.Parse($"{selectedDate} {selectedTime}");
-        if (ModelState.IsValid)
+        ModelState.Remove("AppointmentID");
+        ModelState.Remove("Status");
+        ModelState.Remove("ApptDateTime");
+        ModelState.Remove("ApplyTime");
+
+        if (!ModelState.IsValid)
         {
-            _context.Add(appointment);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Details),"Pet", new { petid = appointment.PetID });
+            await PopulateCreateViewDataAsync(appointment.PetID, appointment.InstitutionID);
+            return View(appointment);
         }
-        await getList(); // 如果驗證失敗，重新取得下拉選單資料
-        return View(appointment);
+
+        var result = await _appointmentService.CreateAsync(appointment, selectedDate, selectedTime);
+        if (!result.IsSuccess)
+        {
+            ModelState.AddModelError(string.Empty, result.ErrorMessage);
+            await PopulateCreateViewDataAsync(appointment.PetID, appointment.InstitutionID);
+            return View(appointment);
+        }
+
+        return RedirectToAction(nameof(Details), "Pet", new { petid = appointment.PetID });
     }
 
-    // GET: APPOINTMENTS/Edit/5
     public async Task<IActionResult> Edit(string? id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
+        if (string.IsNullOrEmpty(id)) return NotFound();
 
-        var appointment = await _context.Appointments.FindAsync(id);
-        if (appointment == null)
-        {
-            return NotFound();
-        }
+        var appointment = await _appointmentService.GetByIdAsync(id);
+        if (appointment == null) return NotFound();
+
         return View(appointment);
     }
 
-    // POST: APPOINTMENTS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(string? id, [Bind("AppointmentID,PetID,InstitutionID,ServiceType,ApptDateTime,Status,Pet,Institution")] Appointment appointment)
     {
-        if (id != appointment.AppointmentID)
+        if (string.IsNullOrEmpty(id)) return NotFound();
+
+        if (!ModelState.IsValid) return View(appointment);
+
+        var result = await _appointmentService.UpdateAsync(id, appointment);
+        if (!result.IsSuccess && result.ErrorMessage == "NOT_FOUND")
         {
             return NotFound();
         }
 
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(appointment);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AppointmentExists(appointment.AppointmentID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(appointment);
+        return RedirectToAction(nameof(Index));
     }
 
-    // GET: APPOINTMENTS/Delete/5
     public async Task<IActionResult> Delete(string? id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
+        if (string.IsNullOrEmpty(id)) return NotFound();
 
-        var appointment = await _context.Appointments
-            .FirstOrDefaultAsync(m => m.AppointmentID == id);
-        if (appointment == null)
-        {
-            return NotFound();
-        }
+        var appointment = await _appointmentService.GetByIdAsync(id);
+        if (appointment == null) return NotFound();
 
         return View(appointment);
     }
 
-    // POST: APPOINTMENTS/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(string? id)
     {
-        var appointment = await _context.Appointments.FindAsync(id);
-        var petid = appointment.PetID.ToString();
-        if (appointment != null)
+        if (string.IsNullOrEmpty(id)) return NotFound();
+
+        var result = await _appointmentService.DeleteAsync(id);
+        if (!result.IsSuccess && result.ErrorMessage == "NOT_FOUND")
         {
-            _context.Appointments.Remove(appointment);
+            return NotFound();
         }
 
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index),new {petid=petid});
+        return RedirectToAction(nameof(Index), new { petid = result.Data });
     }
 
-    private bool AppointmentExists(string? id)
+    private async Task PopulatePetListAsync(int selectedPetId = 0)
     {
-        return _context.Appointments.Any(e => e.AppointmentID == id);
+        var pets = await _appointmentService.GetUserPetsAsync(LoginUserId!);
+        ViewBag.PetList = new SelectList(pets, "PetID", "Name", selectedPetId == 0 ? null : selectedPetId);
+    }
+
+    private async Task PopulateCreateViewDataAsync(int selectedPetId = 0, string? selectedInstitutionId = null)
+    {
+        await PopulatePetListAsync(selectedPetId);
+
+        var institutions = await _appointmentService.GetActiveInstitutionsAsync();
+        ViewBag.InstitutionList = new SelectList(institutions, "InstitutionID", "Name", selectedInstitutionId);
+
+        var slots = _appointmentService.GenerateAvailableTimeSlots(
+            DateTime.Today.AddHours(9),
+            DateTime.Today.AddHours(18),
+            TimeSpan.FromMinutes(30));
+
+        ViewBag.TimeSlots = slots.Select(s => new SelectListItem { Value = s, Text = s }).ToList();
     }
 }
