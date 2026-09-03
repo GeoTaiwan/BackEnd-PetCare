@@ -53,6 +53,7 @@ builder.Services.AddControllersWithViews(options =>
 
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAdminInstitutionService, AdminInstitutionService>();
+builder.Services.AddScoped<IAdminUserService, AdminUserService>();
 
 
 var app = builder.Build();
