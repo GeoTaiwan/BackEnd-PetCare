@@ -52,6 +52,7 @@ builder.Services.AddControllersWithViews(options =>
 // 註冊自訂的服務
 
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IAdminInstitutionService, AdminInstitutionService>();
 
 
 var app = builder.Build();
