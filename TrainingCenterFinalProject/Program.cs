@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Filters;
+using TrainingCenterFinalProject.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +48,11 @@ builder.Services.AddControllersWithViews(options =>
     // 將我們寫好的 AutoTitleFilter 註冊為全域過濾器
     options.Filters.Add<AutoTitleFilter>();
 });
+
+// 註冊自訂的服務
+
+builder.Services.AddScoped<IAccountService, AccountService>();
+
 
 var app = builder.Build();
 
