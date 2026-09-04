@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TrainingCenterFinalProject.Models;
 using TrainingCenterFinalProject.Data;
-
-public class TaskScheduleController : Controller
+using PetCare.Controllers;
+using Microsoft.AspNetCore.Authorization;
+[Authorize(Roles = "VetManage,BeautyManage,NannyManage")]
+public class TaskScheduleManageController : BaseController
 {
     private readonly PetCareDbContext _context;
 
-    public TaskScheduleController(PetCareDbContext context)
+    public TaskScheduleManageController(PetCareDbContext context)
     {
         _context = context;
     }
@@ -16,7 +18,20 @@ public class TaskScheduleController : Controller
     // GET: TASKSCHEDULES
     public async Task<IActionResult> Index()    
     {
-        return View(await _context.TaskSchedules.ToListAsync());
+        var taskSchedules = await _context.TaskSchedules
+            .Include(t=>t.Staff)
+            .Include(t=>t.Institution)
+            .ThenInclude(i=>i.Employments).ThenInclude(e=>e.OccupationDetails)
+            .ToListAsync();
+        var currentUserInstitution = _context.Employments
+            .Where(e => e.UserID == LoginUserId)
+            .Select(e => e.InstitutionID)
+            .FirstOrDefault();
+        ViewBag.InstName = _context.Institutions
+            .Where(i=>i.InstitutionID == currentUserInstitution)
+            .Select(i=>i.Name)
+            .FirstOrDefault();
+        return View(taskSchedules);
     }
 
     // GET: TASKSCHEDULES/Details/5
