@@ -27,15 +27,15 @@ namespace TrainingCenterFinalProject.Models
 
         [Required]
         [Display(Name = "預約時間")]
-        [DisplayFormat(DataFormatString = "{0:yy/MM/dd HH:mm}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd\nHH:mm}", ApplyFormatInEditMode = true)]
         public DateTime ApptDateTime { get; set; }
         [Required]
         [Display(Name = "申請時間")]
-        [DisplayFormat(DataFormatString = "{0:yy/MM/dd HH:mm}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd\nHH:mm}", ApplyFormatInEditMode = true)]
         public DateTime ApplyTime { get; set; }
         
         [Display(Name = "處理時間")]
-        [DisplayFormat(DataFormatString = "{0:yy/MM/dd HH:mm}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd\nHH:mm}", ApplyFormatInEditMode = true)]
         public DateTime? HandleTime { get; set; }
         [Display(Name = "處理員工ID")]
         public string? EmployeeID { get; set; }
