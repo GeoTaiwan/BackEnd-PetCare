@@ -125,23 +125,23 @@ public class TaskScheduleManageController : BaseController
         return View(taskschedule);
     }
 
-    // GET: TASKSCHEDULES/Delete/5
-    public async Task<IActionResult> Delete(int? taskid)
-    {
-        if (taskid == null)
-        {
-            return NotFound();
-        }
+    //// GET: TASKSCHEDULES/Delete/5
+    //public async Task<IActionResult> Delete(int? taskid)
+    //{
+    //    if (taskid == null)
+    //    {
+    //        return NotFound();
+    //    }
 
-        var taskschedule = await _context.TaskSchedules
-            .FirstOrDefaultAsync(m => m.TaskID == taskid);
-        if (taskschedule == null)
-        {
-            return NotFound();
-        }
+    //    var taskschedule = await _context.TaskSchedules
+    //        .FirstOrDefaultAsync(m => m.TaskID == taskid);
+    //    if (taskschedule == null)
+    //    {
+    //        return NotFound();
+    //    }
 
-        return View(taskschedule);
-    }
+    //    return View(taskschedule);
+    //}
 
     // POST: TASKSCHEDULES/Delete/5
     [HttpPost, ActionName("Delete")]
