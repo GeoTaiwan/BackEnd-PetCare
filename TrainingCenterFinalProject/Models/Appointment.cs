@@ -44,6 +44,7 @@ namespace TrainingCenterFinalProject.Models
         [StringLength(20)]
         [Display(Name = "狀態")]
         public string Status { get; set; } = null!;
+        
 
         // === Foreign Keys (加上 ? 繞過驗證) ===
         [ForeignKey(nameof(PetID))]
@@ -53,5 +54,7 @@ namespace TrainingCenterFinalProject.Models
         public virtual Institution? Institution { get; set; }
         [ForeignKey(nameof(EmployeeID))]
         public virtual UserProfile? Employee { get; set; }
+        
+        public virtual TaskSchedule? Task { get; set; }
     }
 }

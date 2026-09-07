@@ -84,7 +84,7 @@ namespace TrainingCenterFinalProject.Migrations
                     b.Property<int>("PetID")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("RevokedDate")
+                    b.Property<DateTime>("RevokedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
@@ -612,6 +612,10 @@ namespace TrainingCenterFinalProject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskID"));
 
+                    b.Property<string>("AppointmentID")
+                        .IsRequired()
+                        .HasColumnType("nchar(20)");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -638,6 +642,9 @@ namespace TrainingCenterFinalProject.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("TaskID");
+
+                    b.HasIndex("AppointmentID")
+                        .IsUnique();
 
                     b.HasIndex("InstitutionID");
 
@@ -944,6 +951,12 @@ namespace TrainingCenterFinalProject.Migrations
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.TaskSchedule", b =>
                 {
+                    b.HasOne("TrainingCenterFinalProject.Models.Appointment", "Appointment")
+                        .WithOne("Task")
+                        .HasForeignKey("TrainingCenterFinalProject.Models.TaskSchedule", "AppointmentID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("TrainingCenterFinalProject.Models.Institution", "Institution")
                         .WithMany("TaskSchedules")
                         .HasForeignKey("InstitutionID")
@@ -955,6 +968,8 @@ namespace TrainingCenterFinalProject.Migrations
                         .HasForeignKey("StaffID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Appointment");
 
                     b.Navigation("Institution");
 
@@ -989,6 +1004,11 @@ namespace TrainingCenterFinalProject.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("TrainingCenterFinalProject.Models.Appointment", b =>
+                {
+                    b.Navigation("Task");
                 });
 
             modelBuilder.Entity("TrainingCenterFinalProject.Models.CareGroomingLog", b =>

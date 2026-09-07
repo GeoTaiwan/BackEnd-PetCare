@@ -210,8 +210,8 @@ namespace TrainingCenterFinalProject.Data
                     var realClinic = context.Institutions.FirstOrDefault(i => i.Name == "快樂動物醫院");
                     var realSalon = context.Institutions.FirstOrDefault(i => i.Name == "毛小孩美容坊");
                     context.Appointments.AddRange(
-                        new Appointment { AppointmentID = "A20260803-I00001-01", PetID = realDog.PetID, InstitutionID = realClinic.InstitutionID, ServiceType = "健康檢查", ApptDateTime = now.AddDays(2),ApplyTime=now, HandleTime = now.AddHours(1),EmployeeID= "U202607280002", Status = "預約成功" },
-                        new Appointment { AppointmentID = "A20260803-I00002-01", PetID = realCat.PetID, InstitutionID = realSalon.InstitutionID, ServiceType = "洗澡修剪", ApptDateTime = now.AddDays(5),ApplyTime=now, Status = "已申請待確認" }
+                        new Appointment { AppointmentID = "A20260803-I00001-001", PetID = realDog.PetID, InstitutionID = realClinic.InstitutionID, ServiceType = "健康檢查", ApptDateTime = now.AddDays(2),ApplyTime=now, HandleTime = now.AddHours(1),EmployeeID= "U202607280002", Status = "預約成功" },
+                        new Appointment { AppointmentID = "A20260803-I00002-001", PetID = realCat.PetID, InstitutionID = realSalon.InstitutionID, ServiceType = "洗澡修剪", ApptDateTime = now.AddDays(5),ApplyTime=now, Status = "已申請待確認" }
                     );
                     context.SaveChanges();
                 }
@@ -262,14 +262,46 @@ namespace TrainingCenterFinalProject.Data
                 // ==========================================
                 // 12. 建立 排班表 (TaskSchedule)
                 // ==========================================
+                //if (!context.Appointments.Any())
+                //{
+                //    var realDog = context.Pets.FirstOrDefault(p => p.Name == "小白");
+                //    var realCat = context.Pets.FirstOrDefault(p => p.Name == "胖橘");
+                //    var realClinic = context.Institutions.FirstOrDefault(i => i.Name == "快樂動物醫院");
+                //    var realSalon = context.Institutions.FirstOrDefault(i => i.Name == "毛小孩美容坊");
+                //    context.Appointments.AddRange(
+                //        new Appointment { AppointmentID = "A20260803-I00001-01", PetID = realDog.PetID, InstitutionID = realClinic.InstitutionID, ServiceType = "健康檢查", ApptDateTime = now.AddDays(2), ApplyTime = now, HandleTime = now.AddHours(1), EmployeeID = "U202607280002", Status = "預約成功" },
+                //        new Appointment { AppointmentID = "A20260803-I00002-01", PetID = realCat.PetID, InstitutionID = realSalon.InstitutionID, ServiceType = "洗澡修剪", ApptDateTime = now.AddDays(5), ApplyTime = now, Status = "已申請待確認" }
+                //    );
+                //    context.SaveChanges();
+                //}
                 if (!context.TaskSchedules.Any())
                 {
-                    
+                    var relatedAppointment = context.Appointments.FirstOrDefault(a => a.AppointmentID == "A20260803-I00002-001");
                     var realSalon = context.Institutions.FirstOrDefault(i => i.Name == "毛小孩美容坊");
-                    context.TaskSchedules.Add(
-                        new TaskSchedule { StaffID = groomer.UserID, InstitutionID = realSalon.InstitutionID, CreatedDate = now, StartTime = now.AddHours(1), EndTime = now.AddHours(5), TaskDescription = "下午場次美容服務排班", Status = "Pending" }
-                    );
-                    context.SaveChanges();
+
+                    // 確保兩者都有找到資料，再進行寫入，避免發生 NullReferenceException
+                    if (relatedAppointment != null && realSalon != null)
+                    {
+                        context.TaskSchedules.Add(
+                            new TaskSchedule
+                            {
+                                StaffID = groomer.UserID,
+                                InstitutionID = realSalon.InstitutionID,
+
+                                // 1. 補上必須的外鍵
+                                AppointmentID = relatedAppointment.AppointmentID,
+
+                                // 2. 直接取用 DateTime 的值，並給予 null 時的備案 (例如使用當下時間或 ApplyTime)
+                                CreatedDate = relatedAppointment.HandleTime.HasValue ? relatedAppointment.HandleTime.Value.AddMinutes(5) : relatedAppointment.ApplyTime,
+
+                                StartTime = relatedAppointment.ApptDateTime,
+                                EndTime = relatedAppointment.ApptDateTime.AddMinutes(30),
+                                TaskDescription = "下午場次美容服務排班",
+                                Status = "Pending"
+                            }
+                        );
+                        context.SaveChanges();
+                    }
                 }
             }
         }

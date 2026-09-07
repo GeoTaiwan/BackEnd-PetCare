@@ -44,6 +44,8 @@ namespace TrainingCenterFinalProject.Models
         [StringLength(20)]
         [Display(Name = "任務狀態")]
         public string Status { get; set; } = null!;
+        [Column(TypeName = "nchar(20)")]
+        public string AppointmentID { get; set; } = null!;
 
         // === Foreign Keys (加上 ? 繞過驗證) ===
         [ForeignKey(nameof(StaffID))]
@@ -51,5 +53,7 @@ namespace TrainingCenterFinalProject.Models
 
         [ForeignKey(nameof(InstitutionID))]
         public virtual Institution? Institution { get; set; }
+        [ForeignKey(nameof(AppointmentID))]
+        public virtual Appointment? Appointment { get; set; }
     }
 }
