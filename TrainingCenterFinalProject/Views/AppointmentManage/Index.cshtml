@@ -92,8 +92,16 @@
 								<a asp-controller="AuthorizationRecordManage" asp-action="Create" asp-route-petid="@item.PetID" asp-route-institutionid="@item.InstitutionID" class="btn btn-info position-relative z-2">
 									要求授權
 								</a>
+								
 							}
-							
+
+							<form asp-controller="TaskScheduleManage" asp-action="AssignEmployee" method="post" class="d-inline-block position-relative z-2">
+								<select name="StaffID" class="form-select" asp-items="ViewBag.EmployeeList"></select>
+								<input type="hidden" name="InstitutionID" value="@item.InstitutionID" />
+								<input type="hidden" name="StartTime" value="@item.ApptDateTime" />
+								<input name="TaskDescription" value="" placeholder="備註" />
+								<button type="submit" class="btn btn-primary position-relative z-2" onclick="return confirm('確定要指派【' + document.querySelector('select[name=\'StaffID\']').selectedOptions[0].text + '】嗎？');">指派員工</button>
+							</form>
 						}
 					</td>
 				</tr>

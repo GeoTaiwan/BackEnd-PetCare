@@ -5,6 +5,7 @@ using TrainingCenterFinalProject.Models;
 using TrainingCenterFinalProject.Data;
 using PetCare.Controllers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 [Authorize(Roles = "Vet,Beauty,Nanny,VetManage,BeautyManage,NannyManage")]
 public class AppointmentManageController : BaseController
 {
@@ -39,6 +40,10 @@ public class AppointmentManageController : BaseController
             .Where(a => a.InstitutionID == instID)
             .OrderByDescending(a => a.ApplyTime)
             .ToListAsync();
+        ViewBag.EmployeeList = new SelectList(await _context.Employments
+            .Where(e => e.InstitutionID == instID)
+            .Select(e => new { e.UserID, e.UserProfile!.Name })
+            .ToListAsync(), "UserID", "Name");
         return View(app);
     }
 

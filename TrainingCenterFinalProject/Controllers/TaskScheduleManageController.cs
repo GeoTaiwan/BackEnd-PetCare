@@ -74,6 +74,30 @@ public class TaskScheduleManageController : BaseController
         return View(taskschedule);
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AssignEmployee(TaskSchedule taskschedule)
+    {
+        if (taskschedule == null)
+        {
+            return NotFound();
+        }
+        ModelState.Remove("CreatedDate");
+        ModelState.Remove("StartTime");
+        ModelState.Remove("EndTime");
+        ModelState.Remove("Status");
+        taskschedule.CreatedDate = DateTime.Now;
+        taskschedule.EndTime =taskschedule.StartTime.AddMinutes(30); // Default duration of 30 minutes
+        taskschedule.Status = "Active"; // Default status
+        if (ModelState.IsValid)
+        {
+            _context.Add(taskschedule);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index),"AppointmentManage");
+        }
+        return View(taskschedule);
+    }
+
     // GET: TASKSCHEDULES/Edit/5
     public async Task<IActionResult> Edit(int? taskid)
     {
