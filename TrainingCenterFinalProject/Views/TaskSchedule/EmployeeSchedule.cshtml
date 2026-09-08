@@ -1,0 +1,111 @@
+﻿@model IEnumerable<TrainingCenterFinalProject.Models.TaskSchedule>
+
+@{
+    ViewData["Title"] = "我的工作排程";
+    DateTime startOfWeek = ViewBag.StartOfWeek;
+
+    // 建立一整天的時段清單 (09:00 ~ 17:30，間隔30分)
+    List<TimeSpan> timeSlots = new List<TimeSpan>();
+    for (int h = 9; h <= 17; h++)
+    {
+        timeSlots.Add(new TimeSpan(h, 0, 0));
+        timeSlots.Add(new TimeSpan(h, 30, 0));
+    }
+}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">
+        員工工作排程表 <br />
+        <span class="fs-5 text-muted">
+            (@startOfWeek.ToString("yyyy/MM/dd") ~ @startOfWeek.AddDays(6).ToString("yyyy/MM/dd"))
+        </span>
+    </h2>
+
+    <!-- 切換週次的按鈕 -->
+    <div class="d-flex justify-content-between mb-3">
+        <a href="@Url.Action("EmployeeSchedule", new { targetDate = startOfWeek.AddDays(-7).ToString("yyyy-MM-dd") })" class="btn btn-outline-primary">
+            <i class="bi bi-chevron-left"></i> 上一週
+        </a>
+        <a href="@Url.Action("EmployeeSchedule", new { targetDate = DateTime.Today.ToString("yyyy-MM-dd") })" class="btn btn-primary">
+            回到本週
+        </a>
+        <a href="@Url.Action("EmployeeSchedule", new { targetDate = startOfWeek.AddDays(7).ToString("yyyy-MM-dd") })" class="btn btn-outline-primary">
+            下一週 <i class="bi bi-chevron-right"></i>
+        </a>
+    </div>
+
+    <!-- 課表/行事曆本體 -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped text-center align-middle" style="min-width: 900px;">
+            <thead class="table-dark">
+                <tr>
+                    <th style="width: 9%;">時間</th>
+                    @for (int i = 0; i < 7; i++)
+                    {
+                        // 產生星期日到星期六的表頭
+                        var currentDay = startOfWeek.AddDays(i);
+                        string[] dayNames = { "日", "一", "二", "三", "四", "五", "六" };
+                        <th style="width: 13%;">
+                            星期@(dayNames[i])<br />
+                            <small class="text-light">@currentDay.ToString("MM/dd")</small>
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var slot in timeSlots)
+                {
+                    <tr>
+                        <!-- 欄位 1：顯示時間 (例如 09:00 ~ 09:30) -->
+                        <td class="fw-bold bg-light">
+                            @slot.ToString(@"hh\:mm")<br />|<br />@slot.Add(TimeSpan.FromMinutes(30)).ToString(@"hh\:mm")
+                        </td>
+
+                        <!-- 欄位 2~8：顯示日~六的任務 -->
+                        @for (int i = 0; i < 7; i++)
+                        {
+                            // 組合出「這個格子」的完整日期與時間
+                            var cellDateTime = startOfWeek.AddDays(i).Add(slot);
+
+                            // 在 Model 中尋找 StartTime 符合這個格子的任務
+                            @* var task = Model.FirstOrDefault(t => t.StartTime == cellDateTime); *@
+                            // 將原本的：
+                            // var task = Model.FirstOrDefault(t => t.StartTime == cellDateTime);
+
+                            // 改成這樣：
+                            var task = Model.FirstOrDefault(t => t.StartTime.ToString("yyyyMMddHHmm") == cellDateTime.ToString("yyyyMMddHHmm"));
+
+                            <td>
+                                @if (task != null)
+                                {
+                                    <!-- 找到任務，顯示卡片 -->
+                                    <div class="card border-primary h-100 shadow-sm" style="min-height: 80px;">
+                                        <div class="card-body p-2 text-start">
+                                            <span class="badge bg-primary mb-1">任務單號: @task.TaskID</span>
+
+                                            <!-- 顯示預約編號或說明 -->
+                                            @if (!string.IsNullOrEmpty(task.AppointmentID))
+                                            {
+                                                <div class="small fw-bold text-truncate">預約: @task.Appointment.Pet.Name</div>
+                                                <div class="small fw-bold text-truncate">員工: @task.Staff.Name</div>
+                                            }
+
+                                            <div class="small text-muted text-truncate" title="@task.TaskDescription">
+                                                @(string.IsNullOrEmpty(task.TaskDescription) ? "無備註" : task.TaskDescription)
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <!-- 該時段沒有任務，顯示空白 -->
+                                    <span class="text-black-50" style="opacity: 0.1;">-</span>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TrainingCenterFinalProject.Models;
 using TrainingCenterFinalProject.Data;
+using PetCare.Controllers;
 
-public class TaskScheduleController : Controller
+public class TaskScheduleController : BaseController
 {
     private readonly PetCareDbContext _context;
 
@@ -13,10 +14,48 @@ public class TaskScheduleController : Controller
         _context = context;
     }
 
+    // targetDate 參數讓使用者可以切換「上一週」、「下一週」
+    public async Task<IActionResult> EmployeeSchedule(DateTime? targetDate)
+    {
+        // 1. 決定要顯示的基準日 (沒傳就用今天)
+        DateTime baseDate = targetDate ?? DateTime.Today;
+
+        // 2. 計算本週的「星期日」(StartOfWeek)
+        // DayOfWeek.Sunday = 0, 所以 baseDate 減去它的 DayOfWeek 就能回到星期日
+        int diff = baseDate.DayOfWeek - DayOfWeek.Sunday;
+        DateTime startOfWeek = baseDate.AddDays(-1 * diff).Date;
+
+        // 本週的結束邊界 (下週日 00:00:00，用來做範圍查詢)
+        DateTime endOfWeek = startOfWeek.AddDays(7);
+
+        // 3. 取得當前登入員工的 StaffID
+        // 這裡假設你寫死 "EMP001" 測試，實際應用請替換成 User.Identity.Name 或 Session
+        string currentStaffID = LoginUserId;
+
+        // 4. 從資料庫撈取該員工「這一週」的所有任務
+        var tasks = await _context.TaskSchedules
+            .Include(t => t.Appointment) // 視需要關聯
+            .ThenInclude(a=>a.Pet)
+            .Include(a=>a.Staff)
+            .Where(t => t.StaffID == currentStaffID
+                     && t.StartTime >= startOfWeek
+                     && t.StartTime < endOfWeek
+                     && t.Status == "Active") // 如果你需要過濾狀態
+            .ToListAsync();
+
+        // 5. 將每週的起始日傳給 View，方便顯示標題與切換週次
+        ViewBag.StartOfWeek = startOfWeek;
+
+        return View(tasks);
+    }
+
     // GET: TASKSCHEDULES
     public async Task<IActionResult> Index()    
     {
-        return View(await _context.TaskSchedules.ToListAsync());
+        var tasks = await _context.TaskSchedules
+            .Where(t=>t.StaffID==LoginUserId)
+            .ToListAsync();
+        return View(tasks);
     }
 
     // GET: TASKSCHEDULES/Details/5
