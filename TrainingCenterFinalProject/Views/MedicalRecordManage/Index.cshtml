@@ -23,7 +23,7 @@
 <h1>@(ViewBag.InstitutionName)-@ViewData["Title"]</h1>
 @* <h3>病歷列表</h3> *@
 
-<a asp-action="Create" asp-route-petid="@ViewBag.PetID" class="btn btn-primary">新增病歷</a>
+
 
 @if (Model != null && Model.Any())
 {
@@ -49,6 +49,7 @@
 					<td>@Html.DisplayFor(model => item.TestResultsFile)</td>
 					<td>
 						<a asp-action="Edit" asp-route-recordid="@item.RecordID" asp-route-fromDetails="false" class="btn btn-warning">編輯</a>
+						<a asp-action="Create" asp-route-petid="@item.PetID" class="btn btn-primary">新增病歷</a>
 					</td>
 				</tr>
 			}
@@ -57,7 +58,7 @@
 }
 else
 {
-	<p>目前沒有病歷紀錄。</p>
+	<p>目前沒有已授權病歷紀錄。</p>
 }
 @if (ViewBag.FromIndex != null && (bool)ViewBag.FromIndex)
 {

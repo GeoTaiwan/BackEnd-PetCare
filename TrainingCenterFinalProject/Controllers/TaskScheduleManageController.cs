@@ -18,15 +18,16 @@ public class TaskScheduleManageController : BaseController
     // GET: TASKSCHEDULES
     public async Task<IActionResult> Index()    
     {
-        var taskSchedules = await _context.TaskSchedules
-            .Include(t=>t.Staff)
-            .Include(t=>t.Institution)
-            .ThenInclude(i=>i.Employments).ThenInclude(e=>e.OccupationDetails)
-            .ToListAsync();
         var currentUserInstitution = _context.Employments
             .Where(e => e.UserID == LoginUserId)
             .Select(e => e.InstitutionID)
             .FirstOrDefault();
+        var taskSchedules = await _context.TaskSchedules
+            .Include(t=>t.Staff)
+            .Include(t=>t.Institution)
+            .ThenInclude(i=>i.Employments).ThenInclude(e=>e.OccupationDetails)
+            .Where(t=>t.InstitutionID==currentUserInstitution)
+            .ToListAsync();
         ViewBag.InstName = _context.Institutions
             .Where(i=>i.InstitutionID == currentUserInstitution)
             .Select(i=>i.Name)
