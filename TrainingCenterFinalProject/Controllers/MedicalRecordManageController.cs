@@ -23,27 +23,42 @@ public class MedicalRecordManageController : BaseController
     }
 
     // GET: MEDICALRECORDS
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int petid=0)
     {
+        
+
         string institutionID = await _context.Employments.Where(v => v.UserID == LoginUserId).Select(v => v.InstitutionID).FirstOrDefaultAsync();
 
         var vetID = await _context.Employments.Where(v => v.InstitutionID == institutionID).Select(v => v.UserID).FirstOrDefaultAsync();
-        var medicalrecord = await _context.MedicalRecords
+        var medicalRecords = await _context.MedicalRecords
             .Include(m => m.Pet.AuthorizationRecords.Where(ar => ar.InstitutionID == institutionID))
             .Include(m => m.Vet).ThenInclude(v => v.Employments.Where(e => e.InstitutionID == institutionID))
             .Include(m => m.RecordDiagnoses)
             .ThenInclude(rd => rd.MedicalVocabularyDictionary)
             .Include(m => m.Prescriptions)
-            .Where(m=>m.Pet.AuthorizationRecords.Any(
-                ar => ar.Status == "Authorized" && 
-                ar.GrantedDate<DateTime.Now &&
+            .Include(m => m.Pet)
+            .ToListAsync();
+        if (petid == 0)
+        {
+            medicalRecords = medicalRecords
+            .ToList();
+        } else
+        {
+            medicalRecords = medicalRecords
+            .Where(m => m.PetID == petid)
+            .ToList();
+        }
+        medicalRecords = medicalRecords
+            .Where(m => m.Pet.AuthorizationRecords.Any(
+                ar => ar.Status == "Authorized" &&
+                ar.GrantedDate < DateTime.Now &&
                 ar.RevokedDate >= DateTime.Now))
             .OrderByDescending(m => m.VisitDate)
-            .ToListAsync();
-        
+            .ToList();
         ViewBag.InstitutionID = institutionID;
         ViewBag.InstitutionName = await _context.Institutions.Where(i => i.InstitutionID == institutionID).Select(i => i.Name).FirstOrDefaultAsync();
-        return View(medicalrecord);
+        return View(medicalRecords);
+        
     }
 
     // GET: MEDICALRECORDS/Details/5

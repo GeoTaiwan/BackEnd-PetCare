@@ -62,8 +62,6 @@ public class PetManageController : BaseController
             ar.RevokedDate >= DateTime.Now &&
             ar.InstitutionID == instiID))
             .Where(p => p.Appointments.Any(a => a.InstitutionID == instiID))
-
-
             .OrderByDescending(p => p.Appointments.Max(a => a.ApptDateTime));
 
 
@@ -83,6 +81,7 @@ public class PetManageController : BaseController
             .Include(p => p.MedicalRecords.OrderByDescending(m => m.VisitDate))
             .Include(p => p.CareGroomingLogs.OrderByDescending(l => l.LogDate)).ThenInclude(l => l.Staff) //關聯CareGroomingLog的Staff
             .Include(p => p.Appointments.OrderByDescending(a => a.ApptDateTime)).ThenInclude(a => a.Institution) //關聯Appointments
+            .Include(p=>p.AuthorizationRecords)
             .FirstOrDefaultAsync(m => m.PetID == petid);
         if (pet == null)
         {
