@@ -48,7 +48,14 @@
 					<td>@Html.DisplayFor(model => item.Symptoms)</td>
 					<td>@Html.DisplayFor(model => item.TestResultsFile)</td>
 					<td>
-						<a asp-action="Edit" asp-route-recordid="@item.RecordID" asp-route-fromDetails="false" class="btn btn-warning">編輯</a>
+						@*修正，僅可編輯當日病歷，避免修改過去病歷*@ 
+						@{
+							bool isEditable = item.VisitDate.Date == DateTime.Now.Date;
+						}
+						@if (isEditable)
+						{
+							<a asp-action="Edit" asp-route-recordid="@item.RecordID" asp-route-fromDetails="false" class="btn btn-warning">編輯</a>
+						}
 						<a asp-action="Create" asp-route-petid="@item.PetID" class="btn btn-primary">新增病歷</a>
 					</td>
 				</tr>

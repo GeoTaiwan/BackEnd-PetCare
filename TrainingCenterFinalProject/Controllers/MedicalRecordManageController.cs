@@ -38,6 +38,7 @@ public class MedicalRecordManageController : BaseController
                 ar => ar.Status == "Authorized" && 
                 ar.GrantedDate<DateTime.Now &&
                 ar.RevokedDate >= DateTime.Now))
+            .OrderByDescending(m => m.VisitDate)
             .ToListAsync();
         
         ViewBag.InstitutionID = institutionID;
