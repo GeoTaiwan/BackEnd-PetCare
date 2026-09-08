@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -46,6 +47,21 @@ namespace TrainingCenterFinalProject.Controllers.Api
             {
                 message = "登入成功",
                 token = tokenString
+            });
+        }
+
+        [HttpGet("profile")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public IActionResult GetProfile()
+        {
+            // 測試從 Token 中解析出使用者的 Claims
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var userName = User.Identity.Name;
+
+            return Ok(new
+            {
+                message = $"驗證成功！你好，{userName} (ID: {userId})",
+                data = "這是一份只有登入會員才能看到的機密資料。"
             });
         }
 
