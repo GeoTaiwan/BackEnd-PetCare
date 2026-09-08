@@ -6,7 +6,7 @@ using TrainingCenterFinalProject.Data;
 using PetCare.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
-[Authorize(Roles = "Vet,Beauty,Nanny,VetManage,BeautyManage,NannyManage")]
+[Authorize(Roles = "VetManage,BeautyManage,NannyManage")]
 public class AppointmentManageController : BaseController
 {
     private readonly PetCareDbContext _context;
