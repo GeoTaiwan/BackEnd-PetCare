@@ -46,7 +46,13 @@
                     <td>@Html.DisplayFor(model => item.Pet.Name)</td>
 					<td>@Html.DisplayFor(model => item.VisitDate)</td>
 					<td>@Html.DisplayFor(model => item.Symptoms)</td>
-					<td>@Html.DisplayFor(model => item.TestResultsFile)</td>
+					@*修正為提供下載連結*@ 
+					<td>
+						@if (!string.IsNullOrEmpty(item.TestResultsFile))
+						{
+							<a href="~/uploads/mrFiles/@item.TestResultsFile" target="_blank">下載檔案</a>
+						}
+					</td>
 					<td>
 						@*修正，僅可編輯當日病歷，避免修改過去病歷*@ 
 						@{
