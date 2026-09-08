@@ -81,8 +81,7 @@ namespace TrainingCenterFinalProject.ViewComponents
                         {
                             //若是獸醫院管理者，則顯示獸醫院管理者選單
                             menuQuery = menuQuery
-                                .Where(m =>m.RequiredAuthLevel==1|| m.RequiredAuthLevel == 4 ||
-                                m.RequiredAuthLevel == 7 || m.RequiredAuthLevel == 8);
+                                .Where(m =>m.RequiredAuthLevel==1|| m.RequiredAuthLevel == 4 || m.RequiredAuthLevel == 8);
 
                         }
                         else
@@ -97,8 +96,7 @@ namespace TrainingCenterFinalProject.ViewComponents
                         {
                             //若是寵物美容院管理者，則顯示寵物美容院管理者選單
                             menuQuery = menuQuery
-                                .Where(m => m.RequiredAuthLevel == 2 || m.RequiredAuthLevel == 5 || 
-                                m.RequiredAuthLevel == 7 || m.RequiredAuthLevel == 8);
+                                .Where(m => m.RequiredAuthLevel == 2 || m.RequiredAuthLevel == 5  || m.RequiredAuthLevel == 8);
 
                         }
                         else
@@ -113,8 +111,7 @@ namespace TrainingCenterFinalProject.ViewComponents
                         {
                             //若是寵物保母管理者，則顯示寵物保母管理者選單
                             menuQuery = menuQuery
-                                .Where(m => m.RequiredAuthLevel == 3 || m.RequiredAuthLevel == 6 ||
-                                m.RequiredAuthLevel == 7 || m.RequiredAuthLevel == 8);
+                                .Where(m => m.RequiredAuthLevel == 3 || m.RequiredAuthLevel == 6 || m.RequiredAuthLevel == 8);
 
                         }
                         else
