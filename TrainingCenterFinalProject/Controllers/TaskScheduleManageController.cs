@@ -109,7 +109,10 @@ public class TaskScheduleManageController : BaseController
             return NotFound();
         }
 
-        var taskschedule = await _context.TaskSchedules.FindAsync(taskid);
+        var taskschedule = await _context.TaskSchedules
+            .Include(t=>t.Staff)
+            .Include(t => t.Institution)
+            .FirstOrDefaultAsync(t=>t.TaskID==taskid);
         if (taskschedule == null)
         {
             return NotFound();
@@ -122,7 +125,7 @@ public class TaskScheduleManageController : BaseController
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? taskid, [Bind("TaskID,StaffID,InstitutionID,CreatedDate,StartTime,EndTime,TaskDescription,Status,Staff,Institution")] TaskSchedule taskschedule)
+    public async Task<IActionResult> Edit(int? taskid, TaskSchedule taskschedule)
     {
         if (taskid != taskschedule.TaskID)
         {

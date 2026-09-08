@@ -13,13 +13,13 @@
         <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="LogID" class="control-label"></label>
                 <input asp-for="LogID" class="form-control" value="@ViewData["LogID"]" readonly />
                 <span asp-validation-for="LogID" class="text-danger"></span>
             </div>
 
-            @* <div class="form-group">
+            @* <div class="mb-3">
                 <label asp-for="ImageURL" class="control-label">上傳照片</label>
                 <input name="uploadPhoto" class="form-control" type="file" />
                 <span asp-validation-for="ImageURL" class="text-danger"></span>
@@ -30,12 +30,12 @@
                 <input type="file" name="uploadedFiles" id="photos" multiple accept="image/*" class="form-control" />
             </div>
 
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="CareGroomingLog" class="control-label"></label>
                 <input asp-for="CareGroomingLog" class="form-control" />
                 <span asp-validation-for="CareGroomingLog" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
