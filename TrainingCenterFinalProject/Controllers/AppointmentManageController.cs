@@ -37,6 +37,8 @@ public class AppointmentManageController : BaseController
             .Include(a=>a.Institution)
             .ThenInclude(i => i.AuthorizationRecords.Where(ar=>ar.GrantedDate<DateTime.Now && ar.RevokedDate>=DateTime.Now))
             .Include(a => a.Employee)
+            .Include(a=>a.TaskSchedule)
+            .ThenInclude(ts=>ts.Staff)
             .Where(a => a.InstitutionID == instID)
             .OrderByDescending(a => a.ApplyTime)
             .ToListAsync();

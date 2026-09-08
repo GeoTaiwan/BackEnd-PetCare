@@ -94,14 +94,23 @@
 								</a>
 								
 							}
-
-							<form asp-controller="TaskScheduleManage" asp-action="AssignEmployee" method="post" class="d-inline-block position-relative z-2">
-								<select name="StaffID" class="form-select" asp-items="ViewBag.EmployeeList"></select>
-								<input type="hidden" name="InstitutionID" value="@item.InstitutionID" />
-								<input type="hidden" name="StartTime" value="@item.ApptDateTime" />
-								<input name="TaskDescription" value="" placeholder="備註" />
-								<button type="submit" class="btn btn-primary position-relative z-2" onclick="return confirm('確定要指派【' + document.querySelector('select[name=\'StaffID\']').selectedOptions[0].text + '】嗎？');">指派員工</button>
-							</form>
+							bool hasAssigned = item.TaskSchedule?.Status == "Active";
+							if (hasAssigned)
+							{
+								<span class="text-success">已指派【@(item.TaskSchedule?.Staff?.Name)】</span>
+							}
+							else
+							{
+								<form asp-controller="TaskScheduleManage" asp-action="AssignEmployee" method="post" class="d-inline-block position-relative z-2">
+									<h4 class="text-danger">@TempData[$"ErrMsg_{item.AppointmentID}"]</h4>
+									<select name="StaffID" class="form-select" asp-items="ViewBag.EmployeeList"></select>
+									<input type="hidden" name="AppointmentID" value="@item.AppointmentID" />
+									<input type="hidden" name="InstitutionID" value="@item.InstitutionID" />
+									<input type="hidden" name="StartTime" value="@item.ApptDateTime" />
+									<input name="TaskDescription" value="" placeholder="備註" />
+									<button type="submit" class="btn btn-primary position-relative z-2" onclick="return confirm('確定要指派【' + document.querySelector('select[name=\'StaffID\']').selectedOptions[0].text + '】嗎？');">指派員工</button>
+								</form>
+							}
 						}
 					</td>
 				</tr>

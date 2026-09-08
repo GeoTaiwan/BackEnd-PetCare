@@ -55,6 +55,6 @@ namespace TrainingCenterFinalProject.Models
         [ForeignKey(nameof(EmployeeID))]
         public virtual UserProfile? Employee { get; set; }
         
-        public virtual TaskSchedule? Task { get; set; }
+        public virtual TaskSchedule? TaskSchedule { get; set; }
     }
 }

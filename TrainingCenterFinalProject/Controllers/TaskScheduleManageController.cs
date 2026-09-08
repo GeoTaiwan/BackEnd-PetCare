@@ -83,7 +83,6 @@ public class TaskScheduleManageController : BaseController
             return NotFound();
         }
         ModelState.Remove("CreatedDate");
-        ModelState.Remove("StartTime");
         ModelState.Remove("EndTime");
         ModelState.Remove("Status");
         taskschedule.CreatedDate = DateTime.Now;
@@ -93,9 +92,12 @@ public class TaskScheduleManageController : BaseController
         {
             _context.Add(taskschedule);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index),"AppointmentManage");
+            return RedirectToAction(nameof(Index), "AppointmentManage");
         }
-        return View(taskschedule);
+        TempData[$"ErrMsg_{taskschedule.AppointmentID}"] = "驗證不通過，請檢查輸入的資料是否正確。";
+        return RedirectToAction(nameof(Index), "AppointmentManage");
+
+        //return View(taskschedule);
     }
 
     // GET: TASKSCHEDULES/Edit/5
