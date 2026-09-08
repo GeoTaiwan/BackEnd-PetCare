@@ -1,6 +1,6 @@
 USE [master]
 GO
-/****** 物件:  Database [PetCare]    指令碼日期: 2026/9/7 下午 11:43:03 ******/
+/****** 物件:  Database [PetCare]    指令碼日期: 2026/9/8 下午 04:23:04 ******/
 CREATE DATABASE [PetCare]
  CONTAINMENT = NONE
  ON  PRIMARY 
@@ -84,7 +84,7 @@ ALTER DATABASE [PetCare] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_P
 GO
 USE [PetCare]
 GO
-/****** 物件:  Table [dbo].[__EFMigrationsHistory]    指令碼日期: 2026/9/7 下午 11:43:03 ******/
+/****** 物件:  Table [dbo].[__EFMigrationsHistory]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -98,7 +98,7 @@ CREATE TABLE [dbo].[__EFMigrationsHistory](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[Appointments]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[Appointments]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -119,7 +119,7 @@ CREATE TABLE [dbo].[Appointments](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[AuthorizationRecords]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[AuthorizationRecords]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -137,7 +137,7 @@ CREATE TABLE [dbo].[AuthorizationRecords](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[CareGroomingLogs]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[CareGroomingLogs]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -155,7 +155,7 @@ CREATE TABLE [dbo].[CareGroomingLogs](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[Employments]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[Employments]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -175,7 +175,7 @@ CREATE TABLE [dbo].[Employments](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[Institutions]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[Institutions]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -195,7 +195,7 @@ CREATE TABLE [dbo].[Institutions](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[InstitutionStatuses]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[InstitutionStatuses]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -209,7 +209,7 @@ CREATE TABLE [dbo].[InstitutionStatuses](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[InstitutionTypes]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[InstitutionTypes]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -223,7 +223,7 @@ CREATE TABLE [dbo].[InstitutionTypes](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[LogPhotos]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[LogPhotos]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -239,7 +239,7 @@ CREATE TABLE [dbo].[LogPhotos](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[MedicalRecords]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[MedicalRecords]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -258,7 +258,7 @@ CREATE TABLE [dbo].[MedicalRecords](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[MedicalVocabularyDictionaries]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[MedicalVocabularyDictionaries]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -276,7 +276,7 @@ CREATE TABLE [dbo].[MedicalVocabularyDictionaries](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[Occupations]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[Occupations]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -290,7 +290,7 @@ CREATE TABLE [dbo].[Occupations](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[Pets]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[Pets]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -312,7 +312,7 @@ CREATE TABLE [dbo].[Pets](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[PetWeight]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[PetWeight]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -328,7 +328,7 @@ CREATE TABLE [dbo].[PetWeight](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[Prescriptions]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[Prescriptions]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -347,7 +347,7 @@ CREATE TABLE [dbo].[Prescriptions](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[RecordDiagnoses]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[RecordDiagnoses]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -365,7 +365,7 @@ CREATE TABLE [dbo].[RecordDiagnoses](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[Role]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[Role]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -379,7 +379,7 @@ CREATE TABLE [dbo].[Role](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[SysMenus]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[SysMenus]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -400,7 +400,7 @@ CREATE TABLE [dbo].[SysMenus](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[TaskSchedules]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[TaskSchedules]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -421,7 +421,7 @@ CREATE TABLE [dbo].[TaskSchedules](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[UserCredentialDetails]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[UserCredentialDetails]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -440,7 +440,7 @@ CREATE TABLE [dbo].[UserCredentialDetails](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[UserCredentials]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[UserCredentials]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -454,7 +454,7 @@ CREATE TABLE [dbo].[UserCredentials](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** 物件:  Table [dbo].[UserProfiles]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Table [dbo].[UserProfiles]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -503,6 +503,7 @@ INSERT [dbo].[AuthorizationRecords] ([DataAuthorizationNumber], [PetID], [Instit
 INSERT [dbo].[AuthorizationRecords] ([DataAuthorizationNumber], [PetID], [InstitutionID], [GrantedDate], [RevokedDate], [Status]) VALUES (N'R20260803-I00002-001', 2, N'I00002', CAST(N'2026-06-18T22:43:31.5692374' AS DateTime2), CAST(N'2026-06-20T00:00:00.0000000' AS DateTime2), N'Authorized')
 INSERT [dbo].[AuthorizationRecords] ([DataAuthorizationNumber], [PetID], [InstitutionID], [GrantedDate], [RevokedDate], [Status]) VALUES (N'R20260902-I00001-001', 1, N'I00001', CAST(N'2026-09-02T00:00:00.0000000' AS DateTime2), CAST(N'2026-09-03T23:59:59.0000000' AS DateTime2), N'Pending')
 INSERT [dbo].[AuthorizationRecords] ([DataAuthorizationNumber], [PetID], [InstitutionID], [GrantedDate], [RevokedDate], [Status]) VALUES (N'R20260902-I00003-001', 24, N'I00003', CAST(N'2026-09-02T00:00:00.0000000' AS DateTime2), CAST(N'2026-09-03T23:59:59.0000000' AS DateTime2), N'Authorized')
+INSERT [dbo].[AuthorizationRecords] ([DataAuthorizationNumber], [PetID], [InstitutionID], [GrantedDate], [RevokedDate], [Status]) VALUES (N'R20260908-I00003-001', 24, N'I00003', CAST(N'2026-09-08T00:00:00.0000000' AS DateTime2), CAST(N'2026-09-09T23:59:59.0000000' AS DateTime2), N'Authorized')
 GO
 SET IDENTITY_INSERT [dbo].[CareGroomingLogs] ON 
 
@@ -547,6 +548,7 @@ INSERT [dbo].[MedicalRecords] ([RecordID], [PetID], [VetID], [VisitDate], [Sympt
 INSERT [dbo].[MedicalRecords] ([RecordID], [PetID], [VetID], [VisitDate], [Symptoms], [TestResultsFile], [Diagnosis]) VALUES (4, 22, N'U202607280002', CAST(N'2026-08-07T21:58:00.0000000' AS DateTime2), N'456', N'83beefdb-106b-4194-9ed2-f5eb1e40a7a8_商務系統軟體分析第一次實作練習.docx', NULL)
 INSERT [dbo].[MedicalRecords] ([RecordID], [PetID], [VetID], [VisitDate], [Symptoms], [TestResultsFile], [Diagnosis]) VALUES (5, 1, N'U202607280002', CAST(N'2026-08-21T21:16:00.0000000' AS DateTime2), N'hehehe', NULL, N'good')
 INSERT [dbo].[MedicalRecords] ([RecordID], [PetID], [VetID], [VisitDate], [Symptoms], [TestResultsFile], [Diagnosis]) VALUES (6, 24, N'U202607280002', CAST(N'2026-09-01T14:19:00.0000000' AS DateTime2), N'test', NULL, N'good')
+INSERT [dbo].[MedicalRecords] ([RecordID], [PetID], [VetID], [VisitDate], [Symptoms], [TestResultsFile], [Diagnosis]) VALUES (7, 24, N'U202608170001', CAST(N'2026-09-08T14:09:00.0000000' AS DateTime2), N'測試1', N'81783692-4f5b-4d2b-bb39-b15b309277e2_2-3評量題目.docx', N'def')
 SET IDENTITY_INSERT [dbo].[MedicalRecords] OFF
 GO
 SET IDENTITY_INSERT [dbo].[MedicalVocabularyDictionaries] ON 
@@ -660,11 +662,15 @@ INSERT [dbo].[SysMenus] ([MenuId], [MenuName], [ControllerName], [ActionName], [
 INSERT [dbo].[SysMenus] ([MenuId], [MenuName], [ControllerName], [ActionName], [IconClass], [SortOrder], [RequiredAuthLevel], [ParentId], [IsVisible]) VALUES (38, N'寵物管理', N'PetManage', N'Index', NULL, 0, 7, NULL, 1)
 INSERT [dbo].[SysMenus] ([MenuId], [MenuName], [ControllerName], [ActionName], [IconClass], [SortOrder], [RequiredAuthLevel], [ParentId], [IsVisible]) VALUES (39, N'病歷管理', N'MedicalRecordManage', N'Index', NULL, 0, 1, NULL, 1)
 INSERT [dbo].[SysMenus] ([MenuId], [MenuName], [ControllerName], [ActionName], [IconClass], [SortOrder], [RequiredAuthLevel], [ParentId], [IsVisible]) VALUES (40, N'排班管理', N'TaskScheduleManage', N'Index', NULL, 9, 8, NULL, 1)
+INSERT [dbo].[SysMenus] ([MenuId], [MenuName], [ControllerName], [ActionName], [IconClass], [SortOrder], [RequiredAuthLevel], [ParentId], [IsVisible]) VALUES (41, N'排班管理', N'TaskSchedule', N'Index', NULL, 9, 7, NULL, 1)
+INSERT [dbo].[SysMenus] ([MenuId], [MenuName], [ControllerName], [ActionName], [IconClass], [SortOrder], [RequiredAuthLevel], [ParentId], [IsVisible]) VALUES (42, N'寵物管理', N'PetManage', N'Index', NULL, 0, 8, NULL, 1)
 SET IDENTITY_INSERT [dbo].[SysMenus] OFF
 GO
 SET IDENTITY_INSERT [dbo].[TaskSchedules] ON 
 
-INSERT [dbo].[TaskSchedules] ([TaskID], [StaffID], [InstitutionID], [CreatedDate], [StartTime], [EndTime], [TaskDescription], [Status], [AppointmentID]) VALUES (5, N'U202607280003', N'I00002', CAST(N'2026-08-31T21:10:40.1538506' AS DateTime2), CAST(N'2026-09-05T21:10:40.1538506' AS DateTime2), CAST(N'2026-09-05T21:40:40.1538506' AS DateTime2), N'下午場次美容服務排班', N'Pending', N'A20260803-I00002-001')
+INSERT [dbo].[TaskSchedules] ([TaskID], [StaffID], [InstitutionID], [CreatedDate], [StartTime], [EndTime], [TaskDescription], [Status], [AppointmentID]) VALUES (5, N'U202607280003', N'I00002', CAST(N'2026-08-31T21:10:40.1538506' AS DateTime2), CAST(N'2026-09-05T11:30:00.0000000' AS DateTime2), CAST(N'2026-09-05T12:00:00.0000000' AS DateTime2), N'下午場次美容服務排班', N'Active', N'A20260803-I00002-001')
+INSERT [dbo].[TaskSchedules] ([TaskID], [StaffID], [InstitutionID], [CreatedDate], [StartTime], [EndTime], [TaskDescription], [Status], [AppointmentID]) VALUES (6, N'U202608170001', N'I00003', CAST(N'2026-09-08T13:36:00.0000000' AS DateTime2), CAST(N'2026-09-16T09:00:00.0000000' AS DateTime2), CAST(N'2026-09-16T09:30:00.0000000' AS DateTime2), N'123456', N'Active', N'A20260901-I00003-001')
+INSERT [dbo].[TaskSchedules] ([TaskID], [StaffID], [InstitutionID], [CreatedDate], [StartTime], [EndTime], [TaskDescription], [Status], [AppointmentID]) VALUES (8, N'U202609010001', N'I00003', CAST(N'2026-09-08T14:16:00.0000000' AS DateTime2), CAST(N'2026-09-05T11:30:00.0000000' AS DateTime2), CAST(N'2026-09-05T12:00:00.0000000' AS DateTime2), N'456789', N'Active', N'A20260831-I00003-002')
 SET IDENTITY_INSERT [dbo].[TaskSchedules] OFF
 GO
 INSERT [dbo].[UserCredentialDetails] ([UserID], [CredentialID], [CreatedDate], [Identifier], [PasswordHash], [PasswordSalt]) VALUES (N'U198805150001', N'C01', CAST(N'2026-08-03T19:00:00.0000000' AS DateTime2), N'geo.light.deathnote@gmail.com', N'KA24uCGeQEuRKPpA6OLRW9BxUpWieoroLsXdfC/33Ke+mgB/zeJJ8t4Ah07muXNESL685RQLDaRlUEHbAQkXEw==', N'gQFEMrh4ZF6Q9R/RGeCNuUL9ZhPCTsFxC4YKFWfWLA8YXkpazNd45tmPN00QcuF3fTXI8CaWzkct7X1vEbRqtOgMrWKXBaSDj60KoIKTrL8z9PBBfij/s0t5+FW8F292LlRSS8F7s3rrvUP+2Rf7Idkp+9e8NtekQJKZ9POAF70=')
@@ -694,7 +700,7 @@ INSERT [dbo].[UserProfiles] ([UserID], [Name], [Phone], [Authorization], [Gender
 GO
 SET ANSI_PADDING ON
 GO
-/****** 物件:  Index [IX_Appointments_EmployeeID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_Appointments_EmployeeID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_Appointments_EmployeeID] ON [dbo].[Appointments]
 (
 	[EmployeeID] ASC
@@ -702,13 +708,13 @@ CREATE NONCLUSTERED INDEX [IX_Appointments_EmployeeID] ON [dbo].[Appointments]
 GO
 SET ANSI_PADDING ON
 GO
-/****** 物件:  Index [IX_Appointments_InstitutionID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_Appointments_InstitutionID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_Appointments_InstitutionID] ON [dbo].[Appointments]
 (
 	[InstitutionID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** 物件:  Index [IX_Appointments_PetID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_Appointments_PetID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_Appointments_PetID] ON [dbo].[Appointments]
 (
 	[PetID] ASC
@@ -716,19 +722,19 @@ CREATE NONCLUSTERED INDEX [IX_Appointments_PetID] ON [dbo].[Appointments]
 GO
 SET ANSI_PADDING ON
 GO
-/****** 物件:  Index [IX_AuthorizationRecords_InstitutionID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_AuthorizationRecords_InstitutionID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_AuthorizationRecords_InstitutionID] ON [dbo].[AuthorizationRecords]
 (
 	[InstitutionID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** 物件:  Index [IX_AuthorizationRecords_PetID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_AuthorizationRecords_PetID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_AuthorizationRecords_PetID] ON [dbo].[AuthorizationRecords]
 (
 	[PetID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** 物件:  Index [IX_CareGroomingLogs_PetID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_CareGroomingLogs_PetID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_CareGroomingLogs_PetID] ON [dbo].[CareGroomingLogs]
 (
 	[PetID] ASC
@@ -736,7 +742,7 @@ CREATE NONCLUSTERED INDEX [IX_CareGroomingLogs_PetID] ON [dbo].[CareGroomingLogs
 GO
 SET ANSI_PADDING ON
 GO
-/****** 物件:  Index [IX_CareGroomingLogs_StaffID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_CareGroomingLogs_StaffID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_CareGroomingLogs_StaffID] ON [dbo].[CareGroomingLogs]
 (
 	[StaffID] ASC
@@ -744,7 +750,7 @@ CREATE NONCLUSTERED INDEX [IX_CareGroomingLogs_StaffID] ON [dbo].[CareGroomingLo
 GO
 SET ANSI_PADDING ON
 GO
-/****** 物件:  Index [IX_Employments_InstitutionID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_Employments_InstitutionID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_Employments_InstitutionID] ON [dbo].[Employments]
 (
 	[InstitutionID] ASC
@@ -752,7 +758,7 @@ CREATE NONCLUSTERED INDEX [IX_Employments_InstitutionID] ON [dbo].[Employments]
 GO
 SET ANSI_PADDING ON
 GO
-/****** 物件:  Index [IX_Employments_OccupationID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_Employments_OccupationID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_Employments_OccupationID] ON [dbo].[Employments]
 (
 	[OccupationID] ASC
@@ -760,7 +766,7 @@ CREATE NONCLUSTERED INDEX [IX_Employments_OccupationID] ON [dbo].[Employments]
 GO
 SET ANSI_PADDING ON
 GO
-/****** 物件:  Index [IX_Institutions_OwnerID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_Institutions_OwnerID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_Institutions_OwnerID] ON [dbo].[Institutions]
 (
 	[OwnerID] ASC
@@ -768,7 +774,7 @@ CREATE NONCLUSTERED INDEX [IX_Institutions_OwnerID] ON [dbo].[Institutions]
 GO
 SET ANSI_PADDING ON
 GO
-/****** 物件:  Index [IX_Institutions_StatusId]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_Institutions_StatusId]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_Institutions_StatusId] ON [dbo].[Institutions]
 (
 	[StatusId] ASC
@@ -776,19 +782,19 @@ CREATE NONCLUSTERED INDEX [IX_Institutions_StatusId] ON [dbo].[Institutions]
 GO
 SET ANSI_PADDING ON
 GO
-/****** 物件:  Index [IX_Institutions_TypeId]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_Institutions_TypeId]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_Institutions_TypeId] ON [dbo].[Institutions]
 (
 	[TypeId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** 物件:  Index [IX_LogPhotos_LogID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_LogPhotos_LogID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_LogPhotos_LogID] ON [dbo].[LogPhotos]
 (
 	[LogID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** 物件:  Index [IX_MedicalRecords_PetID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_MedicalRecords_PetID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_MedicalRecords_PetID] ON [dbo].[MedicalRecords]
 (
 	[PetID] ASC
@@ -796,7 +802,7 @@ CREATE NONCLUSTERED INDEX [IX_MedicalRecords_PetID] ON [dbo].[MedicalRecords]
 GO
 SET ANSI_PADDING ON
 GO
-/****** 物件:  Index [IX_MedicalRecords_VetID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_MedicalRecords_VetID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_MedicalRecords_VetID] ON [dbo].[MedicalRecords]
 (
 	[VetID] ASC
@@ -804,31 +810,31 @@ CREATE NONCLUSTERED INDEX [IX_MedicalRecords_VetID] ON [dbo].[MedicalRecords]
 GO
 SET ANSI_PADDING ON
 GO
-/****** 物件:  Index [IX_Pets_OwnerID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_Pets_OwnerID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_Pets_OwnerID] ON [dbo].[Pets]
 (
 	[OwnerID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** 物件:  Index [IX_PetWeight_PetID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_PetWeight_PetID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_PetWeight_PetID] ON [dbo].[PetWeight]
 (
 	[PetID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** 物件:  Index [IX_Prescriptions_RecordID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_Prescriptions_RecordID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_Prescriptions_RecordID] ON [dbo].[Prescriptions]
 (
 	[RecordID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** 物件:  Index [IX_RecordDiagnoses_RecordID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_RecordDiagnoses_RecordID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_RecordDiagnoses_RecordID] ON [dbo].[RecordDiagnoses]
 (
 	[RecordID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** 物件:  Index [IX_RecordDiagnoses_TermID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_RecordDiagnoses_TermID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_RecordDiagnoses_TermID] ON [dbo].[RecordDiagnoses]
 (
 	[TermID] ASC
@@ -836,7 +842,7 @@ CREATE NONCLUSTERED INDEX [IX_RecordDiagnoses_TermID] ON [dbo].[RecordDiagnoses]
 GO
 SET ANSI_PADDING ON
 GO
-/****** 物件:  Index [IX_TaskSchedules_AppointmentID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_TaskSchedules_AppointmentID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE UNIQUE NONCLUSTERED INDEX [IX_TaskSchedules_AppointmentID] ON [dbo].[TaskSchedules]
 (
 	[AppointmentID] ASC
@@ -844,7 +850,7 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_TaskSchedules_AppointmentID] ON [dbo].[Task
 GO
 SET ANSI_PADDING ON
 GO
-/****** 物件:  Index [IX_TaskSchedules_InstitutionID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_TaskSchedules_InstitutionID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_TaskSchedules_InstitutionID] ON [dbo].[TaskSchedules]
 (
 	[InstitutionID] ASC
@@ -852,7 +858,7 @@ CREATE NONCLUSTERED INDEX [IX_TaskSchedules_InstitutionID] ON [dbo].[TaskSchedul
 GO
 SET ANSI_PADDING ON
 GO
-/****** 物件:  Index [IX_TaskSchedules_StaffID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_TaskSchedules_StaffID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_TaskSchedules_StaffID] ON [dbo].[TaskSchedules]
 (
 	[StaffID] ASC
@@ -860,13 +866,13 @@ CREATE NONCLUSTERED INDEX [IX_TaskSchedules_StaffID] ON [dbo].[TaskSchedules]
 GO
 SET ANSI_PADDING ON
 GO
-/****** 物件:  Index [IX_UserCredentialDetails_CredentialID]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_UserCredentialDetails_CredentialID]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_UserCredentialDetails_CredentialID] ON [dbo].[UserCredentialDetails]
 (
 	[CredentialID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-/****** 物件:  Index [IX_UserProfiles_Authorization]    指令碼日期: 2026/9/7 下午 11:43:04 ******/
+/****** 物件:  Index [IX_UserProfiles_Authorization]    指令碼日期: 2026/9/8 下午 04:23:05 ******/
 CREATE NONCLUSTERED INDEX [IX_UserProfiles_Authorization] ON [dbo].[UserProfiles]
 (
 	[Authorization] ASC
