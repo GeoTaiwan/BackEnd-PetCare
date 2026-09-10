@@ -58,14 +58,8 @@
                     <div class="mb-3">
                         <label asp-for="Gender" class="control-label"></label>
                         @* <input asp-for="Gender" class="form-control" /> *@
-                        <select asp-for="Gender" class="form-select form-control" id="genderSelect">
+                        <select asp-for="Gender" class="form-select form-control" id="genderSelect" asp-items="@ViewBag.GenderList">
                             <option value="" disabled selected>請選擇性別</option>
-                            <option value="公">公</option>
-                            <option value="母">母</option>
-                            <option value="公(絕育)">公(絕育)</option>
-                            <option value="母(絕育)">母(絕育)</option>
-                            <option value="其它">其它</option>
-                    
                         </select>
                         <span asp-validation-for="Gender" class="text-danger"></span>
                     </div>

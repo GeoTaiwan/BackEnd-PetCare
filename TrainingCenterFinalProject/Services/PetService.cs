@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TrainingCenterFinalProject.Common;
 using TrainingCenterFinalProject.Data;
@@ -160,4 +161,12 @@ public class PetService : IPetService
         result.Data = true;
         return result;
     }
+
+    public List<string> PopulateGenderList()
+    {
+        var result = new List<string>();
+        result.AddRange("公","母","公(絕育)","母(絕育)","其它");
+        return result;
+    }
+
 }

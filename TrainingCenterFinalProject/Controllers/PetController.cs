@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Controllers;
 using TrainingCenterFinalProject.Models;
 using TrainingCenterFinalProject.Services;
@@ -36,6 +37,7 @@ public class PetController : BaseController
     public IActionResult Create(bool fromMR = false)
     {
         ViewBag.FromMR = fromMR;
+        ViewBag.GenderList = new SelectList(_petService.PopulateGenderList());
         return View();
     }
 
