@@ -1,222 +1,128 @@
-
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using PetCare.Controllers;
-using System.Security.Claims;
-using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Models;
+using TrainingCenterFinalProject.Services;
 
 public class CareGroomingLogController : BaseController
 {
-    private readonly PetCareDbContext _context;
-    //private readonly IWebHostEnvironment _env;
-    
-    public CareGroomingLogController(PetCareDbContext context)
+    private readonly ICareGroomingLogService _careGroomingLogService;
+
+    public CareGroomingLogController(ICareGroomingLogService careGroomingLogService)
     {
-        _context = context;
-        
-        //_env = env;
+        _careGroomingLogService = careGroomingLogService;
     }
 
-   
-
-    // GET: CAREGROOMINGLOGS
-    public async Task<IActionResult> Index()    
+    public async Task<IActionResult> Index()
     {
-        var careLogs = await _context.CareGroomingLogs
-            .Include(cg => cg.Pet)
-            .ThenInclude(p => p.Owner)
-            .Include(cg=>cg.Staff)
-            .Where(cg => cg.Pet.OwnerID == LoginUserId) 
-            .ToListAsync();
-        //若目前使用者為照護人員，則顯示所有經手照護紀錄
-        
-        var userEmployments = await _context.Employments
-        .Where(e => e.UserID == LoginUserId)
-        .ToListAsync();
-        var employeeProfile = userEmployments.FirstOrDefault(e =>
-        !string.IsNullOrEmpty(e.OccupationID) &&
-        e.OccupationID.Length >= 3 &&
-        int.TryParse(e.OccupationID.Substring(1, 2), out int occId) &&
-        occId > 10);
+        if (string.IsNullOrEmpty(LoginUserId)) return Unauthorized();
 
-        if (employeeProfile != null) 
-        {
-            careLogs = await _context.CareGroomingLogs
-                .Where(cg => cg.StaffID == LoginUserId)
-                .Include(cg => cg.Pet)
-                .ThenInclude(p => p.Owner)
-                .Include(cg => cg.Staff)
-                .ToListAsync();
-        }
+        var careLogs = await _careGroomingLogService.GetLogsForUserAsync(LoginUserId);
         return View(careLogs);
     }
 
-    // GET: CAREGROOMINGLOGS/Details/5
     public async Task<IActionResult> Details(int? logid)
     {
-        if (logid == null)
-        {
-            return NotFound();
-        }
+        if (logid == null) return NotFound();
 
-        var caregroominglog = await _context.CareGroomingLogs
-            .Include(cg => cg.Pet)
-            .Include(cg => cg.Staff)
-            .Include(cg => cg.LogPhotos)
-            .FirstOrDefaultAsync(m => m.LogID == logid);
-        if (caregroominglog == null)
-        {
-            return NotFound();
-        }
+        var caregroominglog = await _careGroomingLogService.GetDetailsAsync(logid.Value);
+        if (caregroominglog == null) return NotFound();
 
         return View(caregroominglog);
     }
 
-    // GET: CAREGROOMINGLOGS/Create
-    public async Task<IActionResult> Create(int petid=0)
+    public async Task<IActionResult> Create(int petid = 0)
     {
-        //找出登入的使用者ID
-        var loginuserid = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var userPets = await _context.Pets.Where(p => p.OwnerID == loginuserid).ToListAsync();
-        if (petid == 0)
-        {
-            if (!userPets.Any())
-            {
-                //使用者沒有寵物，導向到寵物列表頁面
-                TempData["ErrorMessage"] = "您尚未新增寵物，請先新增寵物後再新增照護紀錄。";
-                return RedirectToAction("Index", "Pets");
-            }
-            else
-            {                 //使用者有寵物，預設選擇第一隻寵物
-                petid = userPets.First().PetID;
-            }
+        if (string.IsNullOrEmpty(LoginUserId)) return Unauthorized();
 
-        }
-        var log = new CareGroomingLog
+        var data = await _careGroomingLogService.GetCreateDataAsync(LoginUserId, petid);
+
+        if (data.ShouldRedirectToPets)
         {
-            PetID = petid
-        };
-        return View(log);
+            TempData["ErrorMessage"] = data.ErrorMessage;
+            return RedirectToAction("Index", "Pet");
+        }
+
+        return View(data.Log);
     }
 
-    // POST: CAREGROOMINGLOGS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("LogID,PetID,StaffID,LogDate,ActivityDetails,DietNotes,Pet,Staff,LogPhotos")] CareGroomingLog caregroominglog)
+    public async Task<IActionResult> Create([Bind("LogID,PetID,LogDate,ActivityDetails,DietNotes")] CareGroomingLog caregroominglog)
     {
-        if (ModelState.IsValid)
-        {
-            _context.Add(caregroominglog);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(caregroominglog);
+        if (string.IsNullOrEmpty(LoginUserId)) return Unauthorized();
+
+        ModelState.Remove("StaffID");
+        ModelState.Remove("Pet");
+        ModelState.Remove("Staff");
+        ModelState.Remove("LogPhotos");
+
+        if (!ModelState.IsValid) return View(caregroominglog);
+
+        var result = await _careGroomingLogService.CreateAsync(caregroominglog, LoginUserId);
+        if (!result.IsSuccess) return View(caregroominglog);
+
+        return RedirectToAction(nameof(Index));
     }
 
-    // GET: CAREGROOMINGLOGS/Edit/5
     public async Task<IActionResult> Edit(int? logid, bool fromDetails = false)
     {
-        if (logid == null)
-        {
-            return NotFound();
-        }
+        if (logid == null) return NotFound();
 
-        var caregroominglog = await _context.CareGroomingLogs
-        .Include(cg => cg.Staff)         // 關聯 員工資料 (UserProfiles)
-        .Include(cg => cg.Pet)           // 關聯 寵物資料 (Pets)
-        .Include(cg => cg.LogPhotos)     // 關聯 多張照片資料 (LogPhotos)
-        .FirstOrDefaultAsync(cg => cg.LogID == logid); // 替代原本的 FindAsync
-        if (caregroominglog == null)
-        {
-            return NotFound();
-        }
+        var caregroominglog = await _careGroomingLogService.GetEditDataAsync(logid.Value);
+        if (caregroominglog == null) return NotFound();
+
         ViewBag.FromDetails = fromDetails;
         return View(caregroominglog);
     }
 
-    // POST: CAREGROOMINGLOGS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? logid, [Bind("LogID,PetID,StaffID,LogDate,ActivityDetails,DietNotes,Pet,Staff,LogPhotos")] CareGroomingLog caregroominglog, bool fromDetails = false)
+    public async Task<IActionResult> Edit(int? logid, [Bind("LogID,PetID,LogDate,ActivityDetails,DietNotes")] CareGroomingLog caregroominglog, bool fromDetails = false)
     {
-        if (logid != caregroominglog.LogID)
+        if (string.IsNullOrEmpty(LoginUserId)) return Unauthorized();
+        if (logid == null) return NotFound();
+
+        ModelState.Remove("StaffID");
+        ModelState.Remove("Pet");
+        ModelState.Remove("Staff");
+        ModelState.Remove("LogPhotos");
+
+        if (!ModelState.IsValid) return View(caregroominglog);
+
+        var result = await _careGroomingLogService.UpdateAsync(logid.Value, caregroominglog, LoginUserId);
+
+        if (!result.IsSuccess && result.ErrorMessage == "NOT_FOUND") return NotFound();
+        if (!result.IsSuccess && result.ErrorMessage == "FORBIDDEN") return Forbid();
+
+        if (fromDetails)
         {
-            return NotFound();
+            return RedirectToAction("Details", new { logid = caregroominglog.LogID });
         }
 
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(caregroominglog);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CareGroomingLogExists(caregroominglog.LogID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            if (fromDetails)
-            {
-                return RedirectToAction("Details", new { logid = caregroominglog.LogID });
-            }
-            else
-            {
-                return RedirectToAction(nameof(Index));
-            }
-        }
-        return View(caregroominglog);
+        return RedirectToAction(nameof(Index));
     }
 
-    // GET: CAREGROOMINGLOGS/Delete/5
     public async Task<IActionResult> Delete(int? logid)
     {
-        if (logid == null)
-        {
-            return NotFound();
-        }
+        if (logid == null) return NotFound();
 
-        var caregroominglog = await _context.CareGroomingLogs
-            .FirstOrDefaultAsync(m => m.LogID == logid);
-        if (caregroominglog == null)
-        {
-            return NotFound();
-        }
+        var caregroominglog = await _careGroomingLogService.GetDeleteDataAsync(logid.Value);
+        if (caregroominglog == null) return NotFound();
 
         return View(caregroominglog);
     }
 
-    // POST: CAREGROOMINGLOGS/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int? logid)
     {
-        var caregroominglog = await _context.CareGroomingLogs.FindAsync(logid);
-        if (caregroominglog != null)
-        {
-            _context.CareGroomingLogs.Remove(caregroominglog);
-        }
+        if (string.IsNullOrEmpty(LoginUserId)) return Unauthorized();
+        if (logid == null) return NotFound();
 
-        await _context.SaveChangesAsync();
+        var result = await _careGroomingLogService.DeleteAsync(logid.Value, LoginUserId);
+        if (!result.IsSuccess && result.ErrorMessage == "NOT_FOUND") return NotFound();
+        if (!result.IsSuccess && result.ErrorMessage == "FORBIDDEN") return Forbid();
+
         return RedirectToAction(nameof(Index));
     }
-
-    private bool CareGroomingLogExists(int? logid)
-    {
-        return _context.CareGroomingLogs.Any(e => e.LogID == logid);
-    }
-
-    
-
 }

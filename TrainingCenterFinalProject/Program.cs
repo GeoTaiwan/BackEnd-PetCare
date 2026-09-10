@@ -78,6 +78,8 @@ builder.Services.AddScoped<IPetService, PetService>();
 builder.Services.AddScoped<IPetManageService, PetManageService>();
 builder.Services.AddScoped<IPetPhotoService, PetPhotoService>();
 builder.Services.AddScoped<IAuthorizationRecordService, AuthorizationRecordService>();
+builder.Services.AddScoped<ICareGroomingLogService, CareGroomingLogService>();
+builder.Services.AddScoped<IEmploymentService, EmploymentService>();
 
 var app = builder.Build();
 
