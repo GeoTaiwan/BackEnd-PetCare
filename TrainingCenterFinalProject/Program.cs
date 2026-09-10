@@ -82,6 +82,7 @@ builder.Services.AddScoped<ICareGroomingLogService, CareGroomingLogService>();
 builder.Services.AddScoped<IEmploymentService, EmploymentService>();
 builder.Services.AddScoped<IInstitutionService, InstitutionService>();
 builder.Services.AddScoped<ILogPhotoService, LogPhotoService>();
+builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>();
 
 var app = builder.Build();
 
