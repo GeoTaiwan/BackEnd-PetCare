@@ -90,6 +90,7 @@ builder.Services.AddScoped<IOccupationsService, OccupationsService>();
 builder.Services.AddScoped<ITaskScheduleService, TaskScheduleService>();
 builder.Services.AddScoped<ITaskScheduleManageService, TaskScheduleManageService>();
 builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+builder.Services.AddScoped<ISysMenuService, SysMenuService>();
 
 
 var app = builder.Build();

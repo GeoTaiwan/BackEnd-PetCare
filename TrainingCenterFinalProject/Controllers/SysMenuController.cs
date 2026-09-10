@@ -1,150 +1,90 @@
-
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using TrainingCenterFinalProject.Models;
-using TrainingCenterFinalProject.Data;
+using TrainingCenterFinalProject.Services;
 
 public class SysMenuController : Controller
 {
-    private readonly PetCareDbContext _context;
+    private readonly ISysMenuService _sysMenuService;
 
-    public SysMenuController(PetCareDbContext context)
+    public SysMenuController(ISysMenuService sysMenuService)
     {
-        _context = context;
+        _sysMenuService = sysMenuService;
     }
 
-    // GET: SYSMENUS
-    public async Task<IActionResult> Index()    
+    public async Task<IActionResult> Index()
     {
-        return View(await _context.SysMenus.ToListAsync());
+        return View(await _sysMenuService.GetAllAsync());
     }
 
-    // GET: SYSMENUS/Details/5
     public async Task<IActionResult> Details(int? menuid)
     {
-        if (menuid == null)
-        {
-            return NotFound();
-        }
+        if (menuid == null) return NotFound();
 
-        var sysmenu = await _context.SysMenus
-            .FirstOrDefaultAsync(m => m.MenuId == menuid);
-        if (sysmenu == null)
-        {
-            return NotFound();
-        }
+        var sysmenu = await _sysMenuService.GetByIdAsync(menuid.Value);
+        if (sysmenu == null) return NotFound();
 
         return View(sysmenu);
     }
 
-    // GET: SYSMENUS/Create
     public IActionResult Create()
     {
         return View();
     }
 
-    // POST: SYSMENUS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("MenuId,MenuName,ControllerName,ActionName,IconClass,SortOrder,RequiredAuthLevel,ParentId,IsVisible")] SysMenu sysmenu)
     {
-        if (ModelState.IsValid)
-        {
-            _context.Add(sysmenu);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(sysmenu);
+        if (!ModelState.IsValid) return View(sysmenu);
+
+        var result = await _sysMenuService.CreateAsync(sysmenu);
+        if (!result.IsSuccess) return View(sysmenu);
+
+        return RedirectToAction(nameof(Index));
     }
 
-    // GET: SYSMENUS/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
+        if (id == null) return NotFound();
 
-        var sysmenu = await _context.SysMenus.FindAsync(id);
-        if (sysmenu == null)
-        {
-            return NotFound();
-        }
+        var sysmenu = await _sysMenuService.GetByIdAsync(id.Value);
+        if (sysmenu == null) return NotFound();
+
         return View(sysmenu);
     }
 
-    // POST: SYSMENUS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int? id, SysMenu sysmenu)
     {
-        if (id != sysmenu.MenuId)
-        {
-            return NotFound();
-        }
+        if (id == null) return NotFound();
+        if (!ModelState.IsValid) return View(sysmenu);
 
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(sysmenu);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SysMenuExists(sysmenu.MenuId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(sysmenu);
+        var result = await _sysMenuService.UpdateAsync(id.Value, sysmenu);
+        if (!result.IsSuccess && result.ErrorMessage == "NOT_FOUND") return NotFound();
+
+        return RedirectToAction(nameof(Index));
     }
 
-    // GET: SYSMENUS/Delete/5
     public async Task<IActionResult> Delete(int? menuid)
     {
-        if (menuid == null)
-        {
-            return NotFound();
-        }
+        if (menuid == null) return NotFound();
 
-        var sysmenu = await _context.SysMenus
-            .FirstOrDefaultAsync(m => m.MenuId == menuid);
-        if (sysmenu == null)
-        {
-            return NotFound();
-        }
+        var sysmenu = await _sysMenuService.GetByIdAsync(menuid.Value);
+        if (sysmenu == null) return NotFound();
 
         return View(sysmenu);
     }
 
-    // POST: SYSMENUS/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int? menuid)
     {
-        var sysmenu = await _context.SysMenus.FindAsync(menuid);
-        if (sysmenu != null)
-        {
-            _context.SysMenus.Remove(sysmenu);
-        }
+        if (menuid == null) return NotFound();
 
-        await _context.SaveChangesAsync();
+        var result = await _sysMenuService.DeleteAsync(menuid.Value);
+        if (!result.IsSuccess && result.ErrorMessage == "NOT_FOUND") return NotFound();
+
         return RedirectToAction(nameof(Index));
-    }
-
-    private bool SysMenuExists(int? menuid)
-    {
-        return _context.SysMenus.Any(e => e.MenuId == menuid);
     }
 }
