@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Security.Claims;
+using PetCare.Controllers;
 using TrainingCenterFinalProject.Models;
 using TrainingCenterFinalProject.Services;
 
 namespace TrainingCenterFinalProject.Controllers;
 
 [Authorize(Roles = "Admin")]
-public class AdminInstitutionController : Controller
+public class AdminInstitutionController : BaseController
 {
     private readonly IAdminInstitutionService _adminInstitutionService;
 
@@ -35,13 +35,12 @@ public class AdminInstitutionController : Controller
 
     public async Task<IActionResult> Create()
     {
-        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(currentUserId)) return Unauthorized();
+        if (string.IsNullOrEmpty(LoginUserId)) return Unauthorized();
 
-        var institution = await _adminInstitutionService.GetPendingInstitutionByOwnerAsync(currentUserId);
-        if (institution != null)
+        var pending = await _adminInstitutionService.GetPendingInstitutionByOwnerAsync(LoginUserId);
+        if (pending != null)
         {
-            return RedirectToAction("Details", new { id = institution.InstitutionID });
+            return RedirectToAction("Details", new { id = pending.InstitutionID });
         }
 
         await PopulateInstitutionTypesAndStatusesAsync();
@@ -53,9 +52,7 @@ public class AdminInstitutionController : Controller
     public async Task<IActionResult> Create(Institution institution)
     {
         if (institution == null) return BadRequest();
-
-        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(currentUserId)) return Unauthorized();
+        if (string.IsNullOrEmpty(LoginUserId)) return Unauthorized();
 
         ModelState.Remove("InstitutionID");
         ModelState.Remove("StatusId");
@@ -68,11 +65,8 @@ public class AdminInstitutionController : Controller
             return View(institution);
         }
 
-        var result = await _adminInstitutionService.CreateInstitutionAsync(institution, currentUserId);
-        if (result.IsSuccess)
-        {
-            return RedirectToAction("Index", "Home");
-        }
+        var result = await _adminInstitutionService.CreateInstitutionAsync(institution, LoginUserId);
+        if (result.IsSuccess) return RedirectToAction("Index", "Home");
 
         ModelState.AddModelError("", result.ErrorMessage);
         await PopulateInstitutionTypesAndStatusesAsync();
@@ -96,9 +90,7 @@ public class AdminInstitutionController : Controller
     public async Task<IActionResult> Edit(Institution institution, bool fromDetails = false)
     {
         if (institution == null) return NotFound();
-
-        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(currentUserId)) return Unauthorized();
+        if (string.IsNullOrEmpty(LoginUserId)) return Unauthorized();
 
         if (fromDetails)
         {
@@ -113,10 +105,11 @@ public class AdminInstitutionController : Controller
             return View(institution);
         }
 
-        var result = await _adminInstitutionService.UpdateInstitutionAsync(institution, fromDetails, currentUserId);
+        var result = await _adminInstitutionService.UpdateInstitutionAsync(institution, fromDetails, LoginUserId);
+
         if (!result.IsSuccess)
         {
-            if (result.ErrorMessage == "NOT_FOUND") return NotFound("3");
+            if (result.ErrorMessage == "NOT_FOUND") return NotFound();
 
             ModelState.AddModelError("", result.ErrorMessage);
             await PopulateInstitutionTypesAndStatusesAsync();
