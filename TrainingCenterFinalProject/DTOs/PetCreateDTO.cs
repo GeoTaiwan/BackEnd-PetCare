@@ -15,4 +15,7 @@ public class PetCreateDTO
     public string? MicrochipNo { get; set; }
     // 🌟 接收圖片的關鍵
     public IFormFile? UploadPhoto { get; set; }
+    public string? Gender { get; set; }           // 🌟 新增
+    public DateTime? DateOfBirth { get; set; }    // 🌟 新增，ASP.NET 會自動將 "2024-05-10" 轉換成 DateTime
+    public string? SpecialNotes { get; set; }     // 🌟 新增
 }

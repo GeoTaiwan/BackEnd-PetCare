@@ -158,7 +158,10 @@ public class PetsController : ControllerBase
                 Breed = model.Breed,
                 MicrochipNo = model.MicrochipNo,
                 UploadPhoto = model.UploadPhoto,
-                // Android 建立時還沒有上傳照片的需求，其他選填欄位先保持預設
+                Gender = model.Gender,
+                DateOfBirth = model.DateOfBirth,
+                SpecialNotes = model.SpecialNotes,
+                
             };
 
             // 4. 呼叫 Service 儲存[cite: 5]
@@ -174,6 +177,44 @@ public class PetsController : ControllerBase
             {
                 return BadRequest(new { message = result.ErrorMessage });
             }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "伺服器發生錯誤", error = ex.Message });
+        }
+    }
+
+    // GET: api/Pets/options
+    [HttpGet("options")]
+    public IActionResult GetPetOptions()
+    {
+        try
+        {
+            // 1. 取得物種清單 (只取 Value，例如 "狗", "貓")
+            // 如果你的資料庫想存 "狗(Dog)"，就改成 Select(x => x.Text)
+            var species = _petService.PopulateSpeciesList()
+                                     .Select(x => x.Value)
+                                     .ToList();
+
+            // 2. 取得性別清單
+            var genders = _petService.PopulateGenderList()
+                                     .Select(x => x.Value)
+                                     .ToList();
+
+            // 3. 取得品種字典 (Dictionary)
+            var breeds = _petService.GetPetBreedDictionary();
+
+            // 4. 回傳乾淨的 JSON 結構
+            return Ok(new
+            {
+                message = "取得成功",
+                data = new
+                {
+                    species = species,
+                    genders = genders,
+                    breeds = breeds
+                }
+            });
         }
         catch (Exception ex)
         {
