@@ -76,6 +76,8 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IAppointmentManageService, AppointmentManageService>();
 builder.Services.AddScoped<IPetService, PetService>();
 builder.Services.AddScoped<IPetManageService, PetManageService>();
+builder.Services.AddScoped<IPetPhotoService, PetPhotoService>();
+builder.Services.AddScoped<IAuthorizationRecordService, AuthorizationRecordService>();
 
 var app = builder.Build();
 

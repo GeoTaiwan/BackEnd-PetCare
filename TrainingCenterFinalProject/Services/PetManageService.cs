@@ -8,10 +8,12 @@ namespace TrainingCenterFinalProject.Services;
 public class PetManageService : IPetManageService
 {
     private readonly PetCareDbContext _context;
+    private readonly IPetPhotoService _petPhotoService;
 
-    public PetManageService(PetCareDbContext context)
+    public PetManageService(PetCareDbContext context, IPetPhotoService petPhotoService)
     {
         _context = context;
+        _petPhotoService = petPhotoService;
     }
 
     public async Task<PetManageIndexData?> GetIndexDataAsync(string? userId)
@@ -84,7 +86,7 @@ public class PetManageService : IPetManageService
 
         if (pet.UploadPhoto is not null && pet.UploadPhoto.Length > 0)
         {
-            pet.ProfilePhotoUrl = await SavePhotoAsync(pet.UploadPhoto, ownerId, pet.PetID, webRootPath);
+            pet.ProfilePhotoUrl = await _petPhotoService.SavePetPhotoAsync(pet.UploadPhoto, ownerId, pet.PetID, webRootPath);
             _context.Pets.Update(pet);
             await _context.SaveChangesAsync();
         }
@@ -122,8 +124,8 @@ public class PetManageService : IPetManageService
 
         if (pet.UploadPhoto is not null && pet.UploadPhoto.Length > 0)
         {
-            DeletePhysicalPhoto(dbPet.ProfilePhotoUrl, webRootPath);
-            dbPet.ProfilePhotoUrl = await SavePhotoAsync(pet.UploadPhoto, ownerId, dbPet.PetID, webRootPath);
+            _petPhotoService.DeletePetPhoto(dbPet.ProfilePhotoUrl, webRootPath);
+            dbPet.ProfilePhotoUrl = await _petPhotoService.SavePetPhotoAsync(pet.UploadPhoto, ownerId, dbPet.PetID, webRootPath);
         }
         else
         {
@@ -160,7 +162,7 @@ public class PetManageService : IPetManageService
             return result;
         }
 
-        DeletePhysicalPhoto(pet.ProfilePhotoUrl, webRootPath);
+        _petPhotoService.DeletePetPhoto(pet.ProfilePhotoUrl, webRootPath);
 
         var petWeights = await _context.PetWeight.Where(w => w.PetID == petId).ToListAsync();
         var medRecords = await _context.MedicalRecords.Where(m => m.PetID == petId).ToListAsync();
@@ -187,44 +189,12 @@ public class PetManageService : IPetManageService
             return result;
         }
 
-        DeletePhysicalPhoto(pet.ProfilePhotoUrl, webRootPath);
+        _petPhotoService.DeletePetPhoto(pet.ProfilePhotoUrl, webRootPath);
         pet.ProfilePhotoUrl = null;
         await _context.SaveChangesAsync();
 
         result.IsSuccess = true;
         result.Data = true;
         return result;
-    }
-
-    private static async Task<string> SavePhotoAsync(IFormFile file, string ownerId, int petId, string webRootPath)
-    {
-        var uploadsFolder = Path.Combine(webRootPath, "uploads", "pets");
-        if (!Directory.Exists(uploadsFolder))
-        {
-            Directory.CreateDirectory(uploadsFolder);
-        }
-
-        var extension = Path.GetExtension(file.FileName);
-        var newFileName = $"{ownerId}_{petId}{extension}";
-        var filePath = Path.Combine(uploadsFolder, newFileName);
-
-        using var stream = new FileStream(filePath, FileMode.Create);
-        await file.CopyToAsync(stream);
-
-        return "/uploads/pets/" + newFileName;
-    }
-
-    private static void DeletePhysicalPhoto(string? profilePhotoUrl, string webRootPath)
-    {
-        if (string.IsNullOrWhiteSpace(profilePhotoUrl)) return;
-
-        var uploadsFolder = Path.Combine(webRootPath, "uploads", "pets");
-        var fileName = Path.GetFileName(profilePhotoUrl);
-        var filePath = Path.Combine(uploadsFolder, fileName);
-
-        if (File.Exists(filePath))
-        {
-            File.Delete(filePath);
-        }
     }
 }
