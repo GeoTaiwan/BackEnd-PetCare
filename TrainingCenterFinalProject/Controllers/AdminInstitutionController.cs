@@ -11,10 +11,12 @@ namespace TrainingCenterFinalProject.Controllers;
 public class AdminInstitutionController : BaseController
 {
     private readonly IAdminInstitutionService _adminInstitutionService;
+    private readonly IInstitutionService _institutionService;
 
-    public AdminInstitutionController(IAdminInstitutionService adminInstitutionService)
+    public AdminInstitutionController(IAdminInstitutionService adminInstitutionService, IInstitutionService institutionService)
     {
         _adminInstitutionService = adminInstitutionService;
+        _institutionService = institutionService;
     }
 
     public async Task<IActionResult> Index()
@@ -105,6 +107,39 @@ public class AdminInstitutionController : BaseController
             return View(institution);
         }
 
+        var result = await _adminInstitutionService.UpdateInstitutionAsync(institution, fromDetails, LoginUserId);
+
+        if (!result.IsSuccess)
+        {
+            if (result.ErrorMessage == "NOT_FOUND") return NotFound();
+
+            ModelState.AddModelError("", result.ErrorMessage);
+            await PopulateInstitutionTypesAndStatusesAsync();
+            return View(institution);
+        }
+
+        if (fromDetails)
+        {
+            return RedirectToAction("Details", new { id = result.Data.InstitutionID });
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Approve(string institutionId, bool fromDetails = false)
+    {
+        if (string.IsNullOrEmpty(LoginUserId)) return Unauthorized();
+
+        if (fromDetails)
+        {
+            ModelState.Remove("InstitutionID");
+            ModelState.Remove("StatusId");
+            ModelState.Remove("OwnerID");
+        }
+        var institution = await _institutionService.GetInstitutionManageAsync(institutionId);
+        institution.StatusId = "S01";
         var result = await _adminInstitutionService.UpdateInstitutionAsync(institution, fromDetails, LoginUserId);
 
         if (!result.IsSuccess)
