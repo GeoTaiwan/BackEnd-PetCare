@@ -133,7 +133,7 @@ public class PetsController : ControllerBase
 
     // POST: api/Pets
     [HttpPost]
-    public async Task<IActionResult> CreatePet([FromBody] PetCreateDTO model)
+    public async Task<IActionResult> CreatePet([FromForm] PetCreateDTO model) // 🌟 關鍵修改
     {
         try
         {
@@ -157,6 +157,7 @@ public class PetsController : ControllerBase
                 Species = model.Species,
                 Breed = model.Breed,
                 MicrochipNo = model.MicrochipNo,
+                UploadPhoto = model.UploadPhoto,
                 // Android 建立時還沒有上傳照片的需求，其他選填欄位先保持預設
             };
 

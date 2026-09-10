@@ -13,4 +13,6 @@ public class PetCreateDTO
     public string? Breed { get; set; }
 
     public string? MicrochipNo { get; set; }
+    // 🌟 接收圖片的關鍵
+    public IFormFile? UploadPhoto { get; set; }
 }
