@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TrainingCenterFinalProject.Common;
 using TrainingCenterFinalProject.Models;
 
@@ -13,5 +14,7 @@ public interface IPetService
     Task<ServiceResult<Pet>> UpdateAsync(int petId, Pet pet, string ownerId, string webRootPath);
     Task<ServiceResult<bool>> DeleteAsync(int petId, string webRootPath);
     Task<ServiceResult<bool>> DeletePhotoAsync(int petId, string ownerId, string webRootPath);
-    List<string> PopulateGenderList();
+    SelectList PopulateGenderList();
+    SelectList PopulateSpeciesList();
+    Dictionary<string, List<string>> GetPetBreedDictionary();
 }

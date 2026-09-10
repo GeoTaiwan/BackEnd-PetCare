@@ -18,23 +18,12 @@
                     </div>
                     <div class="mb-3">
                         <label asp-for="Species" class="form-label"></label>
-                        <select asp-for="Species" class="form-select" id="speciesSelect">
+                        <select asp-for="Species" class="form-select" id="speciesSelect" asp-items="@ViewBag.SpeciesList">
                             <option value="" disabled selected>請選擇物種</option>
-                            <option value="狗">狗 (Dog)</option>
-                            <option value="貓">貓 (Cat)</option>
-                            <option value="兔子">兔子 (Rabbit)</option>
-                            <option value="鼠/貂 (小型哺乳類)">鼠/貂 (小型哺乳類)</option>
-                            <option value="鳥類">鳥類 (Bird)</option>
-                            <option value="爬蟲/兩棲類">爬蟲/兩棲類 (Reptile/Amphibian)</option>
-                            <option value="其他">其他 (Other)</option>
+                            
                         </select>
                         <span asp-validation-for="Species" class="text-danger"></span>
                     </div>
-                    @* <div class="mb-3">
-                        <label asp-for="Species" class="control-label"></label>
-                        <input asp-for="Species" class="form-control" />
-                        <span asp-validation-for="Species" class="text-danger"></span>
-                    </div> *@
                     <div class="mb-3">
                         <label asp-for="Breed" class="form-label"></label>
 
@@ -133,15 +122,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const petDictionary = {
-                "狗": ["米克斯 (Mix)", "柴犬", "貴賓犬", "馬爾濟斯", "柯基", "黃金獵犬", "法國鬥牛犬", "博美犬", "其他 (自行輸入)"],
-                "貓": ["米克斯 (Mix)", "英國短毛貓", "布偶貓", "美國短毛貓", "波斯貓", "曼赤肯", "俄羅斯藍貓", "其他 (自行輸入)"],
-                "兔子": ["獅子兔", "侏儒兔", "垂耳兔", "道奇兔", "安哥拉兔", "其他 (自行輸入)"],
-                "鼠/貂 (小型哺乳類)": ["倉鼠 (三線/一線/老公公)", "黃金鼠", "天竺鼠 (豚鼠)", "龍貓 (絨鼠)", "雪貂", "蜜袋鼯", "刺蝟", "其他 (自行輸入)"],
-                "鳥類": ["虎皮鸚鵡", "玄鳳鸚鵡", "和尚鸚鵡", "金剛鸚鵡", "灰鸚鵡", "文鳥", "金絲雀", "其他 (自行輸入)"],
-                "爬蟲/兩棲類": ["豹紋守宮", "肥尾守宮", "睫角守宮", "鬆獅蜥", "陸龜 (如赫曼/蘇卡達)", "澤龜 (如斑龜/巴西龜)", "球蟒", "豬鼻蛇", "角蛙", "其他 (自行輸入)"],
-                "其他": ["其他 (自行輸入)"]
-            };
+            // 💡 關鍵修改這裡：將原本寫死的物件，改為由後端注入 JSON 字串
+            const petDictionary = @Html.Raw(ViewBag.PetDictionaryJson);
 
             const speciesSelect = document.getElementById('speciesSelect');
             const breedSelect = document.getElementById('breedSelect');

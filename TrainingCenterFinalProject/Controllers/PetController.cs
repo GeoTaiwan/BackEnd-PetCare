@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Controllers;
+using System.Text.Json;
 using TrainingCenterFinalProject.Models;
 using TrainingCenterFinalProject.Services;
 
@@ -37,7 +38,9 @@ public class PetController : BaseController
     public IActionResult Create(bool fromMR = false)
     {
         ViewBag.FromMR = fromMR;
-        ViewBag.GenderList = new SelectList(_petService.PopulateGenderList());
+        ViewBag.GenderList = _petService.PopulateGenderList();
+        ViewBag.SpeciesList = _petService.PopulateSpeciesList();
+        ViewBag.PetDictionaryJson = JsonSerializer.Serialize(_petService.GetPetBreedDictionary());
         return View();
     }
 

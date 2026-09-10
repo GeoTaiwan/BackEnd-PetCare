@@ -162,11 +162,45 @@ public class PetService : IPetService
         return result;
     }
 
-    public List<string> PopulateGenderList()
+    public SelectList PopulateGenderList()
     {
-        var result = new List<string>();
-        result.AddRange("公","母","公(絕育)","母(絕育)","其它");
-        return result;
+        var resultValue = new List<string>();
+        resultValue.AddRange("公", "母", "公(絕育)", "母(絕育)", "其它");
+        var resultName = new List<string>();
+        resultName.AddRange("公(Male)", "母(Female)", "公(絕育)(Neutered Male)", "母(絕育)(Spayed Female)", "其它(Other)");
+        var result = new List<SelectListItem>();
+        for (int i = 0; i < resultName.Count; i++)
+        {
+            result.Add(new SelectListItem { Text = resultName[i], Value = resultValue[i] });
+        }
+        return new SelectList(result, "Value", "Text");
+    }
+
+    public SelectList PopulateSpeciesList()
+    {
+        var resultValue = new List<string>();
+        resultValue.AddRange("狗", "貓", "兔子", "鼠/貂 (小型哺乳類)", "鳥類", "爬蟲/兩棲類", "其他");
+        var resultName = new List<string>();
+        resultName.AddRange("狗(Dog)", "貓(Cat)", "兔子(Rabbit)", "鼠/貂(小型哺乳類)", "鳥類(Bird)", "爬蟲/兩棲類(Reptile/Amphibian)", "其他(Other)");
+        var result = new List<SelectListItem>();
+        for (int i = 0; i < resultName.Count; i++)
+        {
+            result.Add(new SelectListItem { Text = resultName[i], Value = resultValue[i] });
+        }
+        return new SelectList(result, "Value", "Text");
+    }
+    public Dictionary<string, List<string>> GetPetBreedDictionary()
+    {
+        return new Dictionary<string, List<string>>
+    {
+        { "狗", new List<string> { "米克斯 (Mix)", "柴犬", "貴賓犬", "馬爾濟斯", "柯基", "黃金獵犬", "法國鬥牛犬", "博美犬", "其他 (自行輸入)" } },
+        { "貓", new List<string> { "米克斯 (Mix)", "英國短毛貓", "布偶貓", "美國短毛貓", "波斯貓", "曼赤肯", "俄羅斯藍貓", "其他 (自行輸入)" } },
+        { "兔子", new List<string> { "獅子兔", "侏儒兔", "垂耳兔", "道奇兔", "安哥拉兔", "其他 (自行輸入)" } },
+        { "鼠/貂 (小型哺乳類)", new List<string> { "倉鼠 (三線/一線/老公公)", "黃金鼠", "天竺鼠 (豚鼠)", "龍貓 (絨鼠)", "雪貂", "蜜袋鼯", "刺蝟", "其他 (自行輸入)" } },
+        { "鳥類", new List<string> { "虎皮鸚鵡", "玄鳳鸚鵡", "和尚鸚鵡", "金剛鸚鵡", "灰鸚鵡", "文鳥", "金絲雀", "其他 (自行輸入)" } },
+        { "爬蟲/兩棲類", new List<string> { "豹紋守宮", "肥尾守宮", "睫角守宮", "鬆獅蜥", "陸龜 (如赫曼/蘇卡達)", "澤龜 (如斑龜/巴西龜)", "球蟒", "豬鼻蛇", "角蛙", "其他 (自行輸入)" } },
+        { "其他", new List<string> { "其他 (自行輸入)" } }
+    };
     }
 
 }
