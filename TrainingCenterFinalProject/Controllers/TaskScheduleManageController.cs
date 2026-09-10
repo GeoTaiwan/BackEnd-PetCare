@@ -1,195 +1,114 @@
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TrainingCenterFinalProject.Models;
-using TrainingCenterFinalProject.Data;
-using PetCare.Controllers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using PetCare.Controllers;
+using TrainingCenterFinalProject.Models;
+using TrainingCenterFinalProject.Services;
+
 [Authorize(Roles = "VetManage,BeautyManage,NannyManage")]
 public class TaskScheduleManageController : BaseController
 {
-    private readonly PetCareDbContext _context;
+    private readonly ITaskScheduleManageService _taskScheduleManageService;
 
-    public TaskScheduleManageController(PetCareDbContext context)
+    public TaskScheduleManageController(ITaskScheduleManageService taskScheduleManageService)
     {
-        _context = context;
+        _taskScheduleManageService = taskScheduleManageService;
     }
 
-    // GET: TASKSCHEDULES
-    public async Task<IActionResult> Index()    
+    public async Task<IActionResult> Index()
     {
-        var currentUserInstitution = _context.Employments
-            .Where(e => e.UserID == LoginUserId)
-            .Select(e => e.InstitutionID)
-            .FirstOrDefault();
-        var taskSchedules = await _context.TaskSchedules
-            .Include(t=>t.Staff)
-            .Include(t=>t.Institution)
-            .ThenInclude(i=>i.Employments).ThenInclude(e=>e.OccupationDetails)
-            .Where(t=>t.InstitutionID==currentUserInstitution)
-            .ToListAsync();
-        ViewBag.InstName = _context.Institutions
-            .Where(i=>i.InstitutionID == currentUserInstitution)
-            .Select(i=>i.Name)
-            .FirstOrDefault();
-        return View(taskSchedules);
+        if (string.IsNullOrEmpty(LoginUserId)) return Unauthorized();
+
+        var data = await _taskScheduleManageService.GetIndexDataAsync(LoginUserId);
+        if (data == null) return BadRequest();
+
+        ViewBag.InstName = data.InstitutionName;
+        return View(data.TaskSchedules);
     }
 
-    // GET: TASKSCHEDULES/Details/5
     public async Task<IActionResult> Details(int? taskid)
     {
-        if (taskid == null)
-        {
-            return NotFound();
-        }
+        if (taskid == null) return NotFound();
 
-        var taskschedule = await _context.TaskSchedules
-            .FirstOrDefaultAsync(m => m.TaskID == taskid);
-        if (taskschedule == null)
-        {
-            return NotFound();
-        }
+        var task = await _taskScheduleManageService.GetByIdAsync(taskid.Value);
+        if (task == null) return NotFound();
 
-        return View(taskschedule);
+        return View(task);
     }
 
-    // GET: TASKSCHEDULES/Create
     public IActionResult Create()
     {
         return View();
     }
 
-    // POST: TASKSCHEDULES/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("TaskID,StaffID,InstitutionID,CreatedDate,StartTime,EndTime,TaskDescription,Status,Staff,Institution")] TaskSchedule taskschedule)
     {
-        if (ModelState.IsValid)
-        {
-            _context.Add(taskschedule);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(taskschedule);
+        if (!ModelState.IsValid) return View(taskschedule);
+
+        var result = await _taskScheduleManageService.CreateAsync(taskschedule);
+        if (!result.IsSuccess) return View(taskschedule);
+
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AssignEmployee(TaskSchedule taskschedule)
     {
-        if (taskschedule == null)
-        {
-            return NotFound();
-        }
+        if (taskschedule == null) return NotFound();
+
         ModelState.Remove("CreatedDate");
         ModelState.Remove("EndTime");
         ModelState.Remove("Status");
-        taskschedule.CreatedDate = DateTime.Now;
-        taskschedule.EndTime =taskschedule.StartTime.AddMinutes(30); // Default duration of 30 minutes
-        taskschedule.Status = "Active"; // Default status
-        if (ModelState.IsValid)
+
+        if (!ModelState.IsValid)
         {
-            _context.Add(taskschedule);
-            await _context.SaveChangesAsync();
+            TempData[$"ErrMsg_{taskschedule.AppointmentID}"] = "驗證不通過，請檢查輸入的資料是否正確。";
             return RedirectToAction(nameof(Index), "AppointmentManage");
         }
-        TempData[$"ErrMsg_{taskschedule.AppointmentID}"] = "驗證不通過，請檢查輸入的資料是否正確。";
-        return RedirectToAction(nameof(Index), "AppointmentManage");
 
-        //return View(taskschedule);
+        var result = await _taskScheduleManageService.AssignEmployeeAsync(taskschedule);
+        if (!result.IsSuccess)
+        {
+            TempData[$"ErrMsg_{taskschedule.AppointmentID}"] = "建立任務失敗。";
+        }
+
+        return RedirectToAction(nameof(Index), "AppointmentManage");
     }
 
-    // GET: TASKSCHEDULES/Edit/5
     public async Task<IActionResult> Edit(int? taskid)
     {
-        if (taskid == null)
-        {
-            return NotFound();
-        }
+        if (taskid == null) return NotFound();
 
-        var taskschedule = await _context.TaskSchedules
-            .Include(t=>t.Staff)
-            .Include(t => t.Institution)
-            .FirstOrDefaultAsync(t=>t.TaskID==taskid);
-        if (taskschedule == null)
-        {
-            return NotFound();
-        }
-        return View(taskschedule);
+        var task = await _taskScheduleManageService.GetByIdAsync(taskid.Value);
+        if (task == null) return NotFound();
+
+        return View(task);
     }
 
-    // POST: TASKSCHEDULES/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int? taskid, TaskSchedule taskschedule)
     {
-        if (taskid != taskschedule.TaskID)
-        {
-            return NotFound();
-        }
+        if (taskid == null) return NotFound();
+        if (!ModelState.IsValid) return View(taskschedule);
 
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(taskschedule);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TaskScheduleExists(taskschedule.TaskID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(taskschedule);
+        var result = await _taskScheduleManageService.UpdateAsync(taskid.Value, taskschedule);
+        if (!result.IsSuccess && result.ErrorMessage == "NOT_FOUND") return NotFound();
+
+        return RedirectToAction(nameof(Index));
     }
 
-    //// GET: TASKSCHEDULES/Delete/5
-    //public async Task<IActionResult> Delete(int? taskid)
-    //{
-    //    if (taskid == null)
-    //    {
-    //        return NotFound();
-    //    }
-
-    //    var taskschedule = await _context.TaskSchedules
-    //        .FirstOrDefaultAsync(m => m.TaskID == taskid);
-    //    if (taskschedule == null)
-    //    {
-    //        return NotFound();
-    //    }
-
-    //    return View(taskschedule);
-    //}
-
-    // POST: TASKSCHEDULES/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int? taskid)
     {
-        var taskschedule = await _context.TaskSchedules.FindAsync(taskid);
-        if (taskschedule != null)
-        {
-            _context.TaskSchedules.Remove(taskschedule);
-        }
+        if (taskid == null) return NotFound();
 
-        await _context.SaveChangesAsync();
+        var result = await _taskScheduleManageService.DeleteAsync(taskid.Value);
+        if (!result.IsSuccess && result.ErrorMessage == "NOT_FOUND") return NotFound();
+
         return RedirectToAction(nameof(Index));
-    }
-
-    private bool TaskScheduleExists(int? taskid)
-    {
-        return _context.TaskSchedules.Any(e => e.TaskID == taskid);
     }
 }
