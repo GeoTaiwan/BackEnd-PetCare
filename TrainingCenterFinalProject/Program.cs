@@ -86,6 +86,7 @@ builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>();
 builder.Services.AddScoped<IMedicalRecordManageService, MedicalRecordManageService>();
 builder.Services.AddScoped<IMedicalVocabularyDictionaryService, MedicalVocabularyDictionaryService>();
 builder.Services.AddScoped<IOccupationsService, OccupationsService>();
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 
 var app = builder.Build();
 
