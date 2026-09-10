@@ -84,6 +84,7 @@ builder.Services.AddScoped<IInstitutionService, InstitutionService>();
 builder.Services.AddScoped<ILogPhotoService, LogPhotoService>();
 builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>();
 builder.Services.AddScoped<IMedicalRecordManageService, MedicalRecordManageService>();
+builder.Services.AddScoped<IMedicalVocabularyDictionaryService, MedicalVocabularyDictionaryService>();
 
 var app = builder.Build();
 
