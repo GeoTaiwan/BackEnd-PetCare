@@ -73,7 +73,9 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAdminInstitutionService, AdminInstitutionService>();
 builder.Services.AddScoped<IAdminUserService, AdminUserService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IAppointmentManageService, AppointmentManageService>();
 builder.Services.AddScoped<IPetService, PetService>();
+builder.Services.AddScoped<IPetManageService, PetManageService>();
 
 var app = builder.Build();
 
