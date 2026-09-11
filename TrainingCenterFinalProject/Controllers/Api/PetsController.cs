@@ -336,9 +336,9 @@ public class PetsController : ControllerBase
         }
     }
 
-    // GET: api/Pets/{id}/medical-records
-    [HttpGet("{id}/medical-records")]
-    public async Task<IActionResult> GetMedicalRecords(int id)
+    // GET: api/Pets/medical-records/{id}
+    [HttpGet("medical-records/{id}")]
+    public async Task<IActionResult> GetMedicalRecords(int id=0)
     {
         try
         {
@@ -351,6 +351,16 @@ public class PetsController : ControllerBase
             // 🌟 3. 使用你寫好的 Service 取得資料[cite: 4]
             // 這裡會取得 MedicalRecordIndexData，裡面包含了 Records 清單[cite: 4]
             // 而且底層已經依照看診日期遞減排序，並過濾了 userId 與 petId[cite: 5]
+            
+            //MedicalRecordIndexData indexData;
+            //if (id == null)
+            //{
+            //    indexData = await _medicalRecordService.GetIndexDataAsync(userId);
+            //}
+            //else
+            //{
+            //    indexData = await _medicalRecordService.GetIndexDataAsync(userId, id.Value);
+            //}
             var indexData = await _medicalRecordService.GetIndexDataAsync(userId, id);
 
             // 🌟 4. 將資料庫實體轉換為前端需要的 DTO
@@ -377,5 +387,7 @@ public class PetsController : ControllerBase
             return StatusCode(500, new { message = "伺服器發生錯誤", error = ex.Message });
         }
     }
+
+
 
 }
