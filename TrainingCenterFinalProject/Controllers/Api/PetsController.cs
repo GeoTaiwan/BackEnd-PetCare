@@ -15,11 +15,13 @@ namespace TrainingCenterFinalProject.Controllers.Api;
 public class PetsController : ControllerBase
 {
     private readonly IPetService _petService;
+    private readonly IMedicalRecordService _medicalRecordService;
     private readonly IWebHostEnvironment _env;
     // 🌟 關鍵 2：注入你寫好的 IPetService[cite: 4, 5]
-    public PetsController(IPetService petService, IWebHostEnvironment environment)
+    public PetsController(IPetService petService, IWebHostEnvironment environment,IMedicalRecordService medicalRecordService)
     {
         _petService = petService;
+        _medicalRecordService = medicalRecordService;
         _env = environment;
     }
 
@@ -327,6 +329,47 @@ public class PetsController : ControllerBase
             {
                 return NotFound(new { message = "找不到該寵物，刪除失敗" });
             }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "伺服器發生錯誤", error = ex.Message });
+        }
+    }
+
+    // GET: api/Pets/{id}/medical-records
+    [HttpGet("{id}/medical-records")]
+    public async Task<IActionResult> GetMedicalRecords(int id)
+    {
+        try
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "無法識別使用者身分" });
+            }
+
+            // 🌟 3. 使用你寫好的 Service 取得資料[cite: 4]
+            // 這裡會取得 MedicalRecordIndexData，裡面包含了 Records 清單[cite: 4]
+            // 而且底層已經依照看診日期遞減排序，並過濾了 userId 與 petId[cite: 5]
+            var indexData = await _medicalRecordService.GetIndexDataAsync(userId, id);
+
+            // 🌟 4. 將資料庫實體轉換為前端需要的 DTO
+            var recordsDto = indexData.Records.Select(m => new MedicalRecordDTO
+            {
+                RecordID = m.RecordID,       // 對應 MedicalRecord.cs 的 PK[cite: 3]
+                VisitDate = m.VisitDate,     // 看診日期[cite: 3]
+                VetID = m.VetID,             // 獸醫 ID[cite: 3]
+                Symptoms = m.Symptoms,       // 症狀[cite: 3]
+                Diagnosis = m.Diagnosis,     // 診斷結果[cite: 3]
+                TestResultsFile = m.TestResultsFile // 檢驗報告檔案[cite: 3]
+            }).ToList();
+
+            // 5. 回傳 JSON
+            return Ok(new
+            {
+                message = "取得成功",
+                data = recordsDto
+            });
         }
         catch (Exception ex)
         {
