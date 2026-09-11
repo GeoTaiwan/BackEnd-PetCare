@@ -17,4 +17,5 @@ public interface IPetService
     SelectList PopulateGenderList();
     SelectList PopulateSpeciesList();
     Dictionary<string, List<string>> GetPetBreedDictionary();
+    Task<bool> UpdatePetWeightAsync(PetWeight newWeight);
 }

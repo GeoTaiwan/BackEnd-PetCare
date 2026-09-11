@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using TrainingCenterFinalProject.Services;
-using TrainingCenterFinalProject.Models;
 using PetCare.DTOs; // 引入 Pet 實體
+using System.Security.Claims;
+using TrainingCenterFinalProject.Models;
+using TrainingCenterFinalProject.Services;
 
 namespace TrainingCenterFinalProject.Controllers.Api;
 
@@ -215,6 +215,45 @@ public class PetsController : ControllerBase
                     breeds = breeds
                 }
             });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "伺服器發生錯誤", error = ex.Message });
+        }
+    }
+
+    // POST: api/Pets/{id}/weights
+    [HttpPost("{id}/weights")]
+    public async Task<IActionResult> AddPetWeight(int id, [FromBody] PetWeightCreateDto model)
+    {
+        try
+        {
+            // 1. 確認使用者身分
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "無法識別使用者身分" });
+            }
+
+            // 2. 驗證這隻寵物是否屬於該使用者 (安全防護)[cite: 6]
+            var pet = await _petService.GetOwnedPetAsync(id, userId);
+            if (pet == null)
+            {
+                return NotFound(new { message = "找不到此寵物或無權限操作" });
+            }
+
+            // 3. 建立體重實體 (這裡假設你有 PetWeight 這個 DbContext DbSet)
+            var newWeight = new PetWeight
+            {
+                PetID = id,
+                Weight = model.Weight,
+                RecordDate = DateTime.Now // 預設紀錄時間為現在
+            };
+
+            // 4. 存入資料庫 (你可以把這段寫進 PetService，或者直接在這裡呼叫 dbContext)
+            await _petService.UpdatePetWeightAsync(newWeight);
+
+            return Ok(new { message = "體重紀錄新增成功" });
         }
         catch (Exception ex)
         {

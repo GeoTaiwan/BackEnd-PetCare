@@ -203,4 +203,22 @@ public class PetService : IPetService
     };
     }
 
+    public async Task<bool> UpdatePetWeightAsync(PetWeight newWeight)
+    {
+        if (newWeight == null)
+        {
+            return false;
+        }
+        try
+        {
+            _context.PetWeight.Add(newWeight);
+            await _context.SaveChangesAsync();
+        }
+        catch
+        {
+            return false;
+        }
+        return true;
+    }
+
 }
