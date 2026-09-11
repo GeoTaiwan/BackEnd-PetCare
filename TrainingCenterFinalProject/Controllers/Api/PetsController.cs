@@ -361,7 +361,8 @@ public class PetsController : ControllerBase
                 VetID = m.VetID,             // 獸醫 ID[cite: 3]
                 Symptoms = m.Symptoms,       // 症狀[cite: 3]
                 Diagnosis = m.Diagnosis,     // 診斷結果[cite: 3]
-                TestResultsFile = m.TestResultsFile // 檢驗報告檔案[cite: 3]
+                TestResultsFile = m.TestResultsFile, // 檢驗報告檔案[cite: 3]
+                VetName = m.Vet.Name // 透過 Navigation Property 取得獸醫姓名[cite: 3]
             }).ToList();
 
             // 5. 回傳 JSON
