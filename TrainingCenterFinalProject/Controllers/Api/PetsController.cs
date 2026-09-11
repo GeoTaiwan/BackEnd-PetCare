@@ -261,4 +261,77 @@ public class PetsController : ControllerBase
         }
     }
 
+    // PUT: api/Pets/{id}
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdatePet(int id, [FromForm] PetCreateDTO model)
+    {
+        try
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId)) return Unauthorized(new { message = "無法識別使用者身分" });
+
+            // 1. 將接收到的表單資料轉為實體
+            var updatePet = new Pet
+            {
+                PetID = id, // 🌟 記得塞入 ID
+                Name = model.Name,
+                Species = model.Species,
+                Breed = model.Breed,
+                Gender = model.Gender,
+                DateOfBirth = model.DateOfBirth,
+                MicrochipNo = model.MicrochipNo,
+                SpecialNotes = model.SpecialNotes,
+                UploadPhoto = model.UploadPhoto
+            };
+
+            // 2. 呼叫 Service 更新資料[cite: 5]
+            var result = await _petService.UpdateAsync(id, updatePet, userId, _env.WebRootPath);
+
+            if (result.IsSuccess)
+            {
+                return Ok(new { message = "更新成功", data = result.Data });
+            }
+            else if (result.ErrorMessage == "NOT_FOUND")
+            {
+                return NotFound(new { message = "找不到此寵物或無權限修改" });
+            }
+
+            return BadRequest(new { message = "更新失敗" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "伺服器發生錯誤", error = ex.Message });
+        }
+    }
+
+    // DELETE: api/Pets/{id}
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeletePet(int id)
+    {
+        try
+        {
+            // 為了安全，建議可以先驗證登入者身分，確保不會刪除到別人的寵物
+            // var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            // 呼叫 Service 的 DeleteAsync[cite: 1]
+            // 你的 DeleteAsync 只需要 petId 和 webRootPath 就可以執行刪除了[cite: 2]
+            var result = await _petService.DeleteAsync(id, _env.WebRootPath);
+
+            if (result.IsSuccess)
+            {
+                return Ok(new { message = "寵物資料已成功刪除" });
+            }
+            else
+            {
+                return NotFound(new { message = "找不到該寵物，刪除失敗" });
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "伺服器發生錯誤", error = ex.Message });
+        }
+    }
+
 }
