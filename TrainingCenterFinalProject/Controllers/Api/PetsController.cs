@@ -388,6 +388,63 @@ public class PetsController : ControllerBase
         }
     }
 
+    // POST: api/Pets/{id}/medical-records
+    [HttpPost("{id}/medical-records")]
+    public async Task<IActionResult> CreateMedicalRecord(int id, [FromForm] MedicalRecordCreateForm model)
+    {
+        try
+        {
+            var newRecord = new MedicalRecord
+            {
+                PetID = id, // 🌟 綁定路由傳來的寵物 ID
+                VisitDate = model.VisitDate,
+                Symptoms = model.Symptoms,
+                Diagnosis = model.Diagnosis
+                // VetID 會在 Service 層被預設塞入[cite: 3]
+            };
 
+            var result = await _medicalRecordService.CreateAsync(newRecord, model.UploadFile);
 
+            if (result.IsSuccess) return Ok(new { message = "病歷新增成功" });
+
+            return BadRequest(new { message = "新增失敗" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "伺服器發生錯誤", error = ex.Message });
+        }
+    }
+
+    // PUT: api/Pets/medical-records/{recordId}
+    [HttpPut("medical-records/{recordId}")]
+    public async Task<IActionResult> UpdateMedicalRecord(int recordId, [FromForm] MedicalRecordCreateForm model)
+    {
+        try
+        {
+            // 1. 先取得舊資料，我們需要它的 existingFileName[cite: 3]
+            var oldRecord = await _medicalRecordService.GetEditDataAsync(recordId);
+            if (oldRecord == null) return NotFound(new { message = "找不到該病歷" });
+
+            // 2. 更新實體內容
+            oldRecord.VisitDate = model.VisitDate;
+            oldRecord.Symptoms = model.Symptoms;
+            oldRecord.Diagnosis = model.Diagnosis;
+
+            // 3. 呼叫 Service 的 UpdateAsync，並帶入現有的檔案名稱[cite: 3]
+            var result = await _medicalRecordService.UpdateAsync(
+                recordId,
+                oldRecord,
+                model.UploadFile,
+                oldRecord.TestResultsFile // 將舊檔名傳進去，讓 Service 判斷是否需要刪除舊檔[cite: 3]
+            );
+
+            if (result.IsSuccess) return Ok(new { message = "病歷更新成功" });
+
+            return BadRequest(new { message = "更新失敗" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "伺服器發生錯誤", error = ex.Message });
+        }
+    }
 }
