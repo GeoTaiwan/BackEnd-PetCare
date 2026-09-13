@@ -18,13 +18,16 @@ public class PetsController : ControllerBase
     private readonly IMedicalRecordService _medicalRecordService;
     private readonly IWebHostEnvironment _env;
     private readonly ICareGroomingLogService _careGroomingLogService;
+    private readonly IInstitutionService _institutionService;
     // 🌟 關鍵 2：注入你寫好的 IPetService[cite: 4, 5]
-    public PetsController(IPetService petService, IWebHostEnvironment environment,IMedicalRecordService medicalRecordService, ICareGroomingLogService careGroomingLogService)
+    public PetsController(IPetService petService, IWebHostEnvironment environment,IMedicalRecordService medicalRecordService,
+        ICareGroomingLogService careGroomingLogService, IInstitutionService institutionService)
     {
         _petService = petService;
         _medicalRecordService = medicalRecordService;
         _env = environment;
         _careGroomingLogService = careGroomingLogService;
+        _institutionService = institutionService;
     }
 
     // GET: api/Pets/my
@@ -489,4 +492,24 @@ public class PetsController : ControllerBase
             return StatusCode(500, new { message = "伺服器發生錯誤", error = ex.Message });
         }
     }
+
+    // GET: api/Institutions/for-reservation
+    [HttpGet("for-reservation")]
+    public async Task<IActionResult> GetInstitutionsForReservation([FromQuery] string? typeId)
+    {
+        // 這支是你寫好的 Service 方法，可以用 typeId 過濾[cite: 13]
+        var institutions = await _institutionService.GetInstitutionsForReservationAsync(typeId);
+        var institutionsDto = institutions.Select(i => new InstitutionDTO
+        {
+            InstitutionID = i.InstitutionID,
+            Name = i.Name,
+            TypeName = i.InstitutionType.Name,
+            StatusName = i.InstitutionStatus.StatusName,
+            Address = i.Address,
+            Phone = i.Phone
+        }).ToList();
+        // ... 將 institutions 轉為 DTO 回傳
+        return Ok(new { message = "取得成功", data = institutionsDto });
+    }
+
 }

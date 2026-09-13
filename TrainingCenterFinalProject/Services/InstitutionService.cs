@@ -27,7 +27,10 @@ public class InstitutionService : IInstitutionService
 
     public async Task<List<Institution>> GetInstitutionsForReservationAsync(string? typeId)
     {
-        var query = _context.Institutions.AsQueryable();
+        var query = _context.Institutions
+            .Include(i => i.InstitutionStatus)
+            .Include(i => i.InstitutionType)
+            .AsQueryable();
 
         if (!string.IsNullOrEmpty(typeId))
         {
