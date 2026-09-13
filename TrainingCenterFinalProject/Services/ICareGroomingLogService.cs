@@ -16,6 +16,7 @@ public interface ICareGroomingLogService
 
     Task<CareGroomingLog?> GetDeleteDataAsync(int logId);
     Task<ServiceResult<bool>> DeleteAsync(int logId, string currentUserId);
+    Task<List<CareGroomingLog>> GetCaresByPetIdAsync(int petId = 0,string? userId = null);
 }
 
 public class CareGroomingLogCreateData

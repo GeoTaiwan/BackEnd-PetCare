@@ -17,12 +17,14 @@ public class PetsController : ControllerBase
     private readonly IPetService _petService;
     private readonly IMedicalRecordService _medicalRecordService;
     private readonly IWebHostEnvironment _env;
+    private readonly ICareGroomingLogService _careGroomingLogService;
     // 🌟 關鍵 2：注入你寫好的 IPetService[cite: 4, 5]
-    public PetsController(IPetService petService, IWebHostEnvironment environment,IMedicalRecordService medicalRecordService)
+    public PetsController(IPetService petService, IWebHostEnvironment environment,IMedicalRecordService medicalRecordService, ICareGroomingLogService careGroomingLogService)
     {
         _petService = petService;
         _medicalRecordService = medicalRecordService;
         _env = environment;
+        _careGroomingLogService = careGroomingLogService;
     }
 
     // GET: api/Pets/my
@@ -448,4 +450,42 @@ public class PetsController : ControllerBase
         }
     }
 
+    // GET: api/Pets/{id}/grooming-cares
+    [HttpGet("grooming-cares/{id}/{userId?}")]
+    public async Task<IActionResult> GetGroomingCares(int id,string? userId = null)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId)) return Unauthorized(new { message = "無法識別使用者身分" });
+            }
+
+            // 呼叫你的 Service 取得該寵物的美容紀錄，並依日期遞減排序
+            // (請替換為你實際寫在 CareGroomingLogService 中的方法)
+            var cares = await _careGroomingLogService.GetCaresByPetIdAsync(id, userId);
+            //var cares = await _careGroomingLogService.GetCaresByPetIdAsync(id);
+
+            if (cares == null) return NotFound(new { message = "找不到資料" });
+
+            // 轉換為 DTO
+            var resultDto = cares.Select(c => new CareGroomingLogDTO
+            {
+                LogID = c.LogID,           // 對應你的 PK
+                LogDate = c.LogDate,
+                StaffID = c.StaffID,
+                PetID = c.PetID,
+                ActivityDetails = c.ActivityDetails,
+                DietNotes = c.DietNotes,
+                PetName = c.Pet?.Name // 透過 Navigation Property 取得寵物名稱
+            }).ToList();
+
+            return Ok(new { message = "取得成功", data = resultDto });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "伺服器發生錯誤", error = ex.Message });
+        }
+    }
 }

@@ -1,13 +1,16 @@
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using TrainingCenterFinalProject.Common;
 using TrainingCenterFinalProject.Data;
 using TrainingCenterFinalProject.Models;
 
+using Microsoft.AspNetCore.Http;
 namespace TrainingCenterFinalProject.Services;
 
 public class CareGroomingLogService : ICareGroomingLogService
 {
     private readonly PetCareDbContext _context;
+    //private readonly IHttpContextAccessor _httpContextAccessor;
 
     public CareGroomingLogService(PetCareDbContext context)
     {
@@ -32,6 +35,28 @@ public class CareGroomingLogService : ICareGroomingLogService
             .Include(cg => cg.Staff)
             .Where(cg => cg.Pet!.OwnerID == userId)
             .ToListAsync();
+    }
+
+    public async Task<List<CareGroomingLog>> GetCaresByPetIdAsync(int petId=0, string? userId = null)
+    {
+        //從登入資訊取得使用者ID
+        //var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //以寵物ID查詢照護紀錄
+        var cares = _context.CareGroomingLogs
+            .Include(cg => cg.Pet).ThenInclude(p => p.Owner)
+            .Include(cg => cg.Staff)
+            .AsQueryable();
+        if (petId == 0)
+        {
+            cares = cares.Where(cg => cg.Pet!.OwnerID == userId);
+
+        }
+        else
+        {
+            cares = cares.Where(cg => cg.PetID == petId);
+        }
+
+        return await cares.ToListAsync();
     }
 
     public async Task<CareGroomingLog?> GetDetailsAsync(int logId)
