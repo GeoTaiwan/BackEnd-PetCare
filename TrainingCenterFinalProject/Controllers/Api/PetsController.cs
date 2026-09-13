@@ -478,7 +478,8 @@ public class PetsController : ControllerBase
                 PetID = c.PetID,
                 ActivityDetails = c.ActivityDetails,
                 DietNotes = c.DietNotes,
-                PetName = c.Pet?.Name // 透過 Navigation Property 取得寵物名稱
+                PetName = c.Pet?.Name, // 透過 Navigation Property 取得寵物名稱
+                StaffName = c.Staff?.Name // 透過 Navigation Property 取得員工名稱
             }).ToList();
 
             return Ok(new { message = "取得成功", data = resultDto });
