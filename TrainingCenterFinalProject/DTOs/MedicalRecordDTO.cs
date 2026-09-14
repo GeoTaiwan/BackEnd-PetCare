@@ -12,4 +12,5 @@ public class MedicalRecordDTO
     // 如果你需要顯示獸醫的真實姓名，且 UserProfile 裡有 Name 的話，
     // 可以新增一個 public string? VetName { get; set; }，並在稍後轉換時對應。
     public string? VetName { get; set; }
+    public string? PetName { get; set; }
 }
