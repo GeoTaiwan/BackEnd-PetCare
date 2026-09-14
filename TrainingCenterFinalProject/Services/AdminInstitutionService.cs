@@ -137,7 +137,30 @@ public class AdminInstitutionService : IAdminInstitutionService
 
         if (institution.StatusId == "S01")
         {
-            if (owner != null) owner.Authorization = 2;
+            if (owner != null)
+            {
+                //byte auth=0;
+                //switch (institution.TypeId)
+                //{
+                //    case "IT01":
+                //        auth = 4;
+                //        break;
+                //    case "IT02":
+                //        auth = 5;
+                //        break;
+                //    case "IT03":
+                //        auth = 6;
+                //        break;
+                //}
+                byte auth = institution.TypeId switch
+                {
+                    "IT01"=> 4,
+                    "IT02"=> 5,
+                    "IT03"=> 6
+                };
+                owner.Authorization = auth;
+            }
+                
         }
         else if (!activeInstitutions.Any() && owner != null)
         {

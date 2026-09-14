@@ -10,6 +10,7 @@ namespace TrainingCenterFinalProject.Controllers
     {
         public IActionResult Index()
         {
+            ViewBag.PresentRole = "";
             return View();
         }
 
