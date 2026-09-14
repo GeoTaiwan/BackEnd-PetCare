@@ -18,7 +18,7 @@
             bool isValid = item.AuthorizationRecords.Any(ar => ar.Status == "Authorized" && ar.GrantedDate <= DateTime.Now && ar.RevokedDate >= DateTime.Now);
             bool isVet = ViewBag.isVet ?? false;
             <div class="col">
-                <div class="card h-100">
+                <div class="card h-100 shadow-sm border-0 hover-card">
 
                     @if (!string.IsNullOrEmpty(item.ProfilePhotoUrl))
                     {
