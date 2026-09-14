@@ -154,10 +154,16 @@ public class AppointmentService : IAppointmentService
 
     private async Task<string> GenerateAppointmentIdAsync(string institutionId)
     {
-        var datePart = DateTime.Now.ToString("yyyyMMdd");
-        var serialNumber = await _context.Appointments.CountAsync(a =>
-            a.InstitutionID == institutionId &&
-            a.ApplyTime.Date == DateTime.Today) + 1;
+        var currentDateTime = DateTime.Now;
+        var today = currentDateTime.Date;
+        var tomorrow = today.AddDays(1);
+        var datePart = today.ToString("yyyyMMdd");
+        var count = await _context.Appointments
+            .CountAsync(a => a.InstitutionID == institutionId &&
+            a.ApplyTime >= today &&
+            a.ApplyTime < tomorrow);
+
+        var serialNumber = count + 1;
 
         return $"A{datePart}-{institutionId}-{serialNumber:D3}";
     }

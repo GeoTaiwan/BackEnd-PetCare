@@ -30,7 +30,7 @@ public class AppointmentsApiController : ControllerBase
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId)) return Unauthorized();
-
+            
             var appointment = new Appointment
             {
                 PetID = model.PetID,
