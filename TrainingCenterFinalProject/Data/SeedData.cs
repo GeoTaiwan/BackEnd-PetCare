@@ -59,10 +59,10 @@ namespace TrainingCenterFinalProject.Data
                 // 2. 建立 使用者基本資料 (UserProfile)
                 // ==========================================
                 var admin = new UserProfile { UserID = "U202607280001", Name = "系統管理員", Phone = "0900000000", Authorization = 9, Email = "admin@test.com", Status = 1, JoinDate = now };
-                var vet = new UserProfile { UserID = "U202607280002", Name = "預設獸醫", Phone = "0911111111", Authorization = 2, Email = "vet@test.com", Status = 1, JoinDate = now };
-                var groomer = new UserProfile { UserID = "U202607280003", Name = "陳美容", Phone = "0922222222", Authorization = 1, Email = "groomer@test.com", Status = 1, JoinDate = now };
+                var vet = new UserProfile { UserID = "U202607280002", Name = "預設獸醫", Phone = "0911111111", Authorization = 1, Email = "vet@test.com", Status = 1, JoinDate = now };
+                var groomer = new UserProfile { UserID = "U202607280003", Name = "陳美容", Phone = "0922222222", Authorization = 2, Email = "groomer@test.com", Status = 1, JoinDate = now };
                 var owner = new UserProfile { UserID = "U202607280004", Name = "林飼主", Phone = "0933333333", Authorization = 0, Email = "owner@test.com", Status = 1, JoinDate = now };
-                var vetManage = new UserProfile { UserID = "U202607280005", Name = "獸醫管理", Phone = "0933333333", Authorization = 0, Email = "vetManage@test.com", Status = 1, JoinDate = now };
+                var vetManage = new UserProfile { UserID = "U202607280005", Name = "獸醫管理", Phone = "0933333333", Authorization = 4, Email = "vetManage@test.com", Status = 1, JoinDate = now };
                 if (!context.UserProfiles.Any())
                 {
                     context.UserProfiles.AddRange(admin, vet, groomer, owner, vetManage);

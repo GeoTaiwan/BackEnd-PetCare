@@ -1,0 +1,66 @@
+@model TrainingCenterFinalProject.Models.CareGroomingLog
+
+@{
+    // ViewData["Title"] = "Edit";
+	bool fromDetails = ViewBag.FromDetails ?? false;
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" asp-route-fromDetails="@fromDetails">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="LogID" />
+            <input type="hidden" asp-for="PetID" />
+            <input type="hidden" asp-for="StaffID" />
+
+            <div class="mb-3">
+                <label asp-for="Staff.Name" class="control-label">照護者</label>
+                <input asp-for="Staff.Name" class="form-control" disabled readonly/>
+                <span asp-validation-for="Staff.Name" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="LogDate" class="control-label"></label>
+                <input asp-for="LogDate" class="form-control" disabled readonly />
+                <span asp-validation-for="LogDate" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ActivityDetails" class="control-label"></label>
+                <textarea asp-for="ActivityDetails" class="form-control"></textarea>
+                <span asp-validation-for="ActivityDetails" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="DietNotes" class="control-label"></label>
+                <textarea asp-for="DietNotes" class="form-control"></textarea>
+                <span asp-validation-for="DietNotes" class="text-danger"></span>
+            </div>
+            
+            <div class="mb-3">
+                <input type="submit" value="確定更新" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+
+    <div class="col">
+        
+    </div>
+</div>
+@if (fromDetails)
+{
+	<div>
+		<a asp-action="Details" asp-route-logid="@Model?.LogID" class="btn btn-info">回照護明細</a>
+	</div>
+}
+else
+{
+	<div>
+		<a asp-action="Index" class="btn btn-info">回日誌列表</a>
+	</div>
+}   
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

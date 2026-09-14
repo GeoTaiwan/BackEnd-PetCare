@@ -24,6 +24,7 @@ public class UserProfileService : IUserProfileService
     public async Task<UserProfile?> GetByIdAsync(string userId)
     {
         return await _context.UserProfiles
+            .Include(u=>u.Employments)
             .FirstOrDefaultAsync(m => m.UserID == userId);
     }
 

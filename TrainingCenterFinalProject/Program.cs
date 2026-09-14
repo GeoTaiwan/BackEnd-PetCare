@@ -80,6 +80,7 @@ builder.Services.AddScoped<IPetWeightService, PetWeightService>();
 builder.Services.AddScoped<IPetPhotoService, PetPhotoService>();
 builder.Services.AddScoped<IAuthorizationRecordService, AuthorizationRecordService>();
 builder.Services.AddScoped<ICareGroomingLogService, CareGroomingLogService>();
+builder.Services.AddScoped<ICareGroomingLogManageService, CareGroomingLogManageService>();
 builder.Services.AddScoped<IEmploymentService, EmploymentService>();
 builder.Services.AddScoped<IInstitutionService, InstitutionService>();
 builder.Services.AddScoped<ILogPhotoService, LogPhotoService>();
@@ -91,6 +92,7 @@ builder.Services.AddScoped<ITaskScheduleService, TaskScheduleService>();
 builder.Services.AddScoped<ITaskScheduleManageService, TaskScheduleManageService>();
 builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 builder.Services.AddScoped<ISysMenuService, SysMenuService>();
+
 
 
 var app = builder.Build();

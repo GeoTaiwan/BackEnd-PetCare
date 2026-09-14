@@ -1,0 +1,67 @@
+@model IEnumerable<TrainingCenterFinalProject.Models.CareGroomingLog>
+
+@{
+    // ViewData["Title"] = "Index";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">新增資料</a>
+</p>
+<table class="table table-hover">
+    <thead>
+        <tr >
+            <th class="text-nowrap">
+                @Html.DisplayNameFor(model => model.Pet.Name)    
+            </th>
+            <th class="text-nowrap">
+                照護者@(@Html.DisplayNameFor(model => model.Staff.Name))
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LogDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ActivityDetails)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DietNotes)
+            </th>
+            
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr class="position-relative">
+            <td>
+                @Html.DisplayFor(model => item.Pet.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Staff.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.LogDate)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.ActivityDetails)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.DietNotes)
+            </td>
+            
+            <td>
+                <a asp-action="Edit" asp-route-logid="@item.LogID" class="btn btn-warning position-relative z-2">編輯</a>
+                <a asp-action="Details" asp-route-logid="@item.LogID" class="stretched-link"></a>
+                <a asp-action="Delete" asp-route-logid="@item.LogID" class="btn btn-danger position-relative z-2">刪除</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+@section Scripts {
+	<script>
+        
+		console.log("institutionID: @ViewBag.userInstitutionId");
+	</script>
+}

@@ -5,7 +5,7 @@ using TrainingCenterFinalProject.Models;
 using TrainingCenterFinalProject.Services;
 
 // 機構端
-[Authorize(Roles = "VetManage,BeautyManage,NannyManage,Vet,Beauty,Nanny")]
+[Authorize(Roles = "VetManage,Vet")]
 public class MedicalRecordManageController : BaseController
 {
     private readonly IMedicalRecordManageService _medicalRecordManageService;
