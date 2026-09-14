@@ -61,7 +61,7 @@
 					<td class="align-middle">
 						<a class="stretched-link" asp-action="Details" asp-route-appointmentid="@item.AppointmentID"></a>
 
-						@if (!isHandled)
+						@if (!isHandled && item.ApptDateTime>= DateTime.Now)
 						{
 							<form asp-action="Accept" method="post" style="display:inline">
 								<input type="hidden" name="appointmentid" value="@item.AppointmentID" />
@@ -71,6 +71,9 @@
 								<input type="hidden" name="appointmentid" value="@item.AppointmentID" />
 								<button type="submit" class="btn btn-danger position-relative z-2" onclick="return confirm('確定要拒絕這個預約嗎？');">拒絕</button>
 							</form>
+						} else if (item.ApptDateTime < DateTime.Now)
+						{
+							<span class="text-danger">已過期</span>
 						}
 						else if (item.Status == "預約成功")
 						{

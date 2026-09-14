@@ -1,3 +1,4 @@
+using AspNetCoreGeneratedDocument;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PetCare.Controllers;
@@ -77,7 +78,7 @@ public class AppointmentController : BaseController
             return View(appointment);
         }
 
-        return RedirectToAction(nameof(Details), "Pet", new { petid = appointment.PetID });
+        return RedirectToAction("Index", "Appointment");
     }
 
     public async Task<IActionResult> Edit(string? id)
@@ -86,18 +87,27 @@ public class AppointmentController : BaseController
 
         var appointment = await _appointmentService.GetByIdAsync(id);
         if (appointment == null) return NotFound();
-
+        await PopulatePetListAsync(appointment.PetID);
         return View(appointment);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(string? id, [Bind("AppointmentID,PetID,InstitutionID,ServiceType,ApptDateTime,Status,Pet,Institution")] Appointment appointment)
+    public async Task<IActionResult> Edit(string? id, Appointment appointment)
     {
         if (string.IsNullOrEmpty(id)) return NotFound();
+        //ModelState.Remove("InstitutionID");
+        //ModelState.Remove("ApptDateTime");
+        ModelState.Remove("Status");
+        ModelState.Remove("Pet");
+        ModelState.Remove("Institution");
+        appointment.Status = "已申請待確認";
 
-        if (!ModelState.IsValid) return View(appointment);
-
+        if (!ModelState.IsValid)
+        {
+            await PopulatePetListAsync(appointment.PetID);
+            return View(appointment);
+        }
         var result = await _appointmentService.UpdateAsync(id, appointment);
         if (!result.IsSuccess && result.ErrorMessage == "NOT_FOUND")
         {
